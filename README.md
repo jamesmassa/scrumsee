@@ -29,18 +29,3 @@ This directory contains all of the Jira data which was used for the visualizatio
 ### img/
 
 This directory contains images that were used in the dashboard.
- 
-## Acknowledgements
-
-* Hotspots code inspired and adapted from https://codepen.io/jack-taylor89/pen/JeajeL?editors=1100
-* `scrum-main.png` inspired and adapted from https://www.verbindungszentrum.com/scrum-en/
-* https://www.w3schools.com/css/tryit.asp?filename=trycss_tooltip_arrow_top
-* `reset.css` from http://meyerweb.com/eric/tools/css/reset/
-* https://wesbos.com/template-strings-html/ 
-* https://tntvis.github.io/tnt.tooltip/
-* https://codepen.io/ashokgowtham/pen/LpnHe 
-* https://www.d3-graph-gallery.com/graph/line_cursor.html
-* https://d3-legend.susielu.com/
-* https://github.com/d3/d3/wiki/Gallery
-* https://vallandingham.me/bubble_charts_in_d3.html
-* http://dimplejs.org/advanced_examples_viewer.html?id=advanced_time_axis
