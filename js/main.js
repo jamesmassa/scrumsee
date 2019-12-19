@@ -20,13 +20,15 @@ function visualize(error, jiraData, scrumText, retroData) {
         console.log(retroStore.data);
 
         const margin = {top: 0, right: 0, bottom: 0, left: 0};
-        const marginVelocity = { top: 40, right: 65, bottom: 60, left: 60 };
+        const marginScrumSee = { top: 0, right: 0, bottom: 0, left: 0 };
         const marginScope = { top: 0, right: 0, bottom: 0, left: 0 };
         const marginRetro = { top: 0, right: 0, bottom: 0, left: 0 };
+        const marginVelocity = { top: 40, right: 65, bottom: 60, left: 60 };
         const width = 0;
         const height = 0;
         const colorScheme = scrumColorScheme;
 
+        const svgScrumSee = new Svg("#scrumsee-svg", 800, 100, marginScrumSee);
         const svgVelocity = new Svg("#velocity-chart", -1, 400, marginVelocity);
         const svgScope = new Svg("#scope-chart", width/2, height, marginScope);
         const svgStory = new Svg("#story-chart", width/2, height, margin);
@@ -38,6 +40,7 @@ function visualize(error, jiraData, scrumText, retroData) {
         const visScope = new ScopeChart(issueStore, svgScope, visStory,'', colorScheme, eventHandler);
         const visRetro = new RetroChart(retroData.slice(16,21), svgRetro);
         const visEmployee = new EmployeeChart2(issueStore, svgEmployee);
+        const visScrumSee = new ScrumSee(svgScrumSee);
 
         //Map clickable elements to the visualization objects which will display
         const actionMapping = {
