@@ -11,7 +11,7 @@ class ScrumSee {
         this.renderCircles();
         this.renderRectangles();
         this.renderTriangles();
-        this.renderSprintArc2();
+        this.renderSprintArc();
         this.renderScrumArc();
         //this.renderCircleText();
     }
@@ -37,6 +37,7 @@ class ScrumSee {
         const bottomArrowheadTop = bottomArrowheadBottom - heightBottomArrowhead;
         const bottomArrowheadMiddle = bottomArrowheadTop - .5 * (bottomArrowheadTop - bottomArrowheadBottom);
 
+        //const dataRectWidth = (widthPreSprintArrowRect / 3) - (3 * xPct);
         const dataRectWidth = widthPreSprintArrowRect / 6;
         const dataRectHeight = heightBottomArrowhead;
         const dataRectY = (100 * yPct) - dataRectHeight;
@@ -89,7 +90,7 @@ class ScrumSee {
         ];
 
         this.sprintArcData  = [
-            { "name": "sprint-arc", "innerRadius": 50, "outerRadius": 70, startAngle: -.33, endAngle: .5, "x": 2, "y": 2 }
+            { "name": "sprint-arc", "innerRadius": 80, "outerRadius": 105, startAngle: -.33, endAngle: .5, "x": 2, "y": 2 }
         ];
 
         this.scrumArcData  = [
@@ -145,9 +146,10 @@ class ScrumSee {
             .attr("points", d => d.points)
     }
 
-    renderSprintArc2(){
+    renderSprintArc(){
         const data = this.sprintArcData[0];
         const arcLengthBase = 2 * Math.PI;
+        const arcWidth = data.outerRadius - data.innerRadius;
 
         const arcGenerator = d3.arc()
             .innerRadius(data.innerRadius)
@@ -171,12 +173,12 @@ class ScrumSee {
         const defs = g.append('svg:defs');
 
         const marker = defs.append('svg:marker')
-            .attr('id', 'marker_arrow')
-            .attr('markerHeight', 30)
-            .attr('markerWidth', 30)
+            .attr('id', 'marker-arrow')
+            .attr('markerHeight', 40)
+            .attr('markerWidth', 40)
             .attr('markerUnits', 'strokeWidth')
-            .attr('orient', 'auto')
-            .attr('refX', 0)
+            .attr('orient', '180')
+            .attr('refX', .1 * arcWidth)
             .attr('refY', 0)
             .attr('viewBox', markerData[2].viewbox)
             .append('svg:path')
@@ -187,29 +189,7 @@ class ScrumSee {
             .attr("class", "arc")
             .attr("d", arcGenerator)
             .attr("fill", this.arrowColor)
-            .attr('marker-end', 'url(#marker_arrow)' )
-    }
-
-    renderSprintArc(){
-        const data = this.sprintArcData[0];
-        const arcLengthBase = 2 * Math.PI;
-
-        const arcGenerator = d3.arc()
-            .innerRadius(data.innerRadius)
-            .outerRadius(data.outerRadius)
-            .startAngle(data.startAngle * arcLengthBase)
-            .endAngle(data.endAngle * arcLengthBase);
-
-        const g = this.svg.svg.append('g')
-            .attr("transform", "translate(" + (this.svg.width / data.x) + "," + (this.svg.height / data.y) + ")");
-
-        const arc = g.selectAll("path")
-            .data(this.sprintArcData, d=> d.id );
-
-        arc.enter().append("path")
-            .attr("class", "arc")
-            .attr("d", arcGenerator)
-            .attr("fill", this.arrowColor);
+            .attr('marker-start', 'url(#marker-arrow)' );
     }
 
     renderScrumArc() {
@@ -231,10 +211,47 @@ class ScrumSee {
         const arc = g.selectAll("path")
             .data(this.scrumArcData, d => d.id);
 
+        const markerArc = g.selectAll("path")
+            .data(this.scrumArcData, d => d.id );
+
         arc.enter().append("path")
             .attr("class", "arc")
             .attr("d", arcGenerator)
             .attr("fill", this.arrowColor);
+
+        const markerData = [
+            { id: 0, name: 'circle', path: 'M 0, 0  m -5, 0  a 5,5 0 1,0 10,0  a 5,5 0 1,0 -10,0', viewbox: '-6 -6 12 12' },
+            { id: 1, name: 'square', path: 'M 0,0 m -5,-5 L 5,-5 L 5,5 L -5,5 Z', viewbox: '-5 -5 10 10' },
+            { id: 2, name: 'arrow', path: 'M 0,0 m -5,-5 L 5,0 L -10,10 Z', viewbox: '-5 -5 10 10' },
+            { id: 3, name: 'stub', path: 'M 0,0 m -1,-5 L 1,-5 L 1,5 L -1,5 Z', viewbox: '-1 -5 2 10' }
+        ];
+
+        const defs = g.append('svg:defs');
+
+        const marker = defs.append('svg:marker')
+            .attr('id', 'marker-scrum-arrow')
+            .attr('markerHeight', 30)
+            .attr('markerWidth', 30)
+            .attr('markerUnits', 'strokeWidth')
+            .attr('orient', '270')
+            .attr('refX', -.2 * arcWidth)
+            .attr('refY', .1 * arcWidth)
+            .attr('viewBox', markerData[2].viewbox)
+            .append('svg:path')
+            .attr('d', markerData[2].path )
+            .attr('fill', this.arrowColor);
+
+        const markerArcGenerator = d3.arc()
+            .innerRadius(data.innerRadius)
+            .outerRadius(data.outerRadius)
+            .startAngle(data.endAngle * arcLengthBase)
+            .endAngle(data.endAngle * arcLengthBase);
+
+        markerArc.enter().append("path")
+            .attr("class", "arc")
+            .attr("d", markerArcGenerator)
+            .attr("fill", this.arrowColor)
+            .attr('marker-start', 'url(#marker-scrum-arrow)' );
     }
 
     // const arcLabel = this.svg.svg.selectAll("text")

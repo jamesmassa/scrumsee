@@ -29,7 +29,7 @@ function visualize(error, jiraData, scrumText, retroData) {
         const height = 0;
         const colorScheme = scrumColorScheme;
 
-        const svgScrumSee = new Svg("#scrumsee-svg", 1400, 150, marginScrumSee);
+        const svgScrumSee = new Svg("#scrumsee-svg", 1400, 210, marginScrumSee);
         const svgVelocity = new Svg("#velocity-chart",  800, 400, marginVelocity);
         const svgScope = new Svg("#scope-chart", width/2, height, marginScope);
         const svgStory = new Svg("#story-chart", width/2, height, margin);
