@@ -5,12 +5,13 @@ class ScrumSee {
     }
 
     drawScrumDiagram(){
-        this.setShapeData();
+        this.svg.svg.selectAll("*").remove();
         this.setColors();
+        this.setShapeData();
         this.renderCircles();
         this.renderRectangles();
         this.renderTriangles();
-        this.renderSprintArc();
+        this.renderSprintArc2();
         this.renderScrumArc();
         //this.renderCircleText();
     }
@@ -18,10 +19,6 @@ class ScrumSee {
     setShapeData(){
         const circleCy = 80;
         const circleHelpRadius = 10;
-
-        const triYbottom = 30;
-        const triYmiddle = 20;
-        const triYtop = 10;
 
         const xPct = this.svg.width / 100;
         const yPct = this.svg.height / 100;
@@ -40,9 +37,12 @@ class ScrumSee {
         const bottomArrowheadTop = bottomArrowheadBottom - heightBottomArrowhead;
         const bottomArrowheadMiddle = bottomArrowheadTop - .5 * (bottomArrowheadTop - bottomArrowheadBottom);
 
-        const dataRectY = 100 * yPct;
         const dataRectWidth = widthPreSprintArrowRect / 6;
         const dataRectHeight = heightBottomArrowhead;
+        const dataRectY = (100 * yPct) - dataRectHeight;
+
+        const triYbottom = 30;
+        const triYtop = 10;
 
         this.cirlcleData = [
             { "name": "backlog", "text": "?", "cx":50, "cy": circleCy, "r": circleHelpRadius },
@@ -59,19 +59,25 @@ class ScrumSee {
         ];
 
         this.rectData  = [
-            { "name": "backlog", "text": "", "x": dataRectWidth, "y": dataRectY, "width": dataRectWidth, "height": dataRectHeight },
-            { "name": "planning", "text": "", "x": 3 * dataRectWidth, "y": dataRectY, "width": dataRectWidth, "height": dataRectHeight },
-            { "name": "sprint-backlog", "text": "", "x": 5 * dataRectWidth, "y": dataRectY, "width": dataRectWidth, "height": dataRectHeight },
-            { "name": "increment", "text": "", "x": 9 * dataRectWidth, "y": dataRectY, "width": dataRectWidth, "height": dataRectHeight },
-            { "name": "showcase", "text": "", "x": 11 * dataRectWidth, "y": dataRectY, "width": dataRectWidth, "height": dataRectHeight },
-            { "name": "retrospective", "text": "", "x": 13 * dataRectWidth, "y": dataRectY, "width": dataRectWidth, "height": dataRectHeight },
-            { "name": "pre-sprint-arrow", "text": "", "x":0, "y": this.svg.height - heightBottomArrowRect, "width": widthPreSprintArrowRect, "height": heightBottomArrowRect },
-            { "name": "post-sprint-arrow", "text": "", "x": startPostSprintArrowRect, "y": this.svg.height - heightBottomArrowRect, "width": widthPostSprintArrowRect, "height": heightBottomArrowRect }
+            { "name": "pre-sprint-arrow", "text": "", "x":0, "y": this.svg.height - heightBottomArrowRect, "width": widthPreSprintArrowRect, "height": heightBottomArrowRect, "color": this.arrowColor },
+            { "name": "post-sprint-arrow", "text": "", "x": startPostSprintArrowRect, "y": this.svg.height - heightBottomArrowRect, "width": widthPostSprintArrowRect, "height": heightBottomArrowRect, "color": this.arrowColor },
+            { "name": "backlog", "text": "", "x": dataRectWidth, "y": dataRectY, "width": dataRectWidth, "height": dataRectHeight, "color": this.dataRectColor },
+            { "name": "planning", "text": "", "x": 3 * dataRectWidth, "y": dataRectY, "width": dataRectWidth, "height": dataRectHeight, "color": this.dataRectColor },
+            { "name": "sprint-backlog", "text": "", "x": 5 * dataRectWidth, "y": dataRectY, "width": dataRectWidth, "height": dataRectHeight, "color": this.dataRectColor },
+            { "name": "increment", "text": "", "x": startPostSprintArrowRect + dataRectWidth, "y": dataRectY, "width": dataRectWidth, "height": dataRectHeight, "color": this.dataRectColor },
+            { "name": "showcase", "text": "", "x": startPostSprintArrowRect + (3 * dataRectWidth), "y": dataRectY, "width": dataRectWidth, "height": dataRectHeight, "color": this.dataRectColor },
+            { "name": "retrospective", "text": "", "x": startPostSprintArrowRect + (5 * dataRectWidth), "y": dataRectY, "width": dataRectWidth, "height": dataRectHeight, "color": this.dataRectColor }
         ];
 
         this.triangleData  = [
-            { "name": "sprint-arrowhead", "points": "50 " + triYbottom + ", 60 " + triYbottom + ", 55 " + triYtop },
-            { "name": "daily-scrum-arrowhead", "points": "70 " + triYbottom + ", 80 " + triYbottom + ", 75 " + triYtop  },
+            { "name": "sprint-arrowhead", "points":
+                    "50 " + triYbottom + ", " +
+                    "60 " + triYbottom + ", " +
+                    "55 " + triYtop },
+            { "name": "daily-scrum-arrowhead", "points":
+                    "70 " + triYbottom + ", " + "" +
+                    "80 " + triYbottom + ", " +
+                    "75 " + triYtop },
             { "name": "pre-sprint-arrowhead", "points":
                     widthPreSprintArrowRect + " " + bottomArrowheadBottom + ", " +
                     preSprintArrowheadEnd + " " + bottomArrowheadMiddle + ", " +
@@ -83,20 +89,20 @@ class ScrumSee {
         ];
 
         this.sprintArcData  = [
-            { "name": "sprint-arc", startAngle: 0, endAngle: 2 * Math.PI }
+            { "name": "sprint-arc", "innerRadius": 50, "outerRadius": 70, startAngle: -.33, endAngle: .5, "x": 2, "y": 2 }
         ];
 
         this.scrumArcData  = [
-            { "name": "daily-scrum-arc", startAngle: 0, endAngle: 2 * Math.PI }
+            { "name": "daily-scrum-arc", "innerRadius": 25, "outerRadius": 40, startAngle: -.3, endAngle: .45, "x": 2, "y": 3.3 }
         ];
 
     }
 
     setColors(){
-        this.rectColor = "#4e73df";
+
         this.circleColor = "#4e73df";
-        this.triangleColor = "#4e73df";
-        this.arcColor = "#4e73df";
+        this.dataRectColor = "#4e73df";
+        this.arrowColor = "#4565C4";
     }
 
     renderCircles(){
@@ -118,11 +124,13 @@ class ScrumSee {
 
         rect.enter().append("rect")
             .attr("class", "rect")
-            .attr("fill", this.rectColor)
+            .attr("fill", d => d.color)
             .attr("width", d => d.width)
             .attr("height", d => d.height)
             .attr("y", d => d.y)
             .attr("x", d => d.x)
+            .attr("rx", 6)
+            .attr("ry", 6);
     }
 
     renderTriangles(){
@@ -131,19 +139,69 @@ class ScrumSee {
 
         triangle.enter().append("polyline")
             .attr("class", "triangle")
-            .attr("fill", this.triangleColor)
+            .attr("fill", this.arrowColor)
             .attr("width", d => d.width)
             .attr("height", d => d.height)
             .attr("points", d => d.points)
     }
 
-    renderSprintArc(){
+    renderSprintArc2(){
+        const data = this.sprintArcData[0];
+        const arcLengthBase = 2 * Math.PI;
+
         const arcGenerator = d3.arc()
-            .innerRadius(50)
-            .outerRadius(70)
+            .innerRadius(data.innerRadius)
+            .outerRadius(data.outerRadius)
+            .startAngle(data.startAngle * arcLengthBase)
+            .endAngle(data.endAngle * arcLengthBase);
 
         const g = this.svg.svg.append('g')
-            .attr('transform', 'translate(400, 100)');
+            .attr("transform", "translate(" + (this.svg.width / data.x) + "," + (this.svg.height / data.y) + ")");
+
+        const arc = g.selectAll("path")
+            .data(this.sprintArcData, d=> d.id );
+
+        const markerData = [
+            { id: 0, name: 'circle', path: 'M 0, 0  m -5, 0  a 5,5 0 1,0 10,0  a 5,5 0 1,0 -10,0', viewbox: '-6 -6 12 12' },
+            { id: 1, name: 'square', path: 'M 0,0 m -5,-5 L 5,-5 L 5,5 L -5,5 Z', viewbox: '-5 -5 10 10' },
+            { id: 2, name: 'arrow', path: 'M 0,0 m -5,-5 L 5,0 L -10,10 Z', viewbox: '-5 -5 10 10' },
+            { id: 3, name: 'stub', path: 'M 0,0 m -1,-5 L 1,-5 L 1,5 L -1,5 Z', viewbox: '-1 -5 2 10' }
+        ];
+
+        const defs = g.append('svg:defs');
+
+        const marker = defs.append('svg:marker')
+            .attr('id', 'marker_arrow')
+            .attr('markerHeight', 30)
+            .attr('markerWidth', 30)
+            .attr('markerUnits', 'strokeWidth')
+            .attr('orient', 'auto')
+            .attr('refX', 0)
+            .attr('refY', 0)
+            .attr('viewBox', markerData[2].viewbox)
+            .append('svg:path')
+            .attr('d', markerData[2].path )
+            .attr('fill', this.arrowColor);
+
+        arc.enter().append("path")
+            .attr("class", "arc")
+            .attr("d", arcGenerator)
+            .attr("fill", this.arrowColor)
+            .attr('marker-end', 'url(#marker_arrow)' )
+    }
+
+    renderSprintArc(){
+        const data = this.sprintArcData[0];
+        const arcLengthBase = 2 * Math.PI;
+
+        const arcGenerator = d3.arc()
+            .innerRadius(data.innerRadius)
+            .outerRadius(data.outerRadius)
+            .startAngle(data.startAngle * arcLengthBase)
+            .endAngle(data.endAngle * arcLengthBase);
+
+        const g = this.svg.svg.append('g')
+            .attr("transform", "translate(" + (this.svg.width / data.x) + "," + (this.svg.height / data.y) + ")");
 
         const arc = g.selectAll("path")
             .data(this.sprintArcData, d=> d.id );
@@ -151,29 +209,24 @@ class ScrumSee {
         arc.enter().append("path")
             .attr("class", "arc")
             .attr("d", arcGenerator)
-            .attr("fill", this.arcColor);
-
-        // const arcLabel = this.svg.svg.selectAll("text")
-        //     .data(this.arcData, d=> d.id );
-        //
-        // arcLabel.enter().append('text')
-        //     .each(d => {
-        //         const centroid = arcGenerator.centroid(d);
-        //         d3.select(this)
-        //             .attr('x', centroid[0])
-        //             .attr('y', centroid[1])
-        //             .attr('dy', '0.33em')
-        //             .text(d.name);
-        //     });
+            .attr("fill", this.arrowColor);
     }
 
     renderScrumArc() {
+        const data = this.scrumArcData[0];
+        const arcWidth = data.outerRadius - data.innerRadius;
+        const arcLengthBase = 2 * Math.PI;
+
         const arcGenerator = d3.arc()
-            .innerRadius(20)
-            .outerRadius(35)
+            .innerRadius(data.innerRadius)
+            .outerRadius(data.outerRadius)
+            .startAngle(data.startAngle * arcLengthBase)
+            .endAngle(data.endAngle * arcLengthBase);
 
         const g = this.svg.svg.append('g')
-            .attr('transform', 'translate(500, 100)');
+            .attr("transform", "translate(" +
+                (this.svg.width / data.x + this.sprintArcData[0].outerRadius + arcWidth)  + "," +
+                (this.svg.height / data.y) + ")");
 
         const arc = g.selectAll("path")
             .data(this.scrumArcData, d => d.id);
@@ -181,11 +234,23 @@ class ScrumSee {
         arc.enter().append("path")
             .attr("class", "arc")
             .attr("d", arcGenerator)
-            .attr("fill", this.arcColor);
+            .attr("fill", this.arrowColor);
     }
 
+    // const arcLabel = this.svg.svg.selectAll("text")
+    //     .data(this.arcData, d=> d.id );
+    //
+    // arcLabel.enter().append('text')
+    //     .each(d => {
+    //         const centroid = arcGenerator.centroid(d);
+    //         d3.select(this)
+    //             .attr('x', centroid[0])
+    //             .attr('y', centroid[1])
+    //             .attr('dy', '0.33em')
+    //             .text(d.name);
+    //     });
 
-        renderCircleText(){
+    renderCircleText(){
 
         const circleText = this.svg.svg.selectAll("text")
             .data(this.orders, d=> d);
