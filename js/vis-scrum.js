@@ -1,14 +1,17 @@
 //Main page controller class
 class ScrumProcess {
-    constructor(issueStore, scrumTextStore, retroStore, actionMapping) {
+    constructor(issueStore, scrumTextStore, retroStore, actionMapping, actionMapping2) {
         this._scrumTextStore = scrumTextStore;
         this._issueStore = issueStore;
         this._retroStore = retroStore;
         this._actionMapping = actionMapping;
+        this._actionMapping2 = actionMapping2;
 
         this.populateSprintSelector();
         this.setStats();
+        this.setStats2();
         this.setText();
+        //this.setText2();
         this.setClickHandlers();
     }
 
@@ -77,6 +80,39 @@ class ScrumProcess {
         }
     }
 
+    setStats2(){
+        const activeSprint = this.issueStore.activeSprint;
+        const velocity = this.issueStore.previousSprint.completedStoryPoints;
+        const committed = activeSprint.totalStoryPoints;
+        const completed = activeSprint.completedStoryPoints;
+        const burndownPct =  parseFloat(100 * completed / committed).toFixed()+"%";
+        const backlogStoryCount = this.issueStore.getIssues().length;
+        const averageHappiness = this.retroStore.getSprintHappiness(activeSprint);
+        const totalAlerts = activeSprint.totalAlerts;
+        const arrow = "<i class='fas fa-angle-double-right'></i>";
+
+        document.querySelector("#sprint").innerHTML = this.getSprintDaysHTML(activeSprint);
+        document.querySelector("#scrum-velocity").innerText = velocity + " story points";
+        document.querySelector("#scrum-burndown-pct").innerText = burndownPct;
+        document.querySelector("#burn-down-progress").style = "width: " + burndownPct;
+        document.querySelector("#total-blockers").innerText = activeSprint.totalBlockers;
+        document.querySelector("#sprint-goal").innerText = activeSprint.goal;
+        document.querySelector("#sprint-backlog").innerHTML = "Sprint Backlog <br>" + committed + " points <br>";
+        document.querySelector("#increment").innerHTML = "Product Increment <br>" + completed + " points <br>";
+        document.querySelector("#backlog").innerHTML = "Product Backlog <br>" + backlogStoryCount + " stories <br>";
+        document.querySelector("#planning").innerHTML = "Sprint Planning <br>" + totalAlerts + " unestimated <br> stories<br><i class='fas fa-arrow-circle-down'></i>";
+        const retroElem = document.querySelector("#retrospective");
+        retroElem.innerHTML = "&nbsp&nbsp" + averageHappiness.toFixed(2);
+
+        if (averageHappiness < 0){
+            retroElem.className += " fa-sad-tear";
+            retroElem.style.color = "darkred";
+        } else {
+            retroElem.className += " fa-smile-beam";
+            retroElem.style.color = "darkgreen";
+        }
+    }
+
     setText() {
         document.querySelector("#content-po p").innerText =
             this.scrumTextStore.data.roles["product-owner"];
@@ -111,6 +147,42 @@ class ScrumProcess {
         document.querySelector("#content-sprint-desc p").innerText =
             this.scrumTextStore.data.general["sprint"];
     }
+
+    setText2() {
+        document.querySelector("#content-po p").innerText =
+            this.scrumTextStore.data.roles["product-owner"];
+
+        document.querySelector("#content-sm p").innerText =
+            this.scrumTextStore.data.roles["scrum-master"];
+
+        document.querySelector("#content-tm p").innerText =
+            this.scrumTextStore.data.roles["team-member"];
+
+        document.querySelector("#content-showcase p").innerText =
+            this.scrumTextStore.data.ceremonies["showcase"];
+
+        document.querySelector("#content-retrospective-desc p").innerText =
+            this.scrumTextStore.data.ceremonies["retrospective"];
+
+        document.querySelector("#content-daily-scrum p").innerText =
+            this.scrumTextStore.data.ceremonies["daily-scrum"];
+
+        document.querySelector("#content-sprint-planning-desc p").innerText =
+            this.scrumTextStore.data.ceremonies["sprint-planning"];
+
+        document.querySelector("#content-product-backlog-desc p").innerText =
+            this.scrumTextStore.data.artifacts["product-backlog"];
+
+        document.querySelector("#content-sprint-backlog-desc p").innerText =
+            this.scrumTextStore.data.artifacts["sprint-backlog"];
+
+        document.querySelector("#content-product-increment-desc p").innerText =
+            this.scrumTextStore.data.artifacts["product-increment"];
+
+        document.querySelector("#content-sprint-desc p").innerText =
+            this.scrumTextStore.data.general["sprint"];
+    }
+
 
     setClickHandlers() {
         document.querySelector("#sprint-selector").onchange = () => {
@@ -184,11 +256,53 @@ class ScrumProcess {
                 });
             }
         });
+
+        const actionMapping2 = this.actionMapping2;
+
+        //Set a click handler on every main page element with an action mapping
+        Object.keys(actionMapping2).forEach(clickedId => {
+
+            document.querySelector(clickedId).onclick = () => {
+
+                //Hide all visualizations and selectors
+                document.querySelectorAll(".viz, .scrum-selector, .scrum-description")
+                    .forEach(domElement => {
+                        domElement.style.display = "none";
+                    });
+
+                //Display the visualizations mapped to the clicked on element
+                actionMapping2[clickedId].forEach(vizObj => {
+                    const visContainerSelector = vizObj.svg.container;
+                    document.querySelector(visContainerSelector).style.display = "block";
+
+                    if (visContainerSelector == "#employee-chart") vizObj.employeeChart.updateVis();
+                    else if(visContainerSelector == "#scope-chart") {
+                        document.querySelectorAll(".scope-selector, .scope-description").forEach(element => {
+                            element.style.display = "block";
+                        });
+                        $(eventHandler).trigger("selectedVisualizationChange", "scope-visualization");
+
+                    } else if(visContainerSelector == "#velocity-chart") {
+                        document.querySelectorAll(".velocity-selector, .velocity-description").forEach(element => {
+                            element.style.display = "block";
+                        });
+                        $(eventHandler).trigger("selectedVisualizationChange", "velocity-visualization");
+                    } else if(visContainerSelector == "#retrospective-chart") {
+                        document.querySelectorAll(".retrospective-description").forEach(element => {
+                            element.style.display = "block";
+                        });
+                    }
+
+                });
+            }
+        });
+
     }
     get issueStore(){return this._issueStore;}
     get scrumTextStore(){return this._scrumTextStore;}
     get retroStore(){return this._retroStore;}
     get actionMapping(){return this._actionMapping;}
+    get actionMapping2(){return this._actionMapping2;}
 
 }
 
