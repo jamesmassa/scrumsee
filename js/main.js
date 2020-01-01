@@ -51,13 +51,7 @@ function visualize(error, jiraData, scrumText, retroData) {
                 "#input-sprint-planning": [visVelocity]
         };
 
-        const actionMapping2 = {
-               // "#sprint": [visScope, visStory],
-                "#increment": [visScope, visStory],
-                "#retrospective": [visRetro],
-                "#planning": [visVelocity]
-        };
-        const visScrumProcess = new ScrumProcess(issueStore, scrumTextStore, retroStore, actionMapping, actionMapping2);
+        const visScrumProcess = new ScrumProcess(issueStore, scrumTextStore, retroStore, actionMapping);
 
 
         d3.select(window).on(

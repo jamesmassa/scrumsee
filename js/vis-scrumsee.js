@@ -18,7 +18,7 @@ class ScrumSee {
         this.renderSprintArc();
         this.renderScrumArc();
         this.renderCircleText();
-        //this.renderRectText();
+        this.renderRectText();
     }
 
 
@@ -26,6 +26,36 @@ class ScrumSee {
         if (d.isClickable) {
             alert("rect " + d.name + " was clicked");
         }
+
+        switch (d.name) {
+            case "backlog":
+                window.open("https://cs171-jira.atlassian.net/secure/RapidBoard.jspa?rapidView=1&projectKey=JV&view=planning&selectedIssue=JV-122&epics=visible", "_blank");
+                break;
+            case "planning":
+                document.querySelectorAll(".velocity-selector, .velocity-description").forEach(element => {
+                    element.style.display = "block";
+                });
+                $(eventHandler).trigger("selectedVisualizationChange", "velocity-visualization");
+                document.querySelector("#velocity-chart").style.display = "block";
+                break;
+            case "sprint-backlog":
+                window.open("https://cs171-jira.atlassian.net/secure/RapidBoard.jspa?rapidView=1&projectKey=JV", "_blank");
+                break;
+            case "increment":
+                window.open("https://cs171-jira.atlassian.net/issues/?jql=project%20%3D%20JV%20and%20status%20%3D%20Done%20and%20sprint%3D5", "_blank");
+                break;
+            case "showcase":
+                break;
+            case "retrospective":
+                document.querySelector("#retrospective-chart").style.display = "block";
+                break;
+            default:
+                alert ("unhandled click for " + d.name);
+                break;
+        }
+    }
+
+    handleCircleClick(d) {
 
         switch (d.name) {
             case "backlog":
@@ -43,11 +73,32 @@ class ScrumSee {
                 break;
             case "retrospective":
                 break;
+            case "sm":
+                break;
+            case "po":
+                break;
+            case "team":
+                break;
+            case "sprint":
+                alert("Sprinting");
+
+                document.querySelectorAll(".scope-selector, .scope-description").forEach(element => {
+                    element.style.display = "block";
+                });
+                document.querySelector("#scope-chart").style.display = "block";
+                document.querySelector("#story-chart").style.display = "block";
+                document.querySelector("#story-details").style.display = "block";
+                $(eventHandler).trigger("selectedVisualizationChange", "scope-visualization");
+                break;
+            case "scrum":
+                alert("Scrumming");
+                break;
             default:
                 alert ("unhandled click for " + d.name);
                 break;
         }
     }
+
 
     setShapeData(){
 
@@ -164,6 +215,7 @@ class ScrumSee {
             .attr("r", d => d.r)
             .attr("cy", d => d.cy)
             .attr("cx", d => d.cx)
+            .on("click", d => this.handleCircleClick(d))
             .on ("mouseover",function(d) {
                     d3.select(this).style("cursor", "pointer");
                 }
@@ -317,6 +369,68 @@ class ScrumSee {
     //             .text(d.name);
     //     });
 
+    renderRectText(){
+        const activeSprint = this.issueStore.activeSprint;
+        const committed = activeSprint.totalStoryPoints;
+        const completed = activeSprint.completedStoryPoints;
+        const backlogStoryCount = this.issueStore.getIssues().length;
+        const averageHappiness = this.retroStore.getSprintHappiness(activeSprint);
+        const totalAlerts = activeSprint.totalAlerts;
+
+        this.rectData.forEach(rect => {
+
+            let text = null;
+
+            switch (rect.name) {
+                case "sprint-backlog":
+                    text = "Sprint Backlog " + committed + " points";
+                    break;
+                case "increment":
+                    text = "Product Increment " + completed + " points ";
+                    break;
+                case "backlog":
+                    text = "Product Backlog " + backlogStoryCount + " stories ";
+                    break;
+                case "planning":
+                    text = "Sprint Planning " + totalAlerts + " unestimated stories";
+                    break;
+                case "retrospective":
+                    text = averageHappiness.toFixed(2);
+                    break;
+                default:
+                    break;
+            }
+
+            const xPos = rect.x + ( rect.width / 2 );
+            const yPos = rect.y + ( rect.height / 2 );
+            const g = this.svg.svg.append('g')
+                .attr("transform", "translate(" + xPos + "," + yPos + ")");
+
+            if (text != null) {
+                g.append("text")
+                    .attr("fill", "black")
+                    .attr("text-anchor", "middle")
+                    .text(text)
+                    .style("font-weight", "bold")
+                    .on("mouseover", function (d) {
+                            d3.select(this).style("cursor", "pointer");
+                        });
+            }
+
+            // if (rect.name == retrospective) {
+            //
+            //     if (averageHappiness < 0){
+            //         retroElem.className += " fa-sad-tear";
+            //         retroElem.style.color = "darkred";
+            //     } else {
+            //         retroElem.className += " fa-smile-beam";
+            //         retroElem.style.color = "darkgreen";
+            //     }
+            // }
+        });
+    }
+
+
     renderCircleText(){
 
         const circleText = this.svg.svg.selectAll("text")
@@ -358,13 +472,23 @@ class ScrumSee {
                     .attr("fill", "black")
                     .attr("y", -9 )
                     .attr("text-anchor", "middle")
-                    .text("Day " + dayOfSprint + " of " + sprintLength);
+                    .text("Day " + dayOfSprint + " of " + sprintLength)
+                    .style("font-weight", "bold")
+                    .on ("mouseover",function(d) {
+                            d3.select(this).style("cursor", "pointer");
+                        }
+                    );
 
                 g.append("text")
                     .attr("fill", "black")
                     .attr("y", 9 )
                     .attr("text-anchor", "middle")
-                    .text("Ends " + formatDate(sprintEnd));
+                    .text("Ends " + formatDate(sprintEnd))
+                    .style("font-weight", "bold")
+                    .on ("mouseover",function(d) {
+                            d3.select(this).style("cursor", "pointer");
+                        }
+                    );
             }
         })
         
