@@ -14,8 +14,6 @@ class Svg {
         this.svg = d3.select(container)
             .append("svg");
 
-        console.log("svg typeof:" + typeof(this.svg));
-
         this.svg
             .attr("width", width)
             .attr("height", height)

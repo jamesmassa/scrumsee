@@ -12,20 +12,16 @@ class ScrumSee {
         this.svg.svg.selectAll("*").remove();
         this.setColors();
         this.setShapeData();
-        this.renderCircles();
         this.renderRectangles();
-        this.renderTriangles();
-        this.renderSprintArc();
-        this.renderScrumArc();
+        this.renderCircles();
         this.renderCircleText();
         this.renderRectText();
+        this.renderSprintArc();
+        this.renderScrumArc();
     }
 
 
     handleRectClick(d) {
-        if (d.isClickable) {
-            alert("rect " + d.name + " was clicked");
-        }
 
         switch (d.name) {
             case "backlog":
@@ -102,16 +98,16 @@ class ScrumSee {
 
     setShapeData(){
 
-        const circleCy = 80;
         const circleHelpRadius = 10;
+        const circleCy = circleHelpRadius;
 
         const xPct = this.svg.width / 100;
         const yPct = this.svg.height / 100;
 
-        const widthPreSprintArrowRect = 30 * xPct;
-        const startPostSprintArrowRect = 60 * xPct;
-        const widthPostSprintArrowRect = 30 * xPct;
-        const heightBottomArrowRect = 20 * yPct;
+        const widthPreSprintArrowRect = 40 * xPct;
+        const startPostSprintArrowRect = 63.5 * xPct;
+        const widthPostSprintArrowRect = 33 * xPct;
+        const heightBottomArrowRect = 15 * yPct;
 
         const widthBottomArrowhead = 1.5 * heightBottomArrowRect;
         const heightBottomArrowhead = 1.5 * widthBottomArrowhead;
@@ -122,14 +118,10 @@ class ScrumSee {
         const bottomArrowheadTop = bottomArrowheadBottom - heightBottomArrowhead;
         const bottomArrowheadMiddle = bottomArrowheadTop - .5 * (bottomArrowheadTop - bottomArrowheadBottom);
 
-        const rectSpacer = 2 * xPct;
+        const rectSpacer = xPct;
         const dataRectWidth = (widthPreSprintArrowRect / 3) - rectSpacer;
-        //const dataRectWidth = widthPreSprintArrowRect / 6;
-        const dataRectHeight = heightBottomArrowhead;
+        const dataRectHeight = 100 * yPct;
         const dataRectY = (100 * yPct) - dataRectHeight;
-
-        const triYbottom = 30;
-        const triYtop = 10;
 
         this.sprintArcData  = [
             { "name": "sprint-arc", "innerRadius": 80, "outerRadius": 105, startAngle: -.33, endAngle: .5, "x": 2, "y": 2 }
@@ -174,14 +166,14 @@ class ScrumSee {
         ];
 
         this.rectData  = [
-            { "name": "pre-sprint-arrow", "text": "", "x":0, "y": this.svg.height - heightBottomArrowRect, "width": widthPreSprintArrowRect, "height": heightBottomArrowRect, "color": this.arrowColor, "isClickable": false },
-            { "name": "post-sprint-arrow", "text": "", "x": startPostSprintArrowRect, "y": this.svg.height - heightBottomArrowRect, "width": widthPostSprintArrowRect, "height": heightBottomArrowRect, "color": this.arrowColor, "isClickable": false },
             { "name": "backlog", "text": "", "x": .5 * rectSpacer, "y": dataRectY, "width": dataRectWidth, "height": dataRectHeight, "color": this.dataRectColor, "isClickable": true },
             { "name": "planning", "text": "", "x": 1.5 * rectSpacer + dataRectWidth, "y": dataRectY, "width": dataRectWidth, "height": dataRectHeight, "color": this.dataRectColor, "isClickable": true },
             { "name": "sprint-backlog", "text": "", "x": 2.5 * rectSpacer + 2 * dataRectWidth, "y": dataRectY, "width": dataRectWidth, "height": dataRectHeight, "color": this.dataRectColor, "isClickable": true },
+            { "name": "pre-sprint-arrow", "text": "", "x":0, "y": this.svg.height - heightBottomArrowRect, "width": widthPreSprintArrowRect, "height": heightBottomArrowRect, "color": this.arrowColor, "isClickable": false },
             { "name": "increment", "text": "", "x": startPostSprintArrowRect + (.5 * rectSpacer), "y": dataRectY, "width": dataRectWidth, "height": dataRectHeight, "color": this.dataRectColor, "isClickable": true },
-            { "name": "showcase", "text": "", "x": startPostSprintArrowRect + dataRectWidth + (1.5 * rectSpacer), "y": dataRectY, "width": dataRectWidth, "height": dataRectHeight, "color": this.dataRectColor, "isClickable": true },
-            { "name": "retrospective", "text": "", "x": startPostSprintArrowRect + (2 * dataRectWidth) + (2.5 * rectSpacer), "y": dataRectY, "width": dataRectWidth, "height": dataRectHeight, "color": this.dataRectColor, "isClickable": true }
+            { "name": "showcase", "text": "Showcase", "x": startPostSprintArrowRect + dataRectWidth + (1.5 * rectSpacer), "y": dataRectY, "width": dataRectWidth, "height": dataRectHeight, "color": this.dataRectColor, "isClickable": true },
+            { "name": "retrospective", "text": "", "x": startPostSprintArrowRect + (2 * dataRectWidth) + (2.5 * rectSpacer), "y": dataRectY, "width": dataRectWidth, "height": dataRectHeight, "color": this.dataRectColor, "isClickable": true },
+            { "name": "post-sprint-arrow", "text": "", "x": startPostSprintArrowRect, "y": this.svg.height - heightBottomArrowRect, "width": widthPostSprintArrowRect, "height": heightBottomArrowRect, "color": this.arrowColor, "isClickable": false }
         ];
 
         this.triangleData  = [
@@ -199,7 +191,8 @@ class ScrumSee {
 
     setColors(){
 
-        this.circleColor = "#4e73df";
+        this.bigCircleColor = "#4e73df";
+        this.helpCircleColor = "#4565C4";
         this.dataRectColor = "#4e73df";
         this.arrowColor = "#4565C4";
     }
@@ -211,7 +204,7 @@ class ScrumSee {
 
         circle.enter().append("circle")
             .attr("class", "circle")
-            .attr("fill", this.circleColor)
+            .attr("fill","gray")
             .attr("r", d => d.r)
             .attr("cy", d => d.cy)
             .attr("cx", d => d.cx)
@@ -225,7 +218,36 @@ class ScrumSee {
             });
     }
 
+    setMarkerArrowHead(name) {
+        this.svg.svg.append("svg:defs").append("svg:marker")
+            .attr("id", name)
+            .attr('markerHeight', 20)
+            .attr('markerWidth', 20)
+            .attr('markerUnits', 'strokeWidth')
+            .attr('orient', "auto")
+            .attr('refX', 0)
+            .attr('refY', 0)
+            .attr('viewBox', this.arcMarkerData[2].viewbox)
+            .append('svg:path')
+            .attr('d', this.arcMarkerData[2].path )
+            .attr('fill', this.arrowColor);
+
+    }
+
+    setMarkerLine(name, x1, y1, height, width){
+        this.svg.svg.append("line")
+            .attr("x1", x1 )
+            .attr("y1", y1 + .5 * height)
+            .attr("x2", x1 + 1.1 * width)
+            .attr("y2", y1 + .5 * height)
+            .attr("stroke-width", 5)
+            .attr("stroke", this.arrowColor)
+            .attr("marker-end", "url(#" + name + ")");
+    }
+
     renderRectangles(){
+
+        //Draw all rects
         const rect = this.svg.svg.selectAll("rect")
             .data(this.rectData, d=> d.id );
 
@@ -250,18 +272,28 @@ class ScrumSee {
                     d3.select(this).style("cursor", "default");
                 }
             });
-    }
 
-    renderTriangles(){
-        const triangle = this.svg.svg.selectAll("polyline")
-            .data(this.triangleData, d=> d.id );
+        //Marker Arrowheads
+        this.setMarkerArrowHead("pre-sprint-arrowhead");
+        const preSprintRect = this.rectData.find(rect => rect.name === "pre-sprint-arrow");
+        this.setMarkerLine(
+            "pre-sprint-arrowhead",
+            preSprintRect.x,
+            preSprintRect.y,
+            preSprintRect.height,
+            preSprintRect.width * .9
+        );
 
-        triangle.enter().append("polyline")
-            .attr("class", "triangle")
-            .attr("fill", this.arrowColor)
-            .attr("width", d => d.width)
-            .attr("height", d => d.height)
-            .attr("points", d => d.points)
+        this.setMarkerArrowHead("post-sprint-arrowhead");
+        const postSprintRect = this.rectData.find(rect => rect.name === "post-sprint-arrow");
+        this.setMarkerLine(
+            "pre-sprint-arrowhead",
+            postSprintRect.x,
+            postSprintRect.y,
+            postSprintRect.height,
+            postSprintRect.width * .95
+        );
+
     }
 
     getArcGenerator(arcData){
@@ -306,6 +338,23 @@ class ScrumSee {
             .attr("d", arcGenerator)
             .attr("fill", this.arrowColor)
             .attr('marker-start', 'url(#marker-arrow)' );
+
+        const sprintName = this.issueStore.activeSprint.name;
+
+//Create an SVG path (based on bl.ocks.org/mbostock/2565344)
+        g.append("path")
+            .attr("id", "sprint-arc-text") //Unique id of the path
+            .attr("d", "M-92.01220140460568,50.584135780680114A105,105,0,1,1,6.429395695523604e-15,105L4.898587196589413e-15,80A80,80,0,1,0,-70.10453440350909,38.54029392813723Z") //SVG path
+            .style("fill", "none");
+
+//Create an SVG text element and append a textPath element
+        g.append("text")
+            .attr("dy", 18)
+            .append("textPath") //append a textPath to the text element
+            .attr("xlink:href", "#sprint-arc-text") //place the ID of the path here
+            .style("text-anchor","middle") //place the text halfway on the arc
+            .attr("startOffset", "22%")
+            .text(sprintName);
     }
 
     renderScrumArc() {
@@ -353,6 +402,22 @@ class ScrumSee {
             .attr("d", markerArcGenerator)
             .attr("fill", this.arrowColor)
             .attr('marker-start', 'url(#marker-scrum-arrow)' );
+
+//Create an SVG path (based on bl.ocks.org/mbostock/2565344)
+        g.append("path")
+            .attr("id", "scrum-arc-text") //Unique id of the path
+            .attr("d", "M-38.042260651806146,12.360679774997891A40,40,0,1,1,12.360679774997898,38.04226065180614L7.725424859373686,23.776412907378838A25,25,0,1,0,-23.77641290737884,7.725424859373682Z") //SVG path
+            .style("fill", "none");
+
+//Create an SVG text element and append a textPath element
+        g.append("text")
+            .attr("dy", 14)
+            .append("textPath") //append a textPath to the text element
+            .attr("xlink:href", "#scrum-arc-text") //place the ID of the path here
+            .style("text-anchor","middle") //place the text halfway on the arc
+            .attr("startOffset", "24%")
+            .text("Daily Scrum")
+            .style("font-size", "smaller");
     }
 
 
@@ -379,24 +444,40 @@ class ScrumSee {
 
         this.rectData.forEach(rect => {
 
-            let text = null;
+            let text, text2, text3 = null;
 
             switch (rect.name) {
                 case "sprint-backlog":
-                    text = "Sprint Backlog " + committed + " points";
+                    text = "Sprint Backlog";
+                    text2 = committed + " points";
                     break;
+
                 case "increment":
-                    text = "Product Increment " + completed + " points ";
+                    text = "Product Increment ";
+                    text2 = completed + " points ";
                     break;
+
                 case "backlog":
-                    text = "Product Backlog " + backlogStoryCount + " stories ";
+                    text = "Product Backlog ";
+                    text2 = backlogStoryCount + " stories ";
                     break;
+
                 case "planning":
-                    text = "Sprint Planning " + totalAlerts + " unestimated stories";
+                    text = "Sprint Planning ";
+                    text2 = totalAlerts + " unestimated";
+                    text3 = "stories";
                     break;
+
+                case "showcase":
+                    text = rect.text;
+                    break;
+
                 case "retrospective":
-                    text = averageHappiness.toFixed(2);
+                    text = "Retrospective";
+                    text2 = "Average";
+                    text3 = averageHappiness.toFixed(2);
                     break;
+
                 default:
                     break;
             }
@@ -406,43 +487,74 @@ class ScrumSee {
             const g = this.svg.svg.append('g')
                 .attr("transform", "translate(" + xPos + "," + yPos + ")");
 
-            if (text != null) {
-                g.append("text")
-                    .attr("fill", "black")
-                    .attr("text-anchor", "middle")
-                    .text(text)
-                    .style("font-weight", "bold")
-                    .on("mouseover", function (d) {
-                            d3.select(this).style("cursor", "pointer");
-                        });
+            if (text && text && text3) {
+                this.appendText(g, -18, text);
+                this.appendText(g, 0, text2);
+                this.appendText(g, 18, text3);
+            } else if (text && text2 ) {
+                this.appendText(g, -18, text);
+                this.appendText(g, 0, text2);
+            } else if (text) {
+                this.appendText(g, -18, text);
             }
 
-            // if (rect.name == retrospective) {
-            //
-            //     if (averageHappiness < 0){
-            //         retroElem.className += " fa-sad-tear";
-            //         retroElem.style.color = "darkred";
-            //     } else {
-            //         retroElem.className += " fa-smile-beam";
-            //         retroElem.style.color = "darkgreen";
-            //     }
-            // }
-        });
+            if (rect.name === "retrospective") {
+                    this.appendFaceIcon(g, averageHappiness);
+            }
+
+        })
     }
 
+    appendFaceIcon(g, averageHappiness) {
+        let html = "";
+        let color = "";
+
+        if (averageHappiness > 0) {
+            html = '<i class="fas fa-smile-beam fa-2x" style="color:darkgreen; background-color: ' + this.dataRectColor + ';" ></i>';
+        } else if (averageHappiness < 0) {
+            html = '<i class="fas fa-sad-tear fa-2x" style="color:darkred; background-color: ' + this.dataRectColor + ';" ></i>';
+        } else {
+            html = '<i class="fas fa-meh fa-2x" style="color:darkred; background-color: ' + this.dataRectColor + ';" ></i>';
+        }
+
+        g.append('svg:foreignObject')
+            .attr("width", 31.)
+            .attr("height", 31.8)
+            .attr("text-anchor", "middle")
+            .attr("y", -75 )
+            .append("xhtml:body")
+            .html(html)
+            .style("font-weight", "bold")
+            .on("mouseover", function (d) {
+                d3.select(this).style("cursor", "pointer");
+            });
+
+    }
+
+    appendText(g, y, text) {
+        g.append("text")
+            .attr("fill", "black")
+            .attr("text-anchor", "middle")
+            .attr("y", y )
+            .text(text)
+            .style("font-weight", "bold")
+            .on("mouseover", function (d) {
+                d3.select(this).style("cursor", "pointer");
+            });
+    }
 
     renderCircleText(){
 
         const circleText = this.svg.svg.selectAll("text")
-            .data(this.circleData, d => d.name);
+            .data(this.circleData);
 
         circleText.enter().append("text")
             .attr("class", "circle-text")
 
             .merge(circleText)
             .text(d=> d.text)
-            .attr("x", d => d.cx - (.5 * d.r) )
-            .attr("y", d=> d.cy + (.5 * d.r) )
+            .attr("x", d => d.name === "scrum" ? d.cx - (.75 * d.r): d.cx - (.5 * d.r) )
+            .attr("y", d=> d.name === "scrum" ? d.cy + (.25 * d.r) : d.cy + (.5 * d.r) )
             .attr("fill", "black")
             .style("font-weight", "bold")
             .on ("mouseover",function(d) {
@@ -454,43 +566,37 @@ class ScrumSee {
 
         const sprint = this.issueStore.activeSprint;
 
-        this.circleData.forEach(circle => {
+        const data = this.sprintArcData[0];
+        const g = this.svg.svg.append('g')
+            .attr("transform", "translate(" + (this.svg.width / data.x) + "," + (this.svg.height / data.y) + ")");
 
-            if (circle.name ==  "sprint") {
-                const data = this.sprintArcData[0];
-                const g = this.svg.svg.append('g')
-                    .attr("transform", "translate(" + (this.svg.width / data.x) + "," + (this.svg.height / data.y) + ")");
+        const sprintStart = sprint.startDate;
+        const sprintEnd = sprint.endDate;
+        const sprintLength = Math.ceil((sprintEnd.getTime() - sprintStart.getTime()) / (1000*60*60*24));
+        const currentDay = new Date();
+        const dayOfSprint = Math.ceil((currentDay.getTime() - sprintStart.getTime()) / (1000*60*60*24));
 
+        g.append("text")
+            .attr("fill", "black")
+            .attr("y", 0 )
+            .attr("text-anchor", "middle")
+            .text("Sprint Day " + dayOfSprint + " of " + sprintLength)
+            .style("font-weight", "bold")
+            .on ("mouseover",function(d) {
+                    d3.select(this).style("cursor", "pointer");
+                }
+            );
 
-                const sprintStart = sprint.startDate;
-                const sprintEnd = sprint.endDate;
-                const sprintLength = Math.ceil((sprintEnd.getTime() - sprintStart.getTime()) / (1000*60*60*24));
-                const currentDay = new Date();
-                const dayOfSprint = Math.ceil((currentDay.getTime() - sprintStart.getTime()) / (1000*60*60*24));
-
-                g.append("text")
-                    .attr("fill", "black")
-                    .attr("y", -9 )
-                    .attr("text-anchor", "middle")
-                    .text("Day " + dayOfSprint + " of " + sprintLength)
-                    .style("font-weight", "bold")
-                    .on ("mouseover",function(d) {
-                            d3.select(this).style("cursor", "pointer");
-                        }
-                    );
-
-                g.append("text")
-                    .attr("fill", "black")
-                    .attr("y", 9 )
-                    .attr("text-anchor", "middle")
-                    .text("Ends " + formatDate(sprintEnd))
-                    .style("font-weight", "bold")
-                    .on ("mouseover",function(d) {
-                            d3.select(this).style("cursor", "pointer");
-                        }
-                    );
-            }
-        })
+        // g.append("text")
+        //     .attr("fill", "black")
+        //     .attr("y", 9 )
+        //     .attr("text-anchor", "middle")
+        //     .text("Ends " + formatDate(sprintEnd))
+        //     .style("font-weight", "bold")
+        //     .on ("mouseover",function(d) {
+        //             d3.select(this).style("cursor", "pointer");
+        //         }
+        //     );
         
     }
 
