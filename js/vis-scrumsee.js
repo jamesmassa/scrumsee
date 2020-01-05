@@ -88,7 +88,7 @@ class ScrumSee {
             .attr("y", 0)
             .attr("x", 0);
 
-        const html = '<div style="margin: 40px; color: black background-color: white;"><h4>' +
+        let html = '<div id="help-text" style="margin: 40px; color: black background-color: white;"><h4>' +
             text + '</h4></div>';
 
         this.appendHTML(g, html,
@@ -96,6 +96,21 @@ class ScrumSee {
             this.svg.height,
             this.svg.width * .2,
             this.svg.height * .2);
+
+        html = '<button id="help-close" style="color: white background-color: #4565C4;">close</button>';
+
+        this.appendHTML(g, html,
+            this.svg.width ,
+            this.svg.height,
+            this.svg.width * .2,
+            this.svg.height * .8);
+
+        document.querySelector("#help-close").onclick = () => {
+            d3.select("#help-text").remove();
+            d3.select("#help-close").remove();
+            d3.select("help-rect").remove();
+            this.drawScrumDiagram();
+        };
     }
 
     setShapeData(){
