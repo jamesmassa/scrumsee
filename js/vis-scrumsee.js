@@ -536,14 +536,14 @@ class ScrumSee {
                 .attr("transform", "translate(" + xPos + "," + yPos + ")");
 
             if (text && text && text3) {
-                this.appendText(g, -18, text);
-                this.appendText(g, 0, text2);
-                this.appendText(g, 18, text3);
+                this.appendRectText(g, -18, text, rect.name);
+                this.appendRectText(g, 0, text2, rect.name);
+                this.appendRectText(g, 18, text3, rect.name);
             } else if (text && text2 ) {
-                this.appendText(g, -18, text);
-                this.appendText(g, 0, text2);
+                this.appendRectText(g, -18, text, rect.name);
+                this.appendRectText(g, 0, text2, rect.name);
             } else if (text) {
-                this.appendText(g, -18, text);
+                this.appendRectText(g, -18, text, rect.name);
             }
 
             if (rect.name === "retrospective") {
@@ -583,13 +583,16 @@ class ScrumSee {
             });
     }
 
-    appendText(g, y, text) {
+    appendRectText(g, y, text, name) {
+
         g.append("text")
+            .data([{"name": name}])
             .attr("fill", "black")
             .attr("text-anchor", "middle")
             .attr("y", y )
             .text(text)
             .style("font-weight", "bold")
+            .on("click", d => this.handleRectClick(d))
             .on("mouseover", function () {
                 d3.select(this).style("cursor", "pointer");
             });
@@ -614,6 +617,7 @@ class ScrumSee {
             .attr("fill", "black")
             .style("font-weight", "bold")
             .style("font-size", "12")
+            .on("click", d => this.handleCircleClick(d))
             .on ("mouseover",function() {
                     d3.select(this).style("cursor", "pointer");
                 }
@@ -635,12 +639,14 @@ class ScrumSee {
         const sprintDaysLeft = Math.max(0, sprintLength - dayOfSprint);
 
         g.append("text")
+            .data([{"name": "sprint"}])
             .attr("fill", "black")
             .attr("y", 0 )
             .attr("text-anchor", "middle")
             .text(sprintDaysLeft + " Days Left ")
             .style("font-weight", "bold")
             .style("font-size", "x-large")
+            .on("click", d => this.handleCircleClick(d))
             .on ("mouseover",function() {d3.select(this).style("cursor", "pointer");});
     }
 
