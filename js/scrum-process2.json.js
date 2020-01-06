@@ -1,5 +1,4 @@
 {
-  "text": {
     "sprint": "1 - 4 week iteration which is planned to produce incremental product which meets the definition of done.",
     "product-owner": "The product owner owns the product vision.  Sets the priorities.  Sets the acceptance criteria and approves product increment.",
     "scrum-master": "The scrum master controls the Scrum process, e.g., measures the velocity, runs the retrospective, etc.",
@@ -12,20 +11,4 @@
     "backlog": "The product backlog is a collection of all stories, i.e., all features and bugs that have been submitted.",
     "sprint-backlog": "The sprint backlog is a collection of all stories which are planned for the current sprint, i.e., they were prioritized by the Product Owner and committed by the Scrum Master.",
     "increment": "The product increment is the scope completed during a sprint which met the definition of done"
-  },
-  "url": {
-    "sprint": "https://www.scrum.org/resources/what-is-a-sprint-in-scrum",
-    "product-owner": "https://www.agilealliance.org/glossary/product-owner/",
-    "scrum-master": "https://www.agilealliance.org/glossary/scrum-master/",
-    "team-member": "https://www.agilealliance.org/glossary/team/",
-    "estimation-poker": "Under Construction",
-    "planning": "https://www.agilealliance.org/glossary/sprint-planning/",
-    "scrum": "https://www.scrum.org/resources/what-is-a-daily-scrum",
-    "showcase": "https://www.agilealliance.org/glossary/showcase/",
-    "retrospective": "https://www.agilealliance.org/glossary/heartbeatretro/",
-    "backlog": "https://www.agilealliance.org/glossary/backlog/",
-    "sprint-backlog": "https://www.agilealliance.org/glossary/sprint-backlog/ ",
-    "increment": "https://www.scrum.org/resources/what-is-an-increment"
-  }
-
 }

@@ -54,6 +54,7 @@ class ScrumSee {
     handleCircleClick(d) {
 
         let text = "";
+        let url = "";
         const data = this.scrumTextStore.data;
 
         switch (d.name) {
@@ -64,16 +65,20 @@ class ScrumSee {
                 alert("Sprint Under Construction");
                 return;
             case "sm":
-                text = data["scrum-master"];
+                text = data.text["scrum-master"];
+                url = data.url["scrum-master"];
                 break;
             case "po":
-                text = data["product-owner"];
+                text = data.text["product-owner"];
+                url = data.url["product-owner"];
                 break;
             case "team":
-                text = data["team"];
+                text = data.text["team"];
+                url = data.url["team"];
                 break;
             default:
-                text = data[d.name];
+                text = data.text[d.name];
+                url = data.url[d.name];
                 break;
         }
 
@@ -86,32 +91,65 @@ class ScrumSee {
             .attr("width", this.svg.width)
             .attr("height", this.svg.height)
             .attr("y", 0)
-            .attr("x", 0);
+            .attr("x", 0)
+            .on("mouseover", function () {d3.select(this).style("cursor", "default");});
 
-        let html = '<div id="help-text" style="margin: 40px; color: black background-color: white;"><h4>' +
+        const helpTextHtml = '<div id="help-text" style="color: black background-color: white;"><h4>' +
             text + '</h4></div>';
 
-        this.appendHTML(g, html,
-            this.svg.width ,
+        this.appendHTML(g, helpTextHtml,
+            this.svg.width * .95,
             this.svg.height,
-            this.svg.width * .2,
-            this.svg.height * .2);
+            this.svg.width * .05,
+            this.svg.height * .2,
+            "default");
 
-        html = '<button id="help-close" style="color: white background-color: #4565C4;">close</button>';
+        const closeHelpButtonHtml = this.getButtonHtml("help-close", "Close");
 
-        this.appendHTML(g, html,
-            this.svg.width ,
-            this.svg.height,
-            this.svg.width * .2,
-            this.svg.height * .8);
+        this.appendHTML(g, closeHelpButtonHtml,
+            this.svg.width * .06 ,
+            this.svg.height * .3,
+            this.svg.width * .9,
+            this.svg.height * .6,
+            "pointer");
 
         document.querySelector("#help-close").onclick = () => {
             d3.select("#help-text").remove();
             d3.select("#help-close").remove();
-            d3.select("help-rect").remove();
+            d3.select("#help-rect").remove();
             this.drawScrumDiagram();
         };
+
+        const g2 = this.svg.svg.append("g");
+        const findOutMoreHtml = this.getButtonHtml("find-out-more", "Find out more");
+
+        this.appendHTML(g2, findOutMoreHtml,
+            this.svg.width * .13,
+            this.svg.height * .3,
+            this.svg.width * .75,
+            this.svg.height * .6,
+            "pointer");
+
+        document.querySelector("#find-out-more").onclick = () => {
+            window.open(url, "_blank")
+        };
+
     }
+
+    getButtonHtml(id, text){
+        let buttonHtml =  '<button id="' + id +
+            '" style="padding: 15px; color: white; background-color: #4565C4; border-radius: 5px; outline: none;">' +
+            text;
+
+        if (id === "find-out-more") {
+            buttonHtml += '&nbsp;&nbsp;<i class="fas fa-external-link-alt"></i>';
+        }
+
+        buttonHtml += '</button>';
+
+        return buttonHtml;
+    }
+
 
     setShapeData(){
 
@@ -444,20 +482,6 @@ class ScrumSee {
             .style("font-size", "smaller");
     }
 
-
-    // const arcLabel = this.svg.svg.selectAll("text")
-    //     .data(this.arcData, d=> d.id );
-    //
-    // arcLabel.enter().append('text')
-    //     .each(d => {
-    //         const centroid = arcGenerator.centroid(d);
-    //         d3.select(this)
-    //             .attr('x', centroid[0])
-    //             .attr('y', centroid[1])
-    //             .attr('dy', '0.33em')
-    //             .text(d.name);
-    //     });
-
     renderRectText(){
         const activeSprint = this.issueStore.activeSprint;
         const committed = activeSprint.totalStoryPoints;
@@ -540,21 +564,22 @@ class ScrumSee {
             html = '<i class="fas fa-meh fa-2x" style="color:darkred; background-color: ' + this.dataRectColor + ';" ></i>';
         }
 
-        this.appendHTML(g, html, 31, 31.8, 0,-75);
+        this.appendHTML(g, html, 31, 31.8, 0,-75, "pointer");
 
     }
 
-    appendHTML(g, html, width, height, x, y){
+    appendHTML(g, html, width, height, x, y, cursor){
         g.append('svg:foreignObject')
             .attr("width", width)
             .attr("height", height)
             .attr("text-anchor", "middle")
+            .attr("x", x)
             .attr("y", y)
             .append("xhtml:body")
             .html(html)
             .style("font-weight", "bold")
             .on("mouseover", function () {
-                d3.select(this).style("cursor", "pointer");
+                d3.select(this).style("cursor", cursor);
             });
     }
 
