@@ -48,7 +48,7 @@ class ScrumProcess {
         const velocity = this.issueStore.previousSprint.completedStoryPoints;
         const committed = activeSprint.totalStoryPoints;
         const completed = activeSprint.completedStoryPoints;
-        const burndownPct =  parseFloat(100 * completed / committed).toFixed()+"%";
+        //const burndownPct =  parseFloat(100 * completed / committed).toFixed()+"%";
         const backlogStoryCount = this.issueStore.getIssues().length;
         const averageHappiness = this.retroStore.getSprintHappiness(activeSprint);
         const totalAlerts = activeSprint.totalAlerts;
@@ -57,8 +57,8 @@ class ScrumProcess {
 
         document.querySelector("#b-sprint").innerHTML = this.getSprintDaysHTML(activeSprint);
         document.querySelector("#scrum-velocity").innerText = velocity + " story points";
-        document.querySelector("#scrum-burndown-pct").innerText = burndownPct;
-        document.querySelector("#burn-down-progress").style = "width: " + burndownPct;
+        //document.querySelector("#scrum-burndown-pct").innerText = burndownPct;
+        //document.querySelector("#burn-down-progress").style = "width: " + burndownPct;
         document.querySelector("#total-blockers").innerText = activeSprint.totalBlockers;
         document.querySelector("#sprint-goal").innerText = activeSprint.goal;
         document.querySelector("#b-sprint-backlog").innerHTML = "Sprint Backlog <br>" + committed + " points <br>";
@@ -134,9 +134,9 @@ class ScrumProcess {
         };
 
         const activeSprint = this.issueStore.activeSprint;
-        document.querySelector("#burn-down-card").onclick = () => {
-            window.open("https://cs171-jira.atlassian.net/secure/RapidBoard.jspa?rapidView=1&projectKey=JV&view=reporting&chart=burndownChart&sprint=" + activeSprint.id, "_blank")
-        };
+        // document.querySelector("#burn-down-card").onclick = () => {
+        //     window.open("https://cs171-jira.atlassian.net/secure/RapidBoard.jspa?rapidView=1&projectKey=JV&view=reporting&chart=burndownChart&sprint=" + activeSprint.id, "_blank")
+        // };
 
         document.querySelector("#blockers-card").onclick = () => {
             window.open("https://cs171-jira.atlassian.net/issues/?jql=project%20%3D%20JV%20and%20status%20%3D%20Blocked%20and%20sprint%3D" + activeSprint.id, "_blank")
