@@ -155,17 +155,18 @@ class ScrumSee {
 
         this.circleHelpRadius = 10;
         const circleCy = this.circleHelpRadius;
+        this.arcCenterOffset = .98;
 
         const xPct = this.svg.width / 100;
         const yPct = this.svg.height / 100;
 
         const widthPreSprintArrowRect = 40 * xPct;
-        const startPostSprintArrowRect = 63.5 * xPct;
+        const startPostSprintArrowRect = 62 * xPct;
         const widthPostSprintArrowRect = 33 * xPct;
         const heightBottomArrowRect = 15 * yPct;
 
         const rectSpacer = xPct;
-        const dataRectWidth = (widthPreSprintArrowRect / 3) - rectSpacer;
+        this.dataRectWidth = (widthPreSprintArrowRect / 3.08) - rectSpacer;
         const dataRectHeight = 100 * yPct;
         const dataRectY = (100 * yPct) - dataRectHeight;
 
@@ -200,26 +201,26 @@ class ScrumSee {
             {
                 "name": "scrum",
                 "text": "24 Hr",
-                "cx":(this.svg.width / sprintArcData.x) + + sprintArcData.outerRadius + scrumArcData.outerRadius - scrumArcData.innerRadius,
+                "cx":(this.arcCenterOffset * this.svg.width / sprintArcData.x) + + sprintArcData.outerRadius + scrumArcData.outerRadius - scrumArcData.innerRadius,
                 "cy": this.svg.height / scrumArcData.y,
                 "r": scrumArcData.innerRadius + 1 },
             {
                 "name": "sprint",
                 "text": "",
-                "cx": this.svg.width / sprintArcData.x,
+                "cx": this.arcCenterOffset * this.svg.width / sprintArcData.x,
                 "cy": this.svg.height / sprintArcData.y,
                 "r": sprintArcData.innerRadius + 1
             }
         ];
 
         this.rectData  = [
-            { "name": "backlog", "text": "", "x": .5 * rectSpacer, "y": dataRectY, "width": dataRectWidth, "height": dataRectHeight, "color": this.dataRectColor, "isClickable": true },
-            { "name": "planning", "text": "", "x": 1.5 * rectSpacer + dataRectWidth, "y": dataRectY, "width": dataRectWidth, "height": dataRectHeight, "color": this.dataRectColor, "isClickable": true },
-            { "name": "sprint-backlog", "text": "", "x": 2.5 * rectSpacer + 2 * dataRectWidth, "y": dataRectY, "width": dataRectWidth, "height": dataRectHeight, "color": this.dataRectColor, "isClickable": true },
-            { "name": "pre-sprint-arrow", "text": "", "x":0, "y": this.svg.height - heightBottomArrowRect, "width": widthPreSprintArrowRect, "height": heightBottomArrowRect, "color": this.arrowColor, "isClickable": false },
-            { "name": "increment", "text": "", "x": startPostSprintArrowRect + (.5 * rectSpacer), "y": dataRectY, "width": dataRectWidth, "height": dataRectHeight, "color": this.dataRectColor, "isClickable": true },
-            { "name": "showcase", "text": "Showcase", "x": startPostSprintArrowRect + dataRectWidth + (1.5 * rectSpacer), "y": dataRectY, "width": dataRectWidth, "height": dataRectHeight, "color": this.dataRectColor, "isClickable": true },
-            { "name": "retrospective", "text": "", "x": startPostSprintArrowRect + (2 * dataRectWidth) + (2.5 * rectSpacer), "y": dataRectY, "width": dataRectWidth, "height": dataRectHeight, "color": this.dataRectColor, "isClickable": true },
+            { "name": "backlog", "text": "", "x": .5 * rectSpacer, "y": dataRectY, "width": this.dataRectWidth, "height": dataRectHeight, "color": this.dataRectColor, "isClickable": true },
+            { "name": "planning", "text": "", "x": 1.5 * rectSpacer + this.dataRectWidth, "y": dataRectY, "width": this.dataRectWidth, "height": dataRectHeight, "color": this.dataRectColor, "isClickable": true },
+            { "name": "sprint-backlog", "text": "", "x": 2.5 * rectSpacer + 2 * this.dataRectWidth, "y": dataRectY, "width": this.dataRectWidth, "height": dataRectHeight, "color": this.dataRectColor, "isClickable": true },
+            { "name": "pre-sprint-arrow", "text": "", "x":.5 * rectSpacer, "y": this.svg.height - heightBottomArrowRect, "width": widthPreSprintArrowRect, "height": heightBottomArrowRect, "color": this.arrowColor, "isClickable": false },
+            { "name": "increment", "text": "", "x": startPostSprintArrowRect + (0 * rectSpacer), "y": dataRectY, "width": this.dataRectWidth, "height": dataRectHeight, "color": this.dataRectColor, "isClickable": true },
+            { "name": "showcase", "text": "Showcase", "x": startPostSprintArrowRect + this.dataRectWidth + (1 * rectSpacer), "y": dataRectY, "width": this.dataRectWidth, "height": dataRectHeight, "color": this.dataRectColor, "isClickable": true },
+            { "name": "retrospective", "text": "", "x": startPostSprintArrowRect + (2 * this.dataRectWidth) + (2 * rectSpacer), "y": dataRectY, "width": this.dataRectWidth, "height": dataRectHeight, "color": this.dataRectColor, "isClickable": true },
             { "name": "post-sprint-arrow", "text": "", "x": startPostSprintArrowRect, "y": this.svg.height - heightBottomArrowRect, "width": widthPostSprintArrowRect, "height": heightBottomArrowRect, "color": this.arrowColor, "isClickable": false }
         ];
     }
@@ -375,7 +376,7 @@ class ScrumSee {
         const arcGenerator = this.getArcGenerator(data);
 
         const g = this.svg.svg.append('g')
-            .attr("transform", "translate(" + (this.svg.width / data.x) + "," + (this.svg.height / data.y) + ")");
+            .attr("transform", "translate(" + (this.arcCenterOffset * this.svg.width / data.x) + "," + (this.svg.height / data.y) + ")");
 
         const arc = g.selectAll("path")
             .data(this.sprintArcData, d => d.id);
@@ -427,7 +428,7 @@ class ScrumSee {
 
         const g = this.svg.svg.append('g')
             .attr("transform", "translate(" +
-                (this.svg.width / data.x + this.sprintArcData[0].outerRadius + arcWidth)  + "," +
+                (this.arcCenterOffset * this.svg.width / data.x + this.sprintArcData[0].outerRadius + arcWidth)  + "," +
                 (this.svg.height / data.y) + ")");
 
         const arc = g.selectAll("path")
@@ -489,6 +490,7 @@ class ScrumSee {
         const backlogStoryCount = this.issueStore.getIssues().length;
         const averageHappiness = this.retroStore.getSprintHappiness(activeSprint);
         const totalAlerts = activeSprint.totalAlerts;
+        const burndownPct =  parseFloat(100 * completed / committed).toFixed()+"%";
 
         this.rectData.forEach(rect => {
 
@@ -550,6 +552,16 @@ class ScrumSee {
                     this.appendFaceIcon(g, averageHappiness);
             }
 
+            if (rect.name === "increment") {
+                const y = this.svg.height * .3;
+                const textElem = this.appendRectText(g, y , burndownPct + " Done", rect.name);
+                textElem.attr("font-size", "x-large");
+                textElem.attr("x", -15);
+
+                let html = '<i class="fas fa-fire fa-2x" style="color:orange; background-color: ' + this.dataRectColor + ';"></i>';
+                this.appendHTML(g, html, 24, 31.8, 50, y * .55, "pointer");
+            }
+
         })
     }
 
@@ -585,8 +597,9 @@ class ScrumSee {
 
     appendRectText(g, y, text, name) {
 
-        g.append("text")
+        const textSvgElem = g.append("text")
             .data([{"name": name}])
+            .attr("id", text + "-name")
             .attr("fill", "black")
             .attr("text-anchor", "middle")
             .attr("y", y )
@@ -596,6 +609,8 @@ class ScrumSee {
             .on("mouseover", function () {
                 d3.select(this).style("cursor", "pointer");
             });
+
+        return textSvgElem;
     }
 
     renderCircleText(){
@@ -629,7 +644,7 @@ class ScrumSee {
 
         const data = this.sprintArcData[0];
         const g = this.svg.svg.append('g')
-            .attr("transform", "translate(" + (this.svg.width / data.x) + "," + (this.svg.height / data.y) + ")");
+            .attr("transform", "translate(" + (this.arcCenterOffset * this.svg.width / data.x) + "," + (this.svg.height / data.y) + ")");
 
         const sprintStart = sprint.startDate;
         const sprintEnd = sprint.endDate;
