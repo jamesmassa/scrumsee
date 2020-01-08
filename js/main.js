@@ -43,15 +43,7 @@ function visualize(error, jiraData, scrumText, retroData) {
         const visRetro = new RetroChart(retroData.slice(16,21), svgRetro);
         const visEmployee = new EmployeeChart2(issueStore, svgEmployee);
 
-        //Map clickable elements to the visualization objects which will display
-        const actionMapping = {
-                "#input-sprint": [visScope, visStory],
-                "#input-product-increment": [visScope, visStory],
-                "#input-retrospective": [visRetro],
-                "#input-sprint-planning": [visVelocity]
-        };
-
-        const visScrumProcess = new ScrumProcess(issueStore, scrumTextStore, retroStore, actionMapping);
+        const visScrumProcess = new ScrumProcess(issueStore);
 
 
         d3.select(window).on(
