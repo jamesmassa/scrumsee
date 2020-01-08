@@ -13,12 +13,11 @@
   <link rel="icon" href="img/favicon.ico">
   <!-- Custom fonts for this template-->
   <link href="css/all.min.css" rel="stylesheet" type="text/css">
-  <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
+<!--  <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">-->
   <link href="css/reset.css" rel="stylesheet">
 
   <!-- Custom styles for this template-->
   <link href="css/jira-dashboard.css" rel="stylesheet">
-  <link href="css/hotspots.css" rel="stylesheet">
   <link href="css/style.css" rel="stylesheet">
   <link rel="stylesheet" href="css/tnt.tooltip.css">
 
@@ -187,8 +186,6 @@
 
         </div>
 
-        <div id="scrumsee-svg"></div>
-
         <!-- Begin Page Content -->
         <div class="container-fluid">
 
@@ -205,174 +202,9 @@
                   </div>
                 <!-- Card Body -->
                 <div class="card-body">
-                  <div class="img-container">
-                    <input type="checkbox" class="input" id="input-product-backlog" name="inputs">
-                    <input type="checkbox" class="input-help" id="input-product-backlog-desc" name="inputs">
-                    <input type="checkbox" class="input" id="input-sprint-backlog" name="inputs">
-                    <input type="checkbox" class="input-help" id="input-sprint-backlog-desc" name="inputs">
-                    <input type="checkbox" class="input" id="input-product-increment" name="inputs">
-                    <input type="checkbox" class="input-help" id="input-product-increment-desc" name="inputs">
-                    <input type="checkbox" class="input-help" id="input-po" name="inputs">
-                    <input type="checkbox" class="input-help" id="input-sm" name="inputs">
-                    <input type="checkbox" class="input-help" id="input-tm" name="inputs">
-                    <input type="checkbox" class="input-help" id="input-daily-scrum" name="inputs">
-                    <input type="checkbox" class="input-help" id="input-showcase" name="inputs">
-                    <input type="checkbox" class="input-help" id="input-retrospective-desc" name="inputs">
-                    <input type="checkbox" class="input" id="input-retrospective" name="inputs">
-                    <input type="checkbox" class="input" id="input-sprint" name="inputs">
-                    <input type="checkbox" class="input-help" id="input-sprint-desc" name="inputs">
-                    <input type="checkbox" class="input" id="input-sprint-planning" name="inputs">
-                    <input type="checkbox" class="input-help" id="input-sprint-planning-desc" name="inputs">
-                    <span id="daily-scrum">Daily Scrum</span>
-                    <span id="product-owner">Product Owner</span>
-                    <span id="scrum-master">Scrum Master</span>
-                    <span id="team">Team</span>
-                    <label for="input-product-backlog">
-                      <span id="b-product-backlog" class="button"></span>
-                    </label>
-                    <label for="input-product-backlog-desc">
-                      <span id="b-product-backlog-desc" class="help">?</span>
-                    </label>
-                    <label for="input-sprint-backlog">
-                      <span id="b-sprint-backlog" class="button">
-                      </span>
-                    </label>
-                    <label for="input-sprint-backlog-desc">
-                      <span id="b-sprint-backlog-desc" class="help">?</span>
-                    </label>
-                    <label for="input-product-increment">
-                      <span id="b-product-increment" class="button"></span>
-                    </label>
-                    <label for="input-product-increment-desc">
-                      <span id="b-product-increment-desc" class="help">?</span>
-                    </label>
-                    <label for="input-po">
-                      <span id="b-po" class="help">?</span>
-                    </label>
-                    <label for="input-sm">
-                      <span id="b-sm" class="help">?</span>
-                    </label>
-                    <label for="input-tm">
-                      <span id="b-tm" class="help">?</span>
-                    </label>
-                    <label for="input-daily-scrum">
-                      <span id="b-daily-scrum" class="help">?</span>
-                    </label>
-<!--                    <label for="input-showcase">-->
-<!--                      <span id="b-showcase" class="help">?</span>-->
-<!--                    </label>-->
-                    <label for="input-retrospective-desc">
-                      <span id="b-retrospective-desc" class="help">?</span>
-                    </label>
-                    <label for="input-retrospective">
-                      <span id="b-retrospective" class="button fas fa-1x"></span>
-                      <span id="retrospective-title">
-                        Retrospective Average
-                        <br><i class="fas fa-arrow-circle-down"></i>
-                      </span>
-                    </label>
-                    <label for="input-sprint">
-                      <span id="b-sprint" class="button" style="text-align: center">
-                      </span>
-                    </label>
-                    <label for="input-sprint-desc">
-                      <span id="b-sprint-desc" class="help">?</span>
-                    </label>
-                    <label for="input-sprint-planning">
-                      <span id="b-sprint-planning" class="button"></span>
-                    </label>
-                    <label for="input-sprint-planning-desc">
-                      <span id="b-sprint-planning-desc" class="help">?</span>
-                    </label>
-                    <div id="content-product-backlog-desc" class="content">
-                      <div style="text-align: right;">
-                        <label for="input-product-backlog-desc" class="cross">X</label>
-                      </div>
-                      <h1>Product Backlog</h1>
-                      <p class="bodyCopy"></p>
-                      <a href="https://www.agilealliance.org/glossary/backlog/" target="_blank" class="cta">Find out more</a>
-                    </div>
-                    <div id="content-sprint-backlog-desc" class="content">
-                      <div style="text-align: right;">
-                        <label for="input-sprint-backlog-desc" class="cross">X</label>
-                      </div>
-                      <h1>Sprint Backlog</h1>
-                      <p class="bodyCopy"></p>
-                      <a href="https://www.agilealliance.org/glossary/sprint-backlog/" target="_blank" class="cta">Find out more</a>
-                    </div>
-                    <div id="content-product-increment-desc" class="content">
-                      <div style="text-align: right;">
-                        <label for="input-product-increment-desc" class="cross">X</label>
-                      </div>
-                      <h1>Product Increment</h1>
-                      <p class="bodyCopy"></p>
-                      <a href="https://www.scrum.org/resources/what-is-an-increment" target="_blank" class="cta">Find out more</a>
-                    </div>
-                    <div id="content-po" class="content">
-                      <div style="text-align: right;">
-                        <label for="input-po" class="cross">X</label>
-                      </div>
-                      <h1>Product Owner</h1>
-                      <p class="bodyCopy"></p>
-                      <a href="https://www.agilealliance.org/glossary/product-owner/" target="_blank" class="cta">Find out more</a>
-                    </div>
-                    <div id="content-sm" class="content">
-                      <div style="text-align: right;">
-                        <label for="input-sm" class="cross">X</label>
-                      </div>
-                      <h1>Scrum Master</h1>
-                      <p class="bodyCopy"></p>
-                      <a href="https://www.agilealliance.org/glossary/scrum-master/" target="_blank" class="cta">Find out more</a>
-                    </div>
-                    <div id="content-tm" class="content">
-                      <div style="text-align: right;">
-                        <label for="input-tm" class="cross">X</label>
-                      </div>
-                      <h1>Team</h1>
-                      <p class="bodyCopy"></p>
-                      <a href="https://www.agilealliance.org/glossary/team/" target="_blank" class="cta">Find out more</a>
-                    </div>
-                    <div id="content-daily-scrum" class="content">
-                      <div style="text-align: right">
-                        <label for="input-daily-scrum" class="cross">X</label>
-                      </div>
-                      <h1>Daily Scrum</h1>
-                      <p class="bodyCopy"></p>
-                      <a href="https://www.scrum.org/resources/what-is-a-daily-scrum" target="_blank" class="cta">Find out more</a>
-                    </div>
-                    <div id="content-showcase" class="content">
-                      <div style="text-align: right;">
-                        <label for="input-showcase" class="cross">X</label>
-                      </div>
-                      <h1>Showcase</h1>
-                      <p class="bodyCopy"></p>
-                      <a href="https://www.agilealliance.org/glossary/showcase/" target="_blank" class="cta">Find out more</a>
-                    </div>
-                    <div id="content-retrospective-desc" class="content">
-                      <div style="text-align: right;">
-                        <label for="input-retrospective-desc" class="cross">X</label>
-                      </div>
-                      <h1>Retrospective</h1>
-                      <p class="bodyCopy"></p>
-                      <a href="https://www.agilealliance.org/glossary/heartbeatretro/" target="_blank" class="cta">Find out more</a>
-                    </div>
-                    <div id="content-sprint-desc" class="content">
-                      <div style="text-align: right;">
-                        <label for="input-sprint-desc" class="cross">X</label>
-                      </div>
-                      <h1>Sprint</h1>
-                      <p class="bodyCopy"></p>
-                      <a href="https://www.scrum.org/resources/what-is-a-sprint-in-scrum" target="_blank" class="cta">Find out more</a>
-                    </div>
-                    <div id="content-sprint-planning-desc" class="content">
-                      <div style="text-align: right;">
-                        <label for="input-sprint-planning-desc" class="cross">X</label>
-                      </div>
-                      <h1>Sprint Planning</h1>
-                      <p class="bodyCopy"></p>
-                      <a href="https://www.agilealliance.org/glossary/sprint-planning/" target="_blank" class="cta">Find out more</a>
-                    </div>
-                  </div>
+
+                    <div id="scrumsee-svg"></div>
+
                 </div>
               </div>
             </div>
