@@ -1,3 +1,5 @@
+/*jshint esversion: 6 */
+/*globals d3,$,eventHandler:false */
 let eventHandler = {};
 const useSampleData = false;
 
@@ -36,17 +38,15 @@ function visualize(error, jiraData, scrumText, retroData) {
         const visVelocity = new VelocityChart2(issueStore, svgVelocity, colorScheme, eventHandler);
         const visStory = new StoryChart2(issueStore, svgStory);
         const visScope = new ScopeChart(issueStore, svgScope, visStory,'', colorScheme, eventHandler);
-        const visRetro = new RetroChart(retroData.slice(16,21), svgRetro);
-        const visEmployee = new EmployeeChart2(issueStore, svgEmployee);
-
-        const visScrumProcess = new ScrumProcess(issueStore);
+        new RetroChart(retroData.slice(16,21), svgRetro);
+        new EmployeeChart2(issueStore, svgEmployee);
+        new ScrumProcess(issueStore);
 
 
         d3.select(window).on(
             'resize.' + svgScrumSee.containerElem.attr('id'),
             () => {
-                    const w = parseInt(svgScrumSee.containerElem.style('width'));
-                    svgScrumSee.width = w;
+                    svgScrumSee.width = parseInt(svgScrumSee.containerElem.style('width'));
                     visScrumSee.drawScrumDiagram();
             }
         );

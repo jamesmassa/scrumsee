@@ -1,3 +1,5 @@
+/*jshint esversion: 6 */
+/*globals d3,$,eventHandler:false */
 class ScrumSee {
     constructor(svg, issueStore, scrumTextStore, retroStore) {
         this.svg = svg;
@@ -65,16 +67,16 @@ class ScrumSee {
                 alert("Sprint Under Construction");
                 return;
             case "sm":
-                text = data.text["scrum-master"];
-                url = data.url["scrum-master"];
+                text = data.text.scrumMaster;
+                url = data.url.scrumMaster;
                 break;
             case "po":
-                text = data.text["product-owner"];
-                url = data.url["product-owner"];
+                text = data.text.productOwner;
+                url = data.url.productOwner;
                 break;
             case "team":
-                text = data.text["team"];
-                url = data.url["team"];
+                text = data.text.team;
+                url = data.url.team;
                 break;
             default:
                 text = data.text[d.name];
@@ -98,19 +100,19 @@ class ScrumSee {
             text + '</h4></div>';
 
         this.appendHTML(g, helpTextHtml,
-            this.svg.width * .95,
+            this.svg.width * 0.95,
             this.svg.height,
-            this.svg.width * .05,
-            this.svg.height * .2,
+            this.svg.width * 0.05,
+            this.svg.height * 0.2,
             "default");
 
         const closeHelpButtonHtml = this.getButtonHtml("help-close", "Close");
 
         this.appendHTML(g, closeHelpButtonHtml,
-            this.svg.width * .06 ,
-            this.svg.height * .3,
-            this.svg.width * .9,
-            this.svg.height * .6,
+            this.svg.width * 0.06 ,
+            this.svg.height * 0.3,
+            this.svg.width * 0.9,
+            this.svg.height * 0.6,
             "pointer");
 
         document.querySelector("#help-close").onclick = () => {
@@ -124,14 +126,14 @@ class ScrumSee {
         const findOutMoreHtml = this.getButtonHtml("find-out-more", "Find out more");
 
         this.appendHTML(g2, findOutMoreHtml,
-            this.svg.width * .13,
-            this.svg.height * .3,
-            this.svg.width * .75,
-            this.svg.height * .6,
+            this.svg.width * 0.13,
+            this.svg.height * 0.3,
+            this.svg.width * 0.75,
+            this.svg.height * 0.6,
             "pointer");
 
         document.querySelector("#find-out-more").onclick = () => {
-            window.open(url, "_blank")
+            window.open(url, "_blank");
         };
 
     }
@@ -155,7 +157,7 @@ class ScrumSee {
 
         this.circleHelpRadius = 10;
         const circleCy = this.circleHelpRadius;
-        this.arcCenterOffset = .98;
+        this.arcCenterOffset = 0.98;
 
         const xPct = this.svg.width / 100;
         const yPct = this.svg.height / 100;
@@ -172,11 +174,11 @@ class ScrumSee {
 
         const roleHeight = this.svg.height - heightBottomArrowRect;
         this.sprintArcData  = [
-            { "name": "sprint-arc", "innerRadius": 80, "outerRadius": 105, startAngle: -.33, endAngle: .5, "x": 2, "y": 2 }
+            { "name": "sprint-arc", "innerRadius": 80, "outerRadius": 105, startAngle: -0.33, endAngle: 0.5, "x": 2, "y": 2 }
         ];
 
         this.scrumArcData  = [
-            { "name": "daily-scrum-arc", "innerRadius": 25, "outerRadius": 40, startAngle: -.3, endAngle: .45, "x": 2, "y": 3.3 }
+            { "name": "daily-scrum-arc", "innerRadius": 25, "outerRadius": 40, startAngle: -0.3, endAngle: 0.45, "x": 2, "y": 3.3 }
         ];
 
         this.arcMarkerData = [
@@ -201,7 +203,7 @@ class ScrumSee {
             {
                 "name": "scrum",
                 "text": "24 Hr",
-                "cx":(this.arcCenterOffset * this.svg.width / sprintArcData.x) + + sprintArcData.outerRadius + scrumArcData.outerRadius - scrumArcData.innerRadius,
+                "cx":(this.arcCenterOffset * this.svg.width / sprintArcData.x) + sprintArcData.outerRadius + scrumArcData.outerRadius - scrumArcData.innerRadius,
                 "cy": this.svg.height / scrumArcData.y,
                 "r": scrumArcData.innerRadius + 1 },
             {
@@ -214,12 +216,12 @@ class ScrumSee {
         ];
 
         this.rectData  = [
-            { "name": "backlog", "text": "", "x": .5 * rectSpacer, "y": dataRectY, "width": this.dataRectWidth, "height": dataRectHeight, "color": this.dataRectColor, "isClickable": true },
+            { "name": "backlog", "text": "", "x": 0.5 * rectSpacer, "y": dataRectY, "width": this.dataRectWidth, "height": dataRectHeight, "color": this.dataRectColor, "isClickable": true },
             { "name": "planning", "text": "", "x": 1.5 * rectSpacer + this.dataRectWidth, "y": dataRectY, "width": this.dataRectWidth, "height": dataRectHeight, "color": this.dataRectColor, "isClickable": true },
             { "name": "sprint-backlog", "text": "", "x": 2.5 * rectSpacer + 2 * this.dataRectWidth, "y": dataRectY, "width": this.dataRectWidth, "height": dataRectHeight, "color": this.dataRectColor, "isClickable": true },
-            { "name": "pre-sprint-arrow", "text": "", "x":.5 * rectSpacer, "y": this.svg.height - heightBottomArrowRect, "width": widthPreSprintArrowRect, "height": heightBottomArrowRect, "color": this.arrowColor, "isClickable": false },
+            { "name": "pre-sprint-arrow", "text": "", "x":0.5 * rectSpacer, "y": this.svg.height - heightBottomArrowRect, "width": widthPreSprintArrowRect, "height": heightBottomArrowRect, "color": this.arrowColor, "isClickable": false },
             { "name": "increment", "text": "", "x": startPostSprintArrowRect, "y": dataRectY, "width": this.dataRectWidth, "height": dataRectHeight, "color": this.dataRectColor, "isClickable": true },
-            { "name": "showcase", "text": "Showcase", "x": startPostSprintArrowRect + this.dataRectWidth + (1 * rectSpacer), "y": dataRectY, "width": this.dataRectWidth, "height": dataRectHeight, "color": this.dataRectColor, "isClickable": true },
+            { "name": "showcase", "text": "Showcase", "x": startPostSprintArrowRect + this.dataRectWidth + rectSpacer, "y": dataRectY, "width": this.dataRectWidth, "height": dataRectHeight, "color": this.dataRectColor, "isClickable": true },
             { "name": "retrospective", "text": "", "x": startPostSprintArrowRect + (2 * this.dataRectWidth) + (2 * rectSpacer), "y": dataRectY, "width": this.dataRectWidth, "height": dataRectHeight, "color": this.dataRectColor, "isClickable": true },
             { "name": "post-sprint-arrow", "text": "", "x": startPostSprintArrowRect, "y": this.svg.height - heightBottomArrowRect, "width": widthPostSprintArrowRect, "height": heightBottomArrowRect, "color": this.arrowColor, "isClickable": false }
         ];
@@ -300,9 +302,9 @@ class ScrumSee {
     setMarkerLine(name, x1, y1, height, width){
         this.svg.svg.append("line")
             .attr("x1", x1 )
-            .attr("y1", y1 + .5 * height)
+            .attr("y1", y1 + 0.5 * height)
             .attr("x2", x1 + 1.1 * width)
-            .attr("y2", y1 + .5 * height)
+            .attr("y2", y1 + 0.5 * height)
             .attr("stroke-width", 5)
             .attr("stroke", this.arrowColor)
             .attr("marker-end", "url(#" + name + ")");
@@ -344,7 +346,7 @@ class ScrumSee {
             preSprintRect.x,
             preSprintRect.y,
             preSprintRect.height,
-            preSprintRect.width * .9
+            preSprintRect.width * 0.9
         );
 
         this.setMarkerArrowHead("post-sprint-arrowhead");
@@ -354,7 +356,7 @@ class ScrumSee {
             postSprintRect.x,
             postSprintRect.y,
             postSprintRect.height,
-            postSprintRect.width * .95
+            postSprintRect.width * 0.95
         );
 
     }
@@ -383,13 +385,13 @@ class ScrumSee {
 
         const defs = g.append('svg:defs');
 
-        const marker = defs.append('svg:marker')
+        defs.append('svg:marker')
             .attr('id', 'marker-arrow')
             .attr('markerHeight', 40)
             .attr('markerWidth', 40)
             .attr('markerUnits', 'strokeWidth')
             .attr('orient', '180')
-            .attr('refX', .1 * arcWidth)
+            .attr('refX', 0.1 * arcWidth)
             .attr('refY', 0)
             .attr('viewBox', this.arcMarkerData[2].viewbox)
             .append('svg:path')
@@ -444,14 +446,14 @@ class ScrumSee {
 
         const defs = g.append('svg:defs');
 
-        const marker = defs.append('svg:marker')
+        defs.append('svg:marker')
             .attr('id', 'marker-scrum-arrow')
             .attr('markerHeight', 30)
             .attr('markerWidth', 30)
             .attr('markerUnits', 'strokeWidth')
             .attr('orient', '270')
-            .attr('refX', -.2 * arcWidth)
-            .attr('refY', .1 * arcWidth)
+            .attr('refX', -0.2 * arcWidth)
+            .attr('refY', 0.1 * arcWidth)
             .attr('viewBox', this.arcMarkerData[2].viewbox)
             .append('svg:path')
             .attr('d', this.arcMarkerData[2].path )
@@ -490,7 +492,7 @@ class ScrumSee {
         const backlogStoryCount = this.issueStore.getIssues().length;
         const averageHappiness = this.retroStore.getSprintHappiness(activeSprint);
         const totalAlerts = activeSprint.totalAlerts;
-        const burndownPct =  parseFloat(100 * completed / committed).toFixed()+"%";
+        const burndownPct =  (100 * completed / committed).toFixed()+"%";
 
         this.rectData.forEach(rect => {
 
@@ -553,16 +555,15 @@ class ScrumSee {
             }
 
             if (rect.name === "increment") {
-                const y = this.svg.height * .3;
+                const y = this.svg.height * 0.3;
                 const textElem = this.appendRectText(g, y , burndownPct + " Done", rect.name);
                 textElem.attr("font-size", "x-large");
                 textElem.attr("x", -15);
 
                 let html = '<i class="fas fa-fire fa-2x" style="color:orange; background-color: ' + this.dataRectColor + ';"></i>';
-                this.appendHTML(g, html, 24, 31.8, 50, y * .55, "pointer");
+                this.appendHTML(g, html, 24, 31.8, 50, y * 0.55, "pointer");
             }
-
-        })
+        });
     }
 
     appendFaceIcon(g, averageHappiness) {
@@ -597,7 +598,7 @@ class ScrumSee {
 
     appendRectText(g, y, text, name) {
 
-        const textSvgElem = g.append("text")
+        return g.append("text")
             .data([{"name": name}])
             .attr("id", text + "-name")
             .attr("fill", "black")
@@ -610,7 +611,6 @@ class ScrumSee {
                 d3.select(this).style("cursor", "pointer");
             });
 
-        return textSvgElem;
     }
 
     renderCircleText(){
@@ -624,11 +624,11 @@ class ScrumSee {
             .merge(circleText)
             .text(d=> d.text)
             .attr("x", d => d.name === "scrum" ?
-                this.getCircleCx(d.name, d.cx) - (.6 * d.r) :
-                this.getCircleCx(d.name, d.cx) - (.3 * d.r) )
+                this.getCircleCx(d.name, d.cx) - (0.6 * d.r) :
+                this.getCircleCx(d.name, d.cx) - (0.3 * d.r) )
             .attr("y", d=> d.name === "scrum" ?
-                d.cy + (.2 * d.r) :
-                d.cy + (.5 * d.r) )
+                d.cy + (0.2 * d.r) :
+                d.cy + (0.5 * d.r) )
             .attr("fill", "black")
             .style("font-weight", "bold")
             .style("font-size", "12")

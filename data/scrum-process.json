@@ -15,8 +15,8 @@
   },
   "url": {
     "sprint": "https://www.scrum.org/resources/what-is-a-sprint-in-scrum",
-    "product-owner": "https://www.agilealliance.org/glossary/product-owner/",
-    "scrum-master": "https://www.agilealliance.org/glossary/scrum-master/",
+    "productOwner": "https://www.agilealliance.org/glossary/product-owner/",
+    "scrumMaster": "https://www.agilealliance.org/glossary/scrum-master/",
     "team-member": "https://www.agilealliance.org/glossary/team/",
     "estimation-poker": "Under Construction",
     "planning": "https://www.agilealliance.org/glossary/sprint-planning/",
@@ -27,5 +27,4 @@
     "sprint-backlog": "https://www.agilealliance.org/glossary/sprint-backlog/ ",
     "increment": "https://www.scrum.org/resources/what-is-an-increment"
   }
-
 }
