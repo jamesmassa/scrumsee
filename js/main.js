@@ -16,10 +16,6 @@ function visualize(error, jiraData, scrumText, retroData) {
         const scrumTextStore = new ScrumTextStore(scrumText);
         const retroStore = new RetroStore(retroData);
 
-        console.log(issueStore.getSprints());
-        console.log(scrumTextStore.ceremonies);
-        console.log(retroStore.data);
-
         const margin = {top: 0, right: 0, bottom: 0, left: 0};
         const marginScrumSee = { top: 0, right: 0, bottom: 0, left: 0 };
         const marginScope = { top: 0, right: 0, bottom: 0, left: 0 };
@@ -71,8 +67,8 @@ function visualize(error, jiraData, scrumText, retroData) {
         });
 
         $(eventHandler).bind("selectedVisualizationChange", (event, selection) => {
-                if (selection == "velocity-visualization") visVelocity.onSelectedVisualizationChange();
-                else if (selection == "scope-visualization") visScope.onSelectedVisualizationChange();
+                if (selection === "velocity-visualization") visVelocity.onSelectedVisualizationChange();
+                else if (selection === "scope-visualization") visScope.onSelectedVisualizationChange();
 
         });
 
