@@ -1,3 +1,6 @@
+/*jshint esversion: 6 */
+/*globals d3,$,eventHandler:false */
+
 //Main page controller class
 class ScrumProcess {
     constructor(issueStore) {
@@ -24,8 +27,7 @@ class ScrumProcess {
                 selectorElem.value = sprint.id;
             }
             optionElement.innerHTML = sprintName;
-
-        })
+        });
     }
 
 
@@ -45,12 +47,12 @@ class ScrumProcess {
         };
 
         document.querySelector("#velocity-card").onclick = () => {
-            window.open("https://cs171-jira.atlassian.net/secure/RapidBoard.jspa?projectKey=JV&rapidView=1&view=reporting&chart=velocityChart", "_blank")
+            window.open("https://cs171-jira.atlassian.net/secure/RapidBoard.jspa?projectKey=JV&rapidView=1&view=reporting&chart=velocityChart", "_blank");
         };
 
         const activeSprint = this.issueStore.activeSprint;
         document.querySelector("#blockers-card").onclick = () => {
-            window.open("https://cs171-jira.atlassian.net/issues/?jql=project%20%3D%20JV%20and%20status%20%3D%20Blocked%20and%20sprint%3D" + activeSprint.id, "_blank")
+            window.open("https://cs171-jira.atlassian.net/issues/?jql=project%20%3D%20JV%20and%20status%20%3D%20Blocked%20and%20sprint%3D" + activeSprint.id, "_blank");
         };
 
         const visualizations = document.querySelectorAll(".viz");
