@@ -40,8 +40,6 @@ function visualize(error, jiraData, scrumText, retroData) {
         const visScope = new ScopeChart(issueStore, svgScope, visStory,'', colorScheme, eventHandler);
         new RetroChart(retroData.slice(16,21), svgRetro);
         new EmployeeChart2(issueStore, svgEmployee);
-        new ScrumProcess(issueStore);
-
 
         d3.select(window).on(
             'resize.' + svgScrumSee.containerElem.attr('id'),
