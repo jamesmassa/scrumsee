@@ -1,4 +1,7 @@
-//TODO: DAVID Merge Velocity Chart into VelocityChart2 structure
+/*jshint esversion: 6 */
+/*globals d3,$,eventHandler:false */
+
+//TODO:  Merge Velocity Chart into VelocityChart2 structure
 //TODO:  Use the svg object passed from VelocityChart2 instead of creating another
 
 //references: https://wesbos.com/template-strings-html/ https://tntvis.github.io/tnt.tooltip/
@@ -22,9 +25,6 @@ class VelocityChart2 {
 
     onSelectedLayerChange(selection) {
         this._velocityChart.onSelectedLayerChange(selection);
-    }
-    onSelectedMetricChange(selection) {
-        this._velocityChart.onSelectedMetricChange(selection);
     }
 
     onSelectedVisualizationChange() {
@@ -70,7 +70,7 @@ VelocityChart.prototype.initVis = function(){
     //TODO: filter by selected time band
     vis.displayData = vis.issueStore.getSprints().filter(function (d) {
         //Active or closed sprints only (no future)
-        return d.state == "CLOSED" || d.state == "ACTIVE";
+        return d.state === "CLOSED" || d.state === "ACTIVE";
     }).sort(function (a, b) {
         return a.endDate - b.endDate;
     });
@@ -83,9 +83,8 @@ VelocityChart.prototype.initVis = function(){
     vis.currentLayer = priorityLayer;
     vis.currentMetric = totalStoryPoints;
 
-    vis.width = $("#vis-velocity-chart").width() - vis.margin.left - vis.margin.right;
+    //vis.width = $("#vis-velocity-chart").width() - vis.margin.left - vis.margin.right;
     vis.height = 400 - vis.margin.top - vis.margin.bottom;
-
 
     vis.svg = d3.select("#vis-velocity-chart").append("svg")
         .attr("width", vis.width + vis.margin.left + vis.margin.right)
@@ -301,7 +300,7 @@ VelocityChart.prototype.updateVis = function(){
         .style("text-anchor", "start")
         .text(function (d, i) {
             let curSprint = "Sprint " + (i + vis.startingSprint + 1);
-            if(d == vis.issueStore.activeSprint.name) curSprint += "(Active)";
+            if(d === vis.issueStore.activeSprint.name) curSprint += "(Active)";
             return curSprint;
         });
 
@@ -350,7 +349,7 @@ VelocityChart.prototype.onSelectedMetricChange = function(selection){
 VelocityChart.prototype.onSelectedVisualizationChange = function() {
     const vis = this;
     vis.issuePropertyControl.updateVis();
-}
+};
 
 
 //Function that returns discrete values of a range given start, end, and # of values
@@ -363,7 +362,7 @@ function splitRange(range, n) {
 }
 
 function findClosestPoint(range, value) {
-    let result;
+    let result = 0;
     let min = 10000000;
 
     range.forEach(function (d, i) {
