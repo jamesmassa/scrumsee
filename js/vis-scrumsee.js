@@ -28,6 +28,7 @@ class ScrumSee {
 
     handleRectClick(d) {
 
+        const activeChart = document.querySelector(".active-chart");
         switch (d.name) {
             case "backlog":
                 window.open("https://cs171-jira.atlassian.net/secure/RapidBoard.jspa?rapidView=1&projectKey=JV&view=planning&selectedIssue=JV-122&epics=visible", "_blank");
@@ -37,7 +38,12 @@ class ScrumSee {
                     element.style.display = "block";
                 });
                 $(eventHandler).trigger("selectedVisualizationChange", "velocity-visualization");
-                document.querySelector("#velocity-chart").style.display = "block";
+                if (activeChart) {
+                    activeChart.style.display = "none";
+                }
+                let velocityChart = document.querySelector("#velocity-chart");
+                velocityChart.style.display = "block";
+                velocityChart.className = velocityChart.className += " active-chart";
                 break;
             case "sprint-backlog":
                 window.open("https://cs171-jira.atlassian.net/secure/RapidBoard.jspa?rapidView=1&projectKey=JV", "_blank");
@@ -48,7 +54,12 @@ class ScrumSee {
             case "showcase":
                 break;
             case "retrospective":
-                document.querySelector("#retrospective-chart").style.display = "block";
+                if (activeChart) {
+                    activeChart.style.display = "none";
+                }
+                let retroChart = document.querySelector("#retrospective-chart");
+                retroChart.style.display = "block";
+                retroChart.className += " active-chart";
                 break;
             default:
                 alert ("unhandled click for " + d.name);
@@ -224,7 +235,7 @@ class ScrumSee {
             { "name": "sprint-backlog", "text": "", "x": 2.5 * rectSpacer + 2 * this.dataRectWidth, "y": dataRectY, "width": this.dataRectWidth, "height": dataRectHeight, "color": this.dataRectColor, "isClickable": true },
             { "name": "pre-sprint-arrow", "text": "", "x":0.5 * rectSpacer, "y": this.svg.height - heightBottomArrowRect, "width": widthPreSprintArrowRect, "height": heightBottomArrowRect, "color": this.arrowColor, "isClickable": false },
             { "name": "increment", "text": "", "x": startPostSprintArrowRect, "y": dataRectY, "width": this.dataRectWidth, "height": dataRectHeight, "color": this.dataRectColor, "isClickable": true },
-            { "name": "showcase", "text": "Showcase", "x": startPostSprintArrowRect + this.dataRectWidth + rectSpacer, "y": dataRectY, "width": this.dataRectWidth, "height": dataRectHeight, "color": this.dataRectColor, "isClickable": true },
+            { "name": "showcase", "text": "Showcase", "x": startPostSprintArrowRect + this.dataRectWidth + rectSpacer, "y": dataRectY, "width": this.dataRectWidth , "height": dataRectHeight, "color": this.dataRectColor, "isClickable": true },
             { "name": "retrospective", "text": "", "x": startPostSprintArrowRect + (2 * this.dataRectWidth) + (2 * rectSpacer), "y": dataRectY, "width": this.dataRectWidth, "height": dataRectHeight, "color": this.dataRectColor, "isClickable": true },
             { "name": "post-sprint-arrow", "text": "", "x": startPostSprintArrowRect, "y": this.svg.height - heightBottomArrowRect, "width": widthPostSprintArrowRect, "height": heightBottomArrowRect, "color": this.arrowColor, "isClickable": false }
         ];
@@ -493,7 +504,7 @@ class ScrumSee {
         const committed = activeSprint.totalStoryPoints;
         const completed = activeSprint.completedStoryPoints;
         const backlogStoryCount = this.issueStore.getIssues().length;
-        const averageHappiness = this.retroStore.getSprintHappiness(activeSprint);
+        const averageHappiness = this.retroStore.getSprintHappiness(activeSprint).toFixed(2);
         const totalAlerts = activeSprint.totalAlerts;
         const burndownPct =  (100 * completed / committed).toFixed()+"%";
 
@@ -529,8 +540,6 @@ class ScrumSee {
 
                 case "retrospective":
                     text = "Retrospective";
-                    text2 = "Average";
-                    text3 = averageHappiness.toFixed(2);
                     break;
 
                 default:
@@ -564,23 +573,32 @@ class ScrumSee {
                 textElem.attr("x", -15);
 
                 let html = '<i class="fas fa-fire fa-2x" style="color:orange; background-color: ' + this.dataRectColor + ';"></i>';
-                this.appendHTML(g, html, 24, 31.8, 50, y * 0.55, "pointer");
+                this.appendHTML(g, html, 30, 31.8, 50, y * 0.5, "pointer");
             }
         });
     }
 
     appendFaceIcon(g, averageHappiness) {
-        let html = "";
+        let color = "";
+        let icon = "";
 
         if (averageHappiness > 0) {
-            html = '<i class="fas fa-smile-beam fa-2x" style="color:darkgreen; background-color: ' + this.dataRectColor + ';" ></i>';
-        } else if (averageHappiness < 0) {
-            html = '<i class="fas fa-sad-tear fa-2x" style="color:darkred; background-color: ' + this.dataRectColor + ';" ></i>';
+            color = "darkgreen";
+            icon = "fa-smile-beam";
+        } else if(averageHappiness < 0){
+            color = "darkRed";
+            icon = "fa-sad-tear";
+
         } else {
-            html = '<i class="fas fa-meh fa-2x" style="color:darkred; background-color: ' + this.dataRectColor + ';" ></i>';
+            color = "darkorange";
+            icon = "fa-meh";
         }
 
-        this.appendHTML(g, html, 31, 31.8, 0,-75, "pointer");
+        const html = '<span style="color:' + color + '">' +
+            averageHappiness +
+            '&nbsp;&nbsp;<i class="fas ' + icon + ' fa-2x"</i></span>';
+
+        this.appendHTML(g, html, 120, 50, -50,-85, "pointer");
 
     }
 
@@ -594,6 +612,8 @@ class ScrumSee {
             .append("xhtml:body")
             .html(html)
             .style("font-weight", "bold")
+            .style("font-size", "larger")
+            .style("background-color", this.dataRectColor)
             .on("mouseover", function () {
                 d3.select(this).style("cursor", cursor);
             });
