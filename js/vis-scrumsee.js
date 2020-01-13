@@ -54,12 +54,7 @@ class ScrumSee {
             case "showcase":
                 break;
             case "retrospective":
-                if (activeChart) {
-                    activeChart.style.display = "none";
-                }
-                let retroChart = document.querySelector("#retrospective-chart");
-                retroChart.style.display = "block";
-                retroChart.className += " active-chart";
+                this.handleRetroClick();
                 break;
             default:
                 alert ("unhandled click for " + d.name);
@@ -110,7 +105,7 @@ class ScrumSee {
             .attr("x", 0)
             .on("mouseover", function () {d3.select(this).style("cursor", "default");});
 
-        const helpTextHtml = '<div id="help-text" style="color: black background-color: white;"><h4>' +
+        const helpTextHtml = '<div id="help-text" style="color: black "><h4>' +
             text + '</h4></div>';
 
         this.appendHTML(g, helpTextHtml,
@@ -118,7 +113,9 @@ class ScrumSee {
             this.svg.height,
             this.svg.width * 0.05,
             this.svg.height * 0.2,
-            "default");
+            "default",
+            null,
+            "white");
 
         const closeHelpButtonHtml = this.getButtonHtml("help-close", "Close");
 
@@ -127,7 +124,9 @@ class ScrumSee {
             this.svg.height * 0.3,
             this.svg.width * 0.9,
             this.svg.height * 0.6,
-            "pointer");
+            "pointer",
+            null,
+            "white");
 
         document.querySelector("#help-close").onclick = () => {
             d3.select("#help-text").remove();
@@ -144,7 +143,9 @@ class ScrumSee {
             this.svg.height * 0.3,
             this.svg.width * 0.75,
             this.svg.height * 0.6,
-            "pointer");
+            "pointer",
+            null,
+            "white");
 
         document.querySelector("#find-out-more").onclick = () => {
             window.open(url, "_blank");
@@ -573,9 +574,13 @@ class ScrumSee {
                 textElem.attr("x", -15);
 
                 let html = '<i class="fas fa-fire fa-2x" style="color:orange; background-color: ' + this.dataRectColor + ';"></i>';
-                this.appendHTML(g, html, 30, 31.8, 50, y * 0.5, "pointer");
+                this.appendHTML(g, html, 30, 31.8, 50, y * 0.5, "pointer", this.handleFireClick, this.dataRectColor);
             }
         });
+    }
+
+    handleFireClick(){
+        window.open("https://cs171-jira.atlassian.net/issues/?jql=project%20%3D%20JV%20and%20status%20%3D%20Done%20and%20sprint%3D5", "_blank");
     }
 
     appendFaceIcon(g, averageHappiness) {
@@ -598,11 +603,22 @@ class ScrumSee {
             averageHappiness +
             '&nbsp;&nbsp;<i class="fas ' + icon + ' fa-2x"</i></span>';
 
-        this.appendHTML(g, html, 120, 50, -50,-85, "pointer");
+        this.appendHTML(g, html, 120, 50, -50,-85, "pointer", this.handleRetroClick, this.dataRectColor);
 
     }
 
-    appendHTML(g, html, width, height, x, y, cursor){
+    handleRetroClick(){
+        const activeChart = document.querySelector(".active-chart");
+
+        if (activeChart) {
+            activeChart.style.display = "none";
+        }
+        let retroChart = document.querySelector("#retrospective-chart");
+        retroChart.style.display = "block";
+        retroChart.className += " active-chart";
+    }
+
+    appendHTML(g, html, width, height, x, y, cursor, callback, backgroundColor){
         g.append('svg:foreignObject')
             .attr("width", width)
             .attr("height", height)
@@ -613,7 +629,12 @@ class ScrumSee {
             .html(html)
             .style("font-weight", "bold")
             .style("font-size", "larger")
-            .style("background-color", this.dataRectColor)
+            .style("background-color", backgroundColor)
+            .on("click", d => {
+                if (callback != null) {
+                    callback(d)
+                }
+            })
             .on("mouseover", function () {
                 d3.select(this).style("cursor", cursor);
             });
