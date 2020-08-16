@@ -84,7 +84,7 @@ VelocityChart.prototype.initVis = function(){
     vis.currentMetric = totalStoryPoints;
 
     //vis.width = $("#vis-velocity-chart").width() - vis.margin.left - vis.margin.right;
-    vis.height = 400 - vis.margin.top - vis.margin.bottom;
+    vis.height = (window.innerHeight / 3) - vis.margin.top - vis.margin.bottom;
 
     vis.svg = d3.select("#vis-velocity-chart").append("svg")
         .attr("width", vis.width + vis.margin.left + vis.margin.right)

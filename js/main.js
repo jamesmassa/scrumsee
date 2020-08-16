@@ -34,7 +34,7 @@ function visualize(error, jiraData, scrumText, retroData) {
         const svgRetro = new Svg("#retrospective-chart", 0, 0, marginRetro);
         const svgEmployee = new Svg("#employee-chart", width, height, margin);
 
-        const visScrumSee = new ScrumSee(svgScrumSee, issueStore, scrumTextStore, retroStore);
+        const visScrumSee = new SeeScrum(svgScrumSee, issueStore, scrumTextStore, retroStore);
         const visVelocity = new VelocityChart2(issueStore, svgVelocity, colorScheme, eventHandler);
         const visStory = new StoryChart2(issueStore, svgStory);
         const visScope = new ScopeChart(issueStore, svgScope, visStory,'', colorScheme, eventHandler);
