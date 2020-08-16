@@ -35,22 +35,11 @@ LineChart = function(_parentElement, _data){
 LineChart.prototype.initVis = function(){
     var vis = this;
 
-    // Add title
-    d3.select("#" + vis.parentElement)
-        .append("div")
-        .attr("id", "retro-title")
-        .text("Sprint Feedback");
-
-    d3.select("#" + vis.parentElement)
-        .append("div")
-        .attr("id", "retro-subtitle")
-        .text("Mouse over the charts to see a breakdown by individuals");
-
     // SVG margin convention
     vis.margin = { top: 70, right: 60, bottom: 50, left: 60 };
 
-    vis.width = 600 - vis.margin.left - vis.margin.right,
-        vis.height = 400 - vis.margin.top - vis.margin.bottom;
+    vis.width = (window.innerWidth / 3.5) - vis.margin.left - vis.margin.right,
+        vis.height = (window.innerHeight / 3.5) - vis.margin.top - vis.margin.bottom;
 
     // Clip paths
     d3.select("#" + vis.parentElement)

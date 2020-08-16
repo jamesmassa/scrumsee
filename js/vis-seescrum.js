@@ -1,6 +1,6 @@
 /*jshint esversion: 6 */
 /*globals d3,$,eventHandler:false */
-class ScrumSee {
+class SeeScrum {
     constructor(svg, issueStore, scrumTextStore, retroStore) {
         this.svg = svg;
         this._scrumTextStore = scrumTextStore;
@@ -34,7 +34,7 @@ class ScrumSee {
                 window.open("https://cs171-jira.atlassian.net/secure/RapidBoard.jspa?rapidView=1&projectKey=JV&view=planning&selectedIssue=JV-122&epics=visible", "_blank");
                 break;
             case "planning":
-                document.querySelectorAll(".velocity-selector, .velocity-description").forEach(element => {
+                document.querySelectorAll(".velocity-selector").forEach(element => {
                     element.style.display = "block";
                 });
                 $(eventHandler).trigger("selectedVisualizationChange", "velocity-visualization");
