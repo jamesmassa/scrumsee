@@ -9,11 +9,14 @@ document.addEventListener("DOMContentLoaded", () => {
         .defer(d3.json, (useSampleData ? "data/CFX-data-scrubbed.json" : "data/JV-12-7-19.json"))
         .defer(d3.json, "data/scrum-process.json")
         .defer(d3.json, "data/metrics.json")
+        .defer(d3.json, "data/jira.json")
         .await(visualize);
 });
 
 
-function visualize(error, jiraData, scrumText, retroData) {
+function visualize(error, jiraData, scrumText, retroData, ssJiraData) {
+        const ssIssueStore = ssJiraData;
+        console.log(ssIssueStore);
         const issueStore = (useSampleData ? new IssueStore(jiraData) : new IssueStore(jiraData, "customfield_10020", "customfield_10028" )) ;
         const scrumTextStore = new ScrumTextStore(scrumText);
         const retroStore = new RetroStore(retroData);
