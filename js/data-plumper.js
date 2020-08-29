@@ -1,12 +1,12 @@
 let sprintField = "customfield_10020";
 let endStatus = {
-    "self": "https://cs171-jira.atlassian.net/rest/api/3/status/10001",
+    "self": "https://seescrum.atlassian.net/rest/api/3/status/10001",
     "description": "",
-    "iconUrl": "https://cs171-jira.atlassian.net/",
+    "iconUrl": "https://seescrum.atlassian.net/",
     "name": "Done",
     "id": "10001",
     "statusCategory": {
-        "self": "https://cs171-jira.atlassian.net/rest/api/3/statuscategory/3",
+        "self": "https://seescrum.atlassian.net/rest/api/3/statuscategory/3",
         "id": 3,
         "key": "done",
         "colorName": "green",
@@ -14,13 +14,13 @@ let endStatus = {
     }
 };
 let startStatus = {
-    "self": "https://cs171-jira.atlassian.net/rest/api/3/status/10000",
+    "self": "https://seescrum.atlassian.net/rest/api/3/status/10000",
     "description": "",
-    "iconUrl": "https://cs171-jira.atlassian.net/",
+    "iconUrl": "https://seescrum.atlassian.net/",
     "name": "To Do",
     "id": "10000",
     "statusCategory": {
-        "self": "https://cs171-jira.atlassian.net/rest/api/3/statuscategory/2",
+        "self": "https://seescrum.atlassian.net/rest/api/3/statuscategory/2",
         "id": 2,
         "key": "new",
         "colorName": "blue-gray",
@@ -29,13 +29,13 @@ let startStatus = {
 };
 let inProgressStatuses = [
     {
-        "self": "https://cs171-jira.atlassian.net/rest/api/3/status/3",
+        "self": "https://seescrum.atlassian.net/rest/api/3/status/3",
         "description": "This issue is being actively worked on at the moment by the assignee.",
-        "iconUrl": "https://cs171-jira.atlassian.net/images/icons/statuses/inprogress.png",
+        "iconUrl": "https://seescrum.atlassian.net/images/icons/statuses/inprogress.png",
         "name": "In Progress",
         "id": "3",
         "statusCategory": {
-            "self": "https://cs171-jira.atlassian.net/rest/api/3/statuscategory/4",
+            "self": "https://seescrum.atlassian.net/rest/api/3/statuscategory/4",
             "id": 4,
             "key": "indeterminate",
             "colorName": "yellow",
@@ -43,13 +43,13 @@ let inProgressStatuses = [
         }
     },
     {
-        "self": "https://cs171-jira.atlassian.net/rest/api/3/status/10012",
+        "self": "https://seescrum.atlassian.net/rest/api/3/status/10012",
         "description": "This status is managed internally by Jira Software",
-        "iconUrl": "https://cs171-jira.atlassian.net/",
+        "iconUrl": "https://seescrum.atlassian.net/",
         "name": "Blocked",
         "id": "10012",
         "statusCategory": {
-            "self": "https://cs171-jira.atlassian.net/rest/api/3/statuscategory/2",
+            "self": "https://seescrum.atlassian.net/rest/api/3/statuscategory/2",
             "id": 2,
             "key": "new",
             "colorName": "blue-gray",
@@ -57,13 +57,13 @@ let inProgressStatuses = [
         }
     },
     {
-        "self": "https://cs171-jira.atlassian.net/rest/api/3/status/10014",
+        "self": "https://seescrum.atlassian.net/rest/api/3/status/10014",
         "description": "This status is managed internally by Jira Software",
-        "iconUrl": "https://cs171-jira.atlassian.net/",
+        "iconUrl": "https://seescrum.atlassian.net/",
         "name": "In Review",
         "id": "10014",
         "statusCategory": {
-            "self": "https://cs171-jira.atlassian.net/rest/api/3/statuscategory/4",
+            "self": "https://seescrum.atlassian.net/rest/api/3/statuscategory/4",
             "id": 4,
             "key": "indeterminate",
             "colorName": "yellow",
