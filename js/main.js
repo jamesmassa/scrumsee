@@ -9,14 +9,53 @@ document.addEventListener("DOMContentLoaded", () => {
         .defer(d3.json, (useSampleData ? "data/CFX-data-scrubbed.json" : "data/JV-12-7-19.json"))
         .defer(d3.json, "data/scrum-process.json")
         .defer(d3.json, "data/metrics.json")
-        .defer(d3.json, "data/jira.json")
+        .defer(d3.json, "data/jira-issues.json")
+        .defer(d3.json, "data/jira-epics.json")
+        .defer(d3.json, "data/jira-sprints.json")
+        .defer(d3.json, "data/jira-versions.json")
         .await(visualize);
 });
 
+function visualize(error, jiraData, scrumText, retroData, issuesData, epicsData, sprintsData, versionsData) {
 
-function visualize(error, jiraData, scrumText, retroData, ssJiraData) {
-        const ssIssueStore = ssJiraData;
-        console.log(ssIssueStore);
+        console.log(issuesData);
+        console.log(epicsData);
+        console.log(sprintsData);
+        console.log(versionsData);
+
+        //Get all issues for a epic with getEpicsUrl + [epicId] + issue
+        //https://seescrum.atlassian.net/rest/agile/latest/board/1/epic/10093/issue
+
+        //Get all issues for a sprint with getSprintsUrl + [sprintId] + issue
+        //This works: https://seescrum.atlassian.net/rest/agile/latest/board/1/sprint/2/issue
+
+        const refData = {
+                "baseUrl": "https://seescrum.atlassian.net/", //use this for both Jira Screens and Jira API
+                "restUrl": "https://seescrum.atlassian.net/rest/agile/latest/board/1/", //Add resource name to the Rest URL
+                "getIssuesUrl": "https://seescrum.atlassian.net/rest/agile/latest/board/1/issue",
+                "getEpicsUrl": "https://seescrum.atlassian.net/rest/agile/latest/board/1/epic/",
+                "getIssuesWithoutEpicUrl": "https://seescrum.atlassian.net/rest/agile/latest/board/1/epic/none/issue",
+                "getSprintsUrl": "https://seescrum.atlassian.net/rest/agile/latest/board/1/sprint/",
+                "getBacklogUrl": "https://seescrum.atlassian.net/rest/agile/latest/board/1/backlog/",
+                "getVersionsUrl": "https://seescrum.atlassian.net/rest/agile/latest/board/1/version/",
+
+                "sprintField": "customfield_10020",
+                "storyPointField": "customfield_10026",
+                "priorities": [],
+                "components": [],
+                "issueTypes": [],
+                "statuses": []
+        }
+        const jiraRepoData = {
+                "issues": issuesData,
+                "epics": epicsData,
+                "sprints": sprintsData,
+                "versions": versionsData,
+                "refdata": refData
+        }
+
+        const jiraRepo = new JiraRepo(jiraRepoData);
+
         const issueStore = (useSampleData ? new IssueStore(jiraData) : new IssueStore(jiraData, "customfield_10020", "customfield_10028" )) ;
         const scrumTextStore = new ScrumTextStore(scrumText);
         const retroStore = new RetroStore(retroData);

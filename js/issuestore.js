@@ -54,7 +54,7 @@
 
 const defaultSprintField = "customfield_10401";
 const defaultStoryPointField = "customfield_10003";
-const jiraBaseUrl = "https://cs171-jira.atlassian.net/";
+const jiraBaseUrl = "https://seescrum.atlassian.net/";
 const plumpData = true;
 //count metrics
 const totalStoryPoints = "totalSprintStoryPoints";
