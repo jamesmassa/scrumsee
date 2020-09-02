@@ -52,33 +52,41 @@
  * fields.issuetype.name: name of the issue type
  *
  */
+const customfieldIds = {
+    "epic": "customfield_10014",
+    "sprint": "customfield_10020",
+    "storypoints": "customfield_10026"
+}
 
 class Issue {
     constructor(issue) {
         this._issue = issue;
     }
 
-    get name () {
-        return this._issue.summary;
-    }
-
     get sprint () {
-        return this._issue['customfield_10020'][0]; //ToDo match on 'id=' to pick up sprint id
+        const str = new String(this.issue.fields.customfield_10020);
+        const start = str.lastIndexOf('id=') + 3;
+        const length = str.slice(start).indexOf(",");
+
+        return parseInt(str.substring(start, start + length));
     }
 
     get epic () {
-        return this._issue.customfields['customfield_10014'];
+        return this.issue.fields.customfield_10014;
     }
 
+    get issue(){return this._issue;}
+
+    get name () {return this.issue.fields.summary;}
     get type() {return this._issue.type['#text'];}
-    get status() {return this._issue.status['#text']}
-    get storyPoints(){return this._issue.customfields['customfield_10026']};
+    get status() {return this._issue.fields.status.name;}
+    get storyPoints(){return this.issue.fields.customfield_10026};
 }
 
 //Collection of Issue objects: a Repo, a Sprint, an Epic, or a Backlog
 class Issues {
     constructor(data) {
-        this._issues = data.forEach(issue => new(Issue));
+        this._issues = data.map(issue => new Issue(issue));
     }
 
     addIssue(issue){
@@ -87,15 +95,10 @@ class Issues {
 
     getFilteredIssues(filterFunc){return this._issues.filter(filterFunc)};
 
-    sum(prop) {
-        return this._issues.reduce(function (a, b) {
-            return a + b[prop];
-        }, 0);
-    }
-
     get totalStories(){return this._issues.count();}
-    get totalStoryPoints(){return this.sum("storyPoints");}
-    get completedStoryPoints(){return this.sum("completedStoryPoints");}
+    get totalStoryPoints(){return this._issues.reduce((sum, issue) => acc + issue.storyPoints);}
+    get completedStories(){return this._issues.filter(issue => issue.status.name === "Done");}
+    get completedStoryPoints(){return this.completedStories.reduce((sum, issue) => acc + issue.storyPoints);}
 
     get issues(){return this._issues;}
     set issues(issues){this._issues = issues;}
@@ -107,51 +110,66 @@ class Issues {
 
 class Epic {
     constructor(data){
-        this._id = data.id;
+        this._id = parseInt(data.id);
         this._name = data.name;
         this._summary = data.summary;
         this._url = data.self;
     }
+    get issues(){return jiraRepo._issues.getFilteredIssues(issue => issue.epic.id === this.id);}
+    get totalStories(){return this.issues.count();}
 
-    get issues(){return this._jiraRepo.issues.getFilteredIssues(this.filterByEpic);}
-    filterByEpic(){};
     get id(){return this._id;}
     get name(){return this._name;}
     get summary(){return this._summary;}
     get url(){return this._url;}
+
+    get totalStories(){return this.issues.count();}
+    get totalStoryPoints(){return this.issues.reduce((sum, issue) => acc + issue.storyPoints);}
+    get completedStories(){return this.issues.filter(issue => issue.status.name === "Done");}
+    get completedStoryPoints(){return this.completedStories.reduce((sum, issue) => acc + issue.storyPoints);}
+
 }
 
 class Epics {
     constructor(data) {
-        this._epics = data.forEach(epic => new Epic(epic));
+        this._epics = data.map(epic => new Epic(epic));
     }
 }
 
 class Sprint {
     constructor(data){
-        this._id = data.id;
+        this._id = parseInt(data.id);
         this._name = data.name;
         this._summary = data.summary;
         this._url = data.self;
         this._goal = data.goal;
+        this._state = data.state;
 
     }
 
-    get issues(){return jiraRepo._issues.getFilteredIssues(issue => issue.sprint.id == id);}
+    get issues(){return jiraRepo._issues.getFilteredIssues(issue => issue.sprint === this.id);}
     get blockers(){return jiraRepo._issues.getFilteredIssues( issue => issue.status === "Blocked");}
+    get totalBlockers(){return this.blockers.length;}
+    get totalStories(){return this.issues.length;}
+    get totalStoryPoints(){return this.issues.reduce((sum, issue) => {return sum + issue.storyPoints;}, 0);}
+    get completedStories(){return this.issues.filter(issue => issue.status === "Done");}
+    get completedStoryPoints(){return this.completedStories.reduce((sum, issue) => {return sum + issue.storyPoints;}, 0);}
+
     get id(){return this._id;}
     get name(){return this._name;}
     get summary(){return this._summary;}
     get url(){return this._url;}
     get goal(){return this._goal;}
+    get state(){return this._state;}
 }
 
 class Sprints {
     constructor(data) {
-        this._sprints = data.forEach(sprint => new Sprint(sprint));
+        this._sprints = data.map(sprint => new Sprint(sprint));
     }
 
     get activeSprint() {return this._sprints.find(sprint => sprint.state === "active");}
+    get previousSprint() {return this._sprints.find(sprint => sprint.id === (this.activeSprint.id - 1));}
     get futureSprints() {return this._sprints.filter(sprint => sprint.state === "future");}
     get completedSprints() {return this._sprints.filter(sprint => sprint.state === "completed");}
 }
@@ -159,7 +177,6 @@ class Sprints {
 class JiraRepo {
 
     constructor(data) {
-
         this._issues = new Issues(data.issues.issues);
         this._sprints = new Sprints(data.sprints.values);
         this._epics = new Epics(data.epics.values);
@@ -169,6 +186,7 @@ class JiraRepo {
 
     get backlog(){return this._issues.issues.getFilteredIssues(issue => issue.sprint.id === null);}
     get activeSprint(){return this._sprints.activeSprint;}
+    get previousSprint(){return this._sprints.previousSprint;}
     get futureSprints(){return this._sprints.futureSprints;}
     get completedSprints(){return this._sprints.completedSprints;}
 

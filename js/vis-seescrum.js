@@ -1,11 +1,12 @@
 /*jshint esversion: 6 */
 /*globals d3,$,eventHandler:false */
 class SeeScrum {
-    constructor(svg, issueStore, scrumTextStore, retroStore) {
+    constructor(svg, issueStore, scrumTextStore, retroStore, jiraRepo) {
         this.svg = svg;
         this._scrumTextStore = scrumTextStore;
         this._issueStore = issueStore;
         this._retroStore = retroStore;
+        this._jiraRepo = jiraRepo;
 
         this.drawScrumDiagram();
     }
@@ -710,8 +711,8 @@ class SeeScrum {
     }
 
     setSummaryStats(){
-        const activeSprint = this.issueStore.activeSprint;
-        const velocity = this.issueStore.previousSprint.completedStoryPoints;
+        const activeSprint = this.jiraRepo.activeSprint;
+        const velocity = this.jiraRepo.previousSprint.completedStoryPoints;
 
         document.querySelector("#scrum-velocity").innerText = velocity + " story points";
         document.querySelector("#total-blockers").innerText = activeSprint.totalBlockers;
@@ -719,6 +720,8 @@ class SeeScrum {
 
     }
 
+    get jiraRepo(){return this._jiraRepo};
+    
     populateSprintSelector() {
         const selectorElem = document.querySelector("#sprint-selector");
 
