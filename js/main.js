@@ -2,6 +2,7 @@
 /*globals d3,$,eventHandler:false */
 let eventHandler = {};
 const useSampleData = false;
+let jiraRepo = null;
 
 document.addEventListener("DOMContentLoaded", () => {
 
@@ -21,7 +22,7 @@ function visualize(error, jiraData, scrumText, retroData, issuesData, epicsData,
         console.log(issuesData);
         console.log(epicsData);
         console.log(sprintsData);
-        console.log(versionsData);
+        console.log(issuesData.issues[10].fields.customfield_10020);
 
         //Get all issues for a epic with getEpicsUrl + [epicId] + issue
         //https://seescrum.atlassian.net/rest/agile/latest/board/1/epic/10093/issue
@@ -39,8 +40,6 @@ function visualize(error, jiraData, scrumText, retroData, issuesData, epicsData,
                 "getBacklogUrl": "https://seescrum.atlassian.net/rest/agile/latest/board/1/backlog/",
                 "getVersionsUrl": "https://seescrum.atlassian.net/rest/agile/latest/board/1/version/",
 
-                "sprintField": "customfield_10020",
-                "storyPointField": "customfield_10026",
                 "priorities": [],
                 "components": [],
                 "issueTypes": [],
@@ -54,7 +53,10 @@ function visualize(error, jiraData, scrumText, retroData, issuesData, epicsData,
                 "refdata": refData
         }
 
-        const jiraRepo = new JiraRepo(jiraRepoData);
+        jiraRepo = new JiraRepo(jiraRepoData);
+        console.log(jiraRepo.issues);
+        console.log(jiraRepo.epics);
+        console.log(jiraRepo.sprints);
 
         const issueStore = (useSampleData ? new IssueStore(jiraData) : new IssueStore(jiraData, "customfield_10020", "customfield_10028" )) ;
         const scrumTextStore = new ScrumTextStore(scrumText);
@@ -76,7 +78,7 @@ function visualize(error, jiraData, scrumText, retroData, issuesData, epicsData,
         const svgRetro = new Svg("#retrospective-chart", 0, 0, marginRetro);
         const svgEmployee = new Svg("#employee-chart", width, height, margin);
 
-        const visScrumSee = new SeeScrum(svgScrumSee, issueStore, scrumTextStore, retroStore);
+        const visScrumSee = new SeeScrum(svgScrumSee, issueStore, scrumTextStore, retroStore, jiraRepo);
         const visVelocity = new VelocityChart2(issueStore, svgVelocity, colorScheme, eventHandler);
         const visStory = new StoryChart2(issueStore, svgStory);
         const visScope = new ScopeChart(issueStore, svgScope, visStory,'', colorScheme, eventHandler);
