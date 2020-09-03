@@ -22,7 +22,6 @@ function visualize(error, jiraData, scrumText, retroData, issuesData, epicsData,
         console.log(issuesData);
         console.log(epicsData);
         console.log(sprintsData);
-        console.log(issuesData.issues[10].fields.customfield_10020);
 
         //Get all issues for a epic with getEpicsUrl + [epicId] + issue
         //https://seescrum.atlassian.net/rest/agile/latest/board/1/epic/10093/issue
@@ -38,12 +37,7 @@ function visualize(error, jiraData, scrumText, retroData, issuesData, epicsData,
                 "getIssuesWithoutEpicUrl": "https://seescrum.atlassian.net/rest/agile/latest/board/1/epic/none/issue",
                 "getSprintsUrl": "https://seescrum.atlassian.net/rest/agile/latest/board/1/sprint/",
                 "getBacklogUrl": "https://seescrum.atlassian.net/rest/agile/latest/board/1/backlog/",
-                "getVersionsUrl": "https://seescrum.atlassian.net/rest/agile/latest/board/1/version/",
-
-                "priorities": [],
-                "components": [],
-                "issueTypes": [],
-                "statuses": []
+                "getVersionsUrl": "https://seescrum.atlassian.net/rest/agile/latest/board/1/version/"
         }
         const jiraRepoData = {
                 "issues": issuesData,

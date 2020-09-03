@@ -420,7 +420,7 @@ class SeeScrum {
             .attr("fill", this.arrowColor)
             .attr('marker-start', 'url(#marker-arrow)' );
 
-        const sprintName = this.issueStore.activeSprint.name;
+        const sprintName = this.jiraRepo.activeSprint.name;
 
 //Create an SVG path (based on bl.ocks.org/mbostock/2565344)
         g.append("path")
@@ -502,10 +502,11 @@ class SeeScrum {
     }
 
     renderRectText(){
-        const activeSprint = this.issueStore.activeSprint;
+        const activeSprint = this.jiraRepo.activeSprint;
         const committed = activeSprint.totalStoryPoints;
         const completed = activeSprint.completedStoryPoints;
-        const backlogStoryCount = this.issueStore.getIssues().length;
+        const backlogStoryCount = this.jiraRepo.backlog.length +
+            this.jiraRepo.futureSprints.reduce((sum, sprint) => sum + sprint.issues.length, 0);
         const averageHappiness = this.retroStore.getSprintHappiness(activeSprint).toFixed(2);
         const totalAlerts = activeSprint.totalAlerts;
         const burndownPct =  (100 * completed / committed).toFixed()+"%";
@@ -685,7 +686,7 @@ class SeeScrum {
         
         circleText.exit().remove();
 
-        const sprint = this.issueStore.activeSprint;
+        const sprint = this.jiraRepo.activeSprint;
 
         const data = this.sprintArcData[0];
         const g = this.svg.svg.append('g')
@@ -725,8 +726,8 @@ class SeeScrum {
     populateSprintSelector() {
         const selectorElem = document.querySelector("#sprint-selector");
 
-        const sprints = this.issueStore.getSprints();
-        sprints.forEach((sprint)=> {
+        const sprints = this.jiraRepo.sprints;
+        sprints.sprints.forEach((sprint)=> {
             const optionElement = document.createElement("option");
             optionElement.value= sprint.id;
             selectorElem.appendChild(optionElement);
@@ -750,7 +751,7 @@ class SeeScrum {
             window.open("https://seescrum.atlassian.net/secure/RapidBoard.jspa?projectKey=JV&rapidView=1&view=reporting&chart=velocityChart", "_blank");
         };
 
-        const activeSprint = this.issueStore.activeSprint;
+        const activeSprint = this.jiraRepo.activeSprint;
         document.querySelector("#blockers-card").onclick = () => {
             window.open("https://seescrum.atlassian.net/issues/?jql=project%20%3D%20JV%20and%20status%20%3D%20Blocked%20and%20sprint%3D" + activeSprint.id, "_blank");
         };
