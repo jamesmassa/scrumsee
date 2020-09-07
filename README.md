@@ -1,6 +1,6 @@
-# ScrumSee
+# See Scrum
 
-The ScrumSee tool helps teams follow the scrum process and highlights actionable insights about the health of their team and their sprints. ScrumSee leverages the universal Scrum diagram to model the full Scrum process and it encourages the team to explore with interactive visualizations.
+The See Scrum tool helps teams follow the scrum process and highlights actionable insights about the health of their team and their sprints. ScrumSee leverages the universal Scrum diagram to model the full Scrum process and it encourages the team to explore with interactive visualizations.
 
 This GitHub repository contains all of the files for this project. The contents are explained 
 below:
