@@ -13,15 +13,22 @@ document.addEventListener("DOMContentLoaded", () => {
         .defer(d3.json, "data/jira-epics.json")
         .defer(d3.json, "data/jira-sprints.json")
         .defer(d3.json, "data/jira-versions.json")
+        .defer(d3.json, "data/git-commits.json")
+        .defer(d3.json, "data/git-languages.json")
+        .defer(d3.json, "data/git-contributors.json")
         .await(visualize);
 });
 
-function visualize(error, jiraData, scrumText, retroData, issuesData, epicsData, sprintsData, versionsData) {
+function visualize(error, jiraData, scrumText, retroData, issuesData, epicsData, sprintsData, versionsData, commitData, languageData, contributorData) {
 
         console.log(issuesData);
         console.log(epicsData);
         console.log(sprintsData);
 
+        console.log(commitData);
+        console.log(languageData);
+        console.log(contributorData);
+        
         //Get all issues for a epic with getEpicsUrl + [epicId] + issue
         //https://seescrum.atlassian.net/rest/agile/latest/board/1/epic/10093/issue
 
@@ -71,7 +78,7 @@ function visualize(error, jiraData, scrumText, retroData, issuesData, epicsData,
         const svgRetro = new Svg("#retrospective-chart", 0, 0, marginRetro);
         const svgEmployee = new Svg("#employee-chart", width, height, margin);
 
-        const visScrumSee = new SeeScrum(svgScrumSee, issueStore, scrumTextStore, retroStore, jiraRepo);
+        const visSeeScrum = new SeeScrum(svgScrumSee, issueStore, scrumTextStore, retroStore, jiraRepo);
         const visVelocity = new VelocityChart2(issueStore, svgVelocity, colorScheme, eventHandler);
         const visStory = new StoryChart2(issueStore, svgStory);
         const visScope = new ScopeChart(issueStore, svgScope, visStory,'', colorScheme, eventHandler);
@@ -82,7 +89,7 @@ function visualize(error, jiraData, scrumText, retroData, issuesData, epicsData,
             'resize.' + svgScrumSee.containerElem.attr('id'),
             () => {
                     svgScrumSee.width = parseInt(svgScrumSee.containerElem.style('width'));
-                    visScrumSee.drawScrumDiagram();
+                    visSeeScrum.drawScrumDiagram();
             }
         );
 
