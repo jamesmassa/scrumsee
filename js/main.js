@@ -1,15 +1,14 @@
 /*jshint esversion: 6 */
 /*globals d3,$,eventHandler:false */
 let eventHandler = {};
-const useSampleData = false;
 let jiraRepo = null;
 
 document.addEventListener("DOMContentLoaded", () => {
 
     queue()
-        .defer(d3.json, (useSampleData ? "data/CFX-data-scrubbed.json" : "data/JV-12-7-19.json"))
+        .defer(d3.json, "data/JV-12-7-19.json")
         .defer(d3.json, "data/scrum-process.json")
-        .defer(d3.json, "data/metrics.json")
+        .defer(d3.json, "data/retrospective-scores.json")
         .defer(d3.json, "data/jira-issues.json")
         .defer(d3.json, "data/jira-epics.json")
         .defer(d3.json, "data/jira-sprints.json")
@@ -52,7 +51,7 @@ function visualize(error, jiraData, scrumText, retroData, issuesData, epicsData,
         console.log(jiraRepo.epics);
         console.log(jiraRepo.sprints);
 
-        const issueStore = (useSampleData ? new IssueStore(jiraData) : new IssueStore(jiraData, "customfield_10020", "customfield_10028" )) ;
+        const issueStore = ( new IssueStore(jiraData, "customfield_10020", "customfield_10028" )) ;
         const scrumTextStore = new ScrumTextStore(scrumText);
         const retroStore = new RetroStore(retroData);
 
