@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Flack Project 2 CSCI-s33a</title>
+        <script src="{{ url_for('static', filename='register.js') }}"></script>
+        <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    </head>
+    <body>
+        <h1> New User Registration</h1>
+        <form action="{{ url_for('register') }}" method="post">
+            <p><input type="text" name="displayname" placeholder="Display Name"><p>
+            <p><button>Register</button></p>
+        </form>
+    </body>
+</html>
