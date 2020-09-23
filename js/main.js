@@ -2,6 +2,7 @@
 /*globals d3,$,eventHandler:false */
 let eventHandler = {};
 let jiraRepo = null;
+let gitRepo = null;
 
 document.addEventListener("DOMContentLoaded", () => {
 
@@ -43,7 +44,10 @@ function visualize(error, jiraData, scrumText, retroData, issuesData, epicsData,
                 "getIssuesWithoutEpicUrl": "https://seescrum.atlassian.net/rest/agile/latest/board/1/epic/none/issue",
                 "getSprintsUrl": "https://seescrum.atlassian.net/rest/agile/latest/board/1/sprint/",
                 "getBacklogUrl": "https://seescrum.atlassian.net/rest/agile/latest/board/1/backlog/",
-                "getVersionsUrl": "https://seescrum.atlassian.net/rest/agile/latest/board/1/version/"
+                "getVersionsUrl": "https://seescrum.atlassian.net/rest/agile/latest/board/1/version/",
+                "getCommitsUrl": "https://api.github.com/repos/jamesmassa/scrumsee/commits",
+                "getLanguagesUrl": "https://api.github.com/repos/jamesmassa/scrumsee/languages",
+                "getContributorsUrl": "https://api.github.com/repos/jamesmassa/scrumsee/contributors"
         }
         const jiraRepoData = {
                 "issues": issuesData,
@@ -57,6 +61,17 @@ function visualize(error, jiraData, scrumText, retroData, issuesData, epicsData,
         console.log(jiraRepo.issues);
         console.log(jiraRepo.epics);
         console.log(jiraRepo.sprints);
+
+        const gitRepoData = {
+                "commits": commitData,
+                "languages": languageData,
+                "contributors": contributorData
+        }
+
+        gitRepo = new GitRepo(gitRepoData);
+        console.log(gitRepo.commits);
+        console.log(gitRepo.languages);
+        console.log(gitRepo.contributors);
 
         const issueStore = ( new IssueStore(jiraData, "customfield_10020", "customfield_10028" )) ;
         const scrumTextStore = new ScrumTextStore(scrumText);
