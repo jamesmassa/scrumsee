@@ -95,10 +95,7 @@ function visualize(error, jiraData, scrumText, retroData, issuesData, epicsData,
 
         const visSeeScrum = new SeeScrum(svgScrumSee, issueStore, scrumTextStore, retroStore, jiraRepo);
         const visVelocity = new VelocityChart2(issueStore, svgVelocity, colorScheme, eventHandler);
-        const visStory = new StoryChart2(issueStore, svgStory);
-        const visScope = new ScopeChart(issueStore, svgScope, visStory,'', colorScheme, eventHandler);
         new RetroChart(retroData.slice(16,21), svgRetro);
-        new EmployeeChart2(issueStore, svgEmployee);
 
         d3.select(window).on(
             'resize.' + svgScrumSee.containerElem.attr('id'),
