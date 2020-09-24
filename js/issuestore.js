@@ -54,8 +54,8 @@
 
 const defaultSprintField = "customfield_10401";
 const defaultStoryPointField = "customfield_10003";
-const jiraBaseUrl = "https://seescrum.atlassian.net/";
-const plumpData = true;
+const jiraBaseUrl = "htßtps://seescrum.atlassian.net/";
+
 //count metrics
 const totalStoryPoints = "totalSprintStoryPoints";
 const completedStoryPoints = "completedSprintStoryPoints";
@@ -117,8 +117,6 @@ class IssueStore {
             deserializeIssueDates(issue);
             //setup issue helper functions
             setIssueHelperProperties(issue, self.storyPointField);
-            //plump the data
-            if(plumpData) plumpIssue(issue);
 
             //get all possible values for priority, issuetype, and component
             if(! priorityIds[issue.fields.priority.id]) {

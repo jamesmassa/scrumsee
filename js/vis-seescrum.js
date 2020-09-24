@@ -32,7 +32,7 @@ class SeeScrum {
         const activeChart = document.querySelector(".active-chart");
         switch (d.name) {
             case "backlog":
-                window.open("https://seescrum.atlassian.net/secure/RapidBoard.jspa?rapidView=1&projectKey=JV&view=planning&selectedIssue=JV-122&epics=visible", "_blank");
+                window.open("https://seescrum.atlassian.net/secure/RapidBoard.jspa?rapidView=1&projectKey=SS&view=planning&&epics=visible", "_blank");
                 break;
             case "planning":
                 document.querySelectorAll(".velocity-selector").forEach(element => {
@@ -47,10 +47,10 @@ class SeeScrum {
                 velocityChart.className = velocityChart.className += " active-chart";
                 break;
             case "sprint-backlog":
-                window.open("https://seescrum.atlassian.net/secure/RapidBoard.jspa?rapidView=1&projectKey=JV", "_blank");
+                window.open("https://seescrum.atlassian.net/secure/RapidBoard.jspa?rapidView=1&projectKey=SS", "_blank");
                 break;
             case "increment":
-                window.open("https://seescrum.atlassian.net/issues/?jql=project%20%3D%20JV%20and%20status%20%3D%20Done%20and%20sprint%3D5", "_blank");
+                window.open("https://seescrum.atlassian.net/issues/?jql=project%20%3D%20SS%20and%20status%20%3D%20Done%20and%20sprint%3D" + this.jiraRepo.activeSprint.number, "_blank");
                 break;
             case "showcase":
                 break;
@@ -582,7 +582,7 @@ class SeeScrum {
     }
 
     handleFireClick(){
-        window.open("https://seescrum.atlassian.net/issues/?jql=project%20%3D%20JV%20and%20status%20%3D%20Done%20and%20sprint%3D5", "_blank");
+        window.open("https://seescrum.atlassian.net/issues/?jql=project%20%3D%20SS%20and%20status%20%3D%20Done%20and%20sprint%3D5", "_blank");
     }
 
     appendFaceIcon(g, averageHappiness) {
@@ -748,12 +748,12 @@ class SeeScrum {
         };
 
         document.querySelector("#velocity-card").onclick = () => {
-            window.open("https://seescrum.atlassian.net/secure/RapidBoard.jspa?projectKey=JV&rapidView=1&view=reporting&chart=velocityChart", "_blank");
+            window.open("https://seescrum.atlassian.net/secure/RapidBoard.jspa?projectKey=SS&rapidView=1&view=reporting&chart=velocityChart", "_blank");
         };
 
         const activeSprint = this.jiraRepo.activeSprint;
         document.querySelector("#blockers-card").onclick = () => {
-            window.open("https://seescrum.atlassian.net/issues/?jql=project%20%3D%20JV%20and%20status%20%3D%20Blocked%20and%20sprint%3D" + activeSprint.id, "_blank");
+            window.open("https://seescrum.atlassian.net/issues/?jql=project%20%3D%20SS%20and%20status%20%3D%20Blocked%20and%20sprint%3D" + activeSprint.id, "_blank");
         };
 
         const visualizations = document.querySelectorAll(".viz");
