@@ -93,6 +93,7 @@ class Epics {
 class Sprint {
     constructor(data){
         this._id = parseInt(data.id);
+        this._number = this.id + 1;
         this._name = data.name;
         this._summary = data.summary;
         this._url = data.self;
@@ -115,6 +116,7 @@ class Sprint {
     get completedStoryPoints(){return this.completedStories.reduce((sum, issue) => {return sum + issue.storyPoints;}, 0);}
 
     get id(){return this._id;}
+    get number(){return this._number;}
     get name(){return this._name;}
     get summary(){return this._summary;}
     get url(){return this._url;}
@@ -137,7 +139,7 @@ class Sprints {
         this._sprints = data.map(sprint => new Sprint(sprint));
     }
 
-    get activeSprint() {return this._sprints.find(sprint => sprint.state === "active");}
+    get activeSprint() {return this._sprints.find(sprint => sprint.state === "active") ;}
     get previousSprint() {return this._sprints.find(sprint => sprint.id === (this.activeSprint.id - 1));}
     get futureSprints() {return this._sprints.filter(sprint => sprint.state === "future");}
     get completedSprints() {return this._sprints.filter(sprint => sprint.state === "completed");}

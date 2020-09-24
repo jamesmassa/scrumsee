@@ -126,11 +126,6 @@ LineChart.prototype.initVis = function(){
         .attr("y", -20)
         .text("Rating");
 
-    /*vis.svg.append("text")
-        .attr("class", "label")
-        .attr("y", vis.height+40)
-        .attr("x", vis.width)
-        .text("Sprint");*/
 
     // Tool tip
     vis.svg.append("text")
