@@ -1,10 +1,10 @@
 /*jshint esversion: 6 */
 /*globals d3,$,eventHandler:false */
 class SeeScrum {
-    constructor(svg, issueStore, scrumTextStore, retroStore, jiraRepo) {
+
+    constructor(svg, scrumTextStore, retroStore, jiraRepo) {
         this.svg = svg;
         this._scrumTextStore = scrumTextStore;
-        this._issueStore = issueStore;
         this._retroStore = retroStore;
         this._jiraRepo = jiraRepo;
 
@@ -774,7 +774,6 @@ class SeeScrum {
     get rectData(){return this._rectData;}
     set rectData(rectData){this._rectData = rectData;}
 
-    get issueStore(){return this._issueStore;}
     get scrumTextStore(){return this._scrumTextStore;}
     get retroStore(){return this._retroStore;}
 }

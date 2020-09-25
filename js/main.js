@@ -77,23 +77,16 @@ function visualize(error, jiraData, scrumText, retroData, issuesData, epicsData,
         const scrumTextStore = new ScrumTextStore(scrumText);
         const retroStore = new RetroStore(retroData);
 
-        const margin = {top: 0, right: 0, bottom: 0, left: 0};
         const marginScrumSee = { top: 0, right: 0, bottom: 0, left: 0 };
-        const marginScope = { top: 0, right: 0, bottom: 0, left: 0 };
         const marginRetro = { top: 0, right: 0, bottom: 0, left: 0 };
         const marginVelocity = { top: 0, right: 0, bottom: 0, left: 0 };
-        const width = 0;
-        const height = 0;
         const colorScheme = scrumColorScheme;
 
         const svgScrumSee = new Svg("#scrumsee-svg", 1400, 210, marginScrumSee);
-        const svgVelocity = new Svg("#velocity-chart",  800, 400, marginVelocity);
-        const svgScope = new Svg("#scope-chart", width/2, height, marginScope);
-        const svgStory = new Svg("#story-chart", width/2, height, margin);
         const svgRetro = new Svg("#retrospective-chart", 0, 0, marginRetro);
-        const svgEmployee = new Svg("#employee-chart", width, height, margin);
+        const svgVelocity = new Svg("#velocity-chart",  800, 400, marginVelocity);
 
-        const visSeeScrum = new SeeScrum(svgScrumSee, issueStore, scrumTextStore, retroStore, jiraRepo);
+        const visSeeScrum = new SeeScrum(svgScrumSee, scrumTextStore, retroStore, jiraRepo);
         const visVelocity = new VelocityChart2(issueStore, svgVelocity, colorScheme, eventHandler);
         new RetroChart(retroData.slice(16,21), svgRetro);
 
@@ -109,20 +102,17 @@ function visualize(error, jiraData, scrumText, retroData, issuesData, epicsData,
         $(eventHandler).bind("selectedIssuePropertyChange", function(event, selection) {
                 issueStore.onSelectedIssuePropertyChange(selection, function () {
                         visVelocity.onSelectedLayerChange(selection);
-                        visScope.onSelectedPropertyChange();
                 });
         });
 
         $(eventHandler).bind("selectedSprintChange", (event, selection) => {
                 issueStore.onSelectedSprintChange(selection, ()=> {
-                        visScope.updateVis();
                         //todo update sprint cards
                 });
         });
 
         $(eventHandler).bind("selectedVisualizationChange", (event, selection) => {
                 if (selection === "velocity-visualization") visVelocity.onSelectedVisualizationChange();
-                else if (selection === "scope-visualization") visScope.onSelectedVisualizationChange();
 
         });
 

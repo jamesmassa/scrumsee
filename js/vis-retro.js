@@ -23,7 +23,7 @@ class RetroChart {
      */
 
     initVis() {
-        var vis = this;
+        let vis = this;
 
         // SVG margin convention
         vis.margin = {top: 70, right: 60, bottom: 50, left: 60};
@@ -49,10 +49,10 @@ class RetroChart {
         vis.splitData = [];
 
         vis.metrics.forEach(function (d) {
-            var subset = vis.data.map(function (e) {
+            let subset = vis.data.map(function (e) {
                 return e[d];
             });
-            var obj = {};
+            let obj = {};
             obj[d] = subset;
             vis.splitData.push(obj);
         });
@@ -85,11 +85,10 @@ class RetroChart {
         vis.xAxis = d3.axisBottom()
             .scale(vis.x)
             .tickFormat(function (d) {
-                var lab = "Sprint " + (d + 1)
+                let lab = "Sprint " + (d + 1)
                 if ((d + 1) == vis.data.length) {
                     lab += " (Active)";
                 }
-                ;
                 return lab;
             })
             .ticks(vis.data.length - 1);
@@ -142,7 +141,7 @@ class RetroChart {
                 return vis.x(i);
             })
             .y(function (d, i) {
-                var tot = d.reduce(function (a, b) {
+                let tot = d.reduce(function (a, b) {
                     return a + b;
                 });
                 return vis.y(tot / d.length);
@@ -151,14 +150,14 @@ class RetroChart {
 
         vis.svg.selectAll(".dotG")
             .data(function (d) {
-                var cat = d3.keys(d)[0];
+                let cat = d3.keys(d)[0];
                 return d[cat];
             })
             .enter()
             .append("g")
             .attr("class", function (d) {
-                var cat = d3.select(this.parentNode.parentNode).attr("class").split(" ")[1];
-                var tot = d.reduce(function (a, b) {
+                let cat = d3.select(this.parentNode.parentNode).attr("class").split(" ")[1];
+                let tot = d.reduce(function (a, b) {
                     return a + b;
                 });
                 return "dotG " + cat + " " + tot / d.length;
@@ -174,11 +173,11 @@ class RetroChart {
             .enter()
             .append("circle")
             .attr("class", function (d) {
-                var cat = d3.select(this.parentNode.parentNode.parentNode).attr("class").split(" ")[1];
+                let cat = d3.select(this.parentNode.parentNode.parentNode).attr("class").split(" ")[1];
                 return "spots " + cat;
             })
             .attr("cy", function (d) {
-                var mean = d3.select(this.parentNode).attr("class").split(" ")[2];
+                let mean = d3.select(this.parentNode).attr("class").split(" ")[2];
                 return vis.y(mean);
             })
             .attr("r", 5)
@@ -190,11 +189,11 @@ class RetroChart {
         // Create path, circles, and legend for each metric
         vis.svg.append("path")
             .datum(function (d) {
-                var cat = d3.keys(d)[0];
+                let cat = d3.keys(d)[0];
                 return d[cat]
             })
             .attr("class", function (d) {
-                var cat = d3.select(this.parentNode.parentNode).attr("class").split(" ")[1];
+                let cat = d3.select(this.parentNode.parentNode).attr("class").split(" ")[1];
                 return "lines " + cat;
             })
             .attr("stroke-width", 2)
@@ -206,20 +205,20 @@ class RetroChart {
 
         vis.svg.selectAll(".dots")
             .data(function (d) {
-                var cat = d3.keys(d)[0];
+                let cat = d3.keys(d)[0];
                 return d[cat];
             })
             .enter()
             .append("circle")
             .attr("class", function (d) {
-                var cat = d3.select(this.parentNode.parentNode).attr("class").split(" ")[1];
+                let cat = d3.select(this.parentNode.parentNode).attr("class").split(" ")[1];
                 return "dots " + cat;
             })
             .attr("cx", function (d, i) {
                 return vis.x(i);
             })
             .attr("cy", function (d, j) {
-                var tot = d.reduce(function (a, b) {
+                let tot = d.reduce(function (a, b) {
                     return a + b;
                 });
                 return vis.y(tot / d.length)
@@ -258,8 +257,8 @@ class RetroChart {
 
         // Transition functions
         function split() {
-            var delay = 500;
-            var cat = d3.select(this).attr("class").split(" ")[1];
+            let delay = 500;
+            let cat = d3.select(this).attr("class").split(" ")[1];
             $(".fit." + cat).show();
             d3.select(".fit." + cat)
                 .transition()
@@ -283,8 +282,8 @@ class RetroChart {
         }
 
         function unsplit() {
-            var delay = 500;
-            var cat = d3.select(this).attr("class").split(" ")[1];
+            let delay = 500;
+            let cat = d3.select(this).attr("class").split(" ")[1];
             d3.select(".fit." + cat)
                 .transition()
                 .duration(delay)
@@ -300,7 +299,7 @@ class RetroChart {
                 .transition()
                 .duration(delay)
                 .attr("cy", function (d) {
-                    var mean = d3.select(this.parentNode).attr("class").split(" ")[2];
+                    let mean = d3.select(this.parentNode).attr("class").split(" ")[2];
                     return vis.y(mean);
                 });
             $(".lines." + cat).delay(delay).show(0);
@@ -354,27 +353,27 @@ class RetroChart {
      * Regression Function
      */
     regress(feedback) {
-        var vis = this;
+        let vis = this;
 
-        var n = feedback.length;
-        var y = feedback.map(function (data) {
-            var tot = data.reduce(function (a, b) {
+        let n = feedback.length;
+        let y = feedback.map(function (data) {
+            let tot = data.reduce(function (a, b) {
                 return a + b
             });
             return tot / data.length;
         });
-        var x = d3.range(n);
+        let x = d3.range(n);
 
-        var x_bar = x.reduce(function (a, b) {
+        let x_bar = x.reduce(function (a, b) {
             return a + b;
         }) / n;
-        var y_bar = y.reduce(function (a, b) {
+        let y_bar = y.reduce(function (a, b) {
             return a + b;
         }) / n;
 
-        var divisor = 0;
-        var dividend = 0;
-        for (var i = 0; i < n; i++) {
+        let divisor = 0;
+        let dividend = 0;
+        for (let i = 0; i < n; i++) {
 
             let xr = x[i] - x_bar;
             let yr = y[i] - y_bar;
@@ -382,8 +381,8 @@ class RetroChart {
             dividend += xr * xr;
         }
 
-        var b1 = divisor / dividend;
-        var b0 = y_bar - (b1 * x_bar);
+        let b1 = divisor / dividend;
+        let b0 = y_bar - (b1 * x_bar);
 
         return [0, n - 1, b0, b1 * (n - 1) + b0];
     };
