@@ -1,6 +1,5 @@
 
-//TODO:  Use the svg object passed from RetroChart instead of creating another
-//TODO:  Use the retroStore Object instead of creating another
+//TODO:  Use the svg object passed from RetroChart instead of creating another svg
 
 class RetroChart {
     constructor(data, svg) {

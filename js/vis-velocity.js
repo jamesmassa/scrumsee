@@ -1,9 +1,7 @@
 /*jshint esversion: 6 */
 /*globals d3,$,eventHandler:false */
 
-//TODO:  Merge VelocityChart functions into VelocityChart2 class
-//TODO:  Use the svg object passed from VelocityChart2 instead of creating another svg
-//TODO:  Replace vis with this keyword
+//TODO:  Use the svg object passed from VelocityChart instead of creating another svg
 //TODO:  Change to bar chart
 //TODO:  Autosize to fit in area below the Scrum Diagram
 //TODO:  Repoint to JiraRepo and decommission issuestore
@@ -13,7 +11,7 @@
 // https://d3-legend.susielu.com/
 
 
-class VelocityChart2 {
+class VelocityChart {
     constructor(data, svg, colorScheme, eventHandler) {
         this._data = data;
         this._svg = svg;
@@ -21,8 +19,7 @@ class VelocityChart2 {
 
         this.parentElement = this.svg.container.substr(1);
         this.issueStore = this.data;
-        //this.eventHandler = eventHandler;
-        //this.svg = svg;
+
         this.margin = this.svg.margin;
         this.height = this.svg.height;
         this.width = this.svg.width;
@@ -44,21 +41,9 @@ class VelocityChart2 {
 
     get eventHandler() {return this._eventHandler;}
 
-    onSelectedLayerChange(selection) {
-        this.onSelectedLayerChange(selection);
-    }
-
-    onSelectedVisualizationChange() {
-        this.onSelectedVisualizationChange();
-    }
-
 
     initVis() {
         const vis = this;
-        //let processingData = true;
-
-        //inject template html
-        document.getElementById(vis.parentElement).innerHTML = velocityHtml;
 
         //initialize initial data
         //TODO: filter by selected time band
@@ -99,12 +84,10 @@ class VelocityChart2 {
 
 
         // Scales and axes
-        vis.xRange = splitRange([0, vis.width], vis.displayData.length);
+        vis.xRange = this.splitRange([0, vis.width], vis.displayData.length);
         vis.x = d3.scaleOrdinal()
             .range(vis.xRange)
-            .domain(vis.displayData.map(function (d) {
-                return d.name;
-            }));
+            .domain(vis.displayData.map( d => d.name));
 
         vis.y = d3.scaleLinear()
             .range([vis.height, 0]);
@@ -183,11 +166,7 @@ class VelocityChart2 {
 
         const stack = d3.stack()
             .keys(vis.colorScale.domain())
-            .value(function (d, key) {
-                //console.log(d);
-                //console.log(d[vis.currentMetric][vis.currentLayer])
-                return d[vis.currentMetric][vis.currentLayer][key];
-            });
+            .value( (d, key) => d[vis.currentMetric][vis.currentLayer][key]);
 
         // Stack data
         vis.stackedData = stack(vis.displayData);
@@ -224,12 +203,8 @@ class VelocityChart2 {
             .attr("class", "area")
             .merge(categories)
             .transition(1000)
-            .style("fill", function (d, i) {
-                return vis.colorScale(vis.issueStore.selectedIssueProperty[i]);
-            })
-            .attr("d", function (d) {
-                return vis.area(d);
-            });
+            .style("fill", (d, i) => vis.colorScale(vis.issueStore.selectedIssueProperty[i]))
+            .attr("d",  d => vis.area(d));
 
         categories.exit().remove();
 
@@ -267,12 +242,10 @@ class VelocityChart2 {
             .style("pointer-events", "all")
             .attr('width', vis.width)
             .attr('height', vis.height)
-            .on('mouseover', function () {
-                verticalLine.style("opacity", 1);
-            })
+            .on('mouseover',  () => verticalLine.style("opacity", 1))
             .on('mousemove', function () {
                 // recover coordinate we need
-                const i = findClosestPoint(vis.xRange, d3.mouse(this)[0]);
+                const i = this.findClosestPoint(vis.xRange, d3.mouse(this)[0]);
                 verticalLine
                     .attr("x1", vis.x(vis.stackedData[0][i].data.name))
                     .attr("y1", vis.y(vis.stackedData[vis.stackedData.length - 1][i][1]))
@@ -308,44 +281,43 @@ class VelocityChart2 {
     };
 
     onSelectedLayerChange(selection) {
-        const vis = this;
 
         switch (selection) {
             case "priorities":
-                vis.currentLayer = priorityLayer;
+                this.currentLayer = priorityLayer;
                 break;
             case "components":
-                vis.currentLayer = componentLayer;
+                this.currentLayer = componentLayer;
                 break;
             case "issueType":
-                vis.currentLayer = issueTypeLayer;
+                this.currentLayer = issueTypeLayer;
                 break;
         }
 
-        vis.wrangleData();
-        vis.issuePropertyControl.updateVis();
-        vis.updateVis();
+        this.wrangleData();
+        this.issuePropertyControl.updateVis();
+        this.updateVis();
 
     };
 
     onSelectedMetricChange(selection) {
-        const vis = this;
+
         switch (selection) {
             case "totalStoryPoints":
-                vis.currentMetric = totalStoryPoints;
+                this.currentMetric = totalStoryPoints;
                 break;
             case "completedStoryPoints":
-                vis.currentMetric = completedStoryPoints;
+                this.currentMetric = completedStoryPoints;
                 break;
             case "issueCount":
-                vis.currentMetric = issueCount;
+                this.currentMetric = issueCount;
                 break;
         }
         d3.select(".velocityMetric")
             .text(() => $("#issue-metric-selector option:selected").text());
 
-        vis.wrangleData();
-        vis.updateVis();
+        this.wrangleData();
+        this.updateVis();
     };
 
     onSelectedVisualizationChange() {
@@ -354,42 +326,23 @@ class VelocityChart2 {
         vis.updateVis();
     };
 
+    //Method that returns discrete values of a range given start, end, and # of values
+    splitRange(range, n) {
+        if(n <=2 ) return range;
+        const increment = (range[1] - range[0])/(n-1);
+        return d3.range(0,n).map( d => range[0] + d*increment);
+    };
+
+    findClosestPoint(range, value) {
+        let result = 0;
+        let min = 10000000;
+
+        range.forEach(function (d, i) {
+            if(Math.abs(d - value) < min) {
+                min = Math.abs(d - value);
+                result = i;
+            }
+        });
+        return result;
+    }
 }
-//Function that returns discrete values of a range given start, end, and # of values
-function splitRange(range, n) {
-    if(n <=2 ) return range;
-    const increment = (range[1] - range[0])/(n-1);
-    return d3.range(0,n).map(function (d) {
-        return range[0] + d*increment;
-    });
-}
-
-function findClosestPoint(range, value) {
-    let result = 0;
-    let min = 10000000;
-
-    range.forEach(function (d, i) {
-        if(Math.abs(d - value) < min) {
-            min = Math.abs(d - value);
-            result = i;
-        }
-    });
-    return result;
-
-}
-
-
-const velocityHtml = `
-<div class="container">
-    <div class="row">
-    <div class="col-md-2" id="velocityIssuePropertyLegend"></div>
-    <div class="col-md-1"></div>
-        <div class="col-md-9" >
-            <div class="row">
-                <div class="col-md-12" id="vis-velocity-chart"></div>
-            </div>
-        </div>
-    </div>
-</div>
-</div>
-`;

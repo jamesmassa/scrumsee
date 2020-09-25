@@ -87,7 +87,7 @@ function visualize(error, jiraData, scrumText, retroData, issuesData, epicsData,
         const svgVelocity = new Svg("#velocity-chart",  800, 400, marginVelocity);
 
         const visSeeScrum = new SeeScrum(svgScrumSee, scrumTextStore, retroStore, jiraRepo);
-        const visVelocity = new VelocityChart2(issueStore, svgVelocity, colorScheme, eventHandler);
+        const visVelocity = new VelocityChart(issueStore, svgVelocity, colorScheme, eventHandler);
         new RetroChart(retroData.slice(16,21), svgRetro);
 
         d3.select(window).on(
