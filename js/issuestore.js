@@ -86,20 +86,20 @@ class IssueStore {
 
         const allSprints = [];
         const sprintMap = [];
-        var priorities = [];
-        var priorityIds = [];
-        var issueTypeIds = [];
-        var issueTypes = [];
-        var componentIds = [];
-        var components = ["None"];
+        const priorities = [];
+        const priorityIds = [];
+        const issueTypeIds = [];
+        const issueTypes = [];
+        const componentIds = [];
+        const components = ["None"];
 
         self.issues.forEach(function (issue) {
             //skip cancelled issues
-            if(issue.fields.status.name == "Cancelled") return;
-            var sprints = issue.fields[self.sprintField];
+            if(issue.fields.status.name === "Cancelled") return;
+            let sprints = issue.fields[self.sprintField];
             if(sprints != null) {
                 sprints.forEach(function (sprint, index) {
-                    var deserializedSprint = deserializeSprint(sprint);
+                    let deserializedSprint = deserializeSprint(sprint);
                     //update the sprint to be the deserianlized version of the sprint
                     issue.fields[self.sprintField][index] = deserializedSprint;
 
@@ -161,7 +161,7 @@ class IssueStore {
         self.previousSprint = self.sprints[previousSprintIndex];
 
         allSprints.forEach(function (sprint) {
-            var sprintIssues = self.getIssuesForSprint(sprint);
+            let sprintIssues = self.getIssuesForSprint(sprint);
             setSprintHelperProperties(sprint, sprintIssues);
             sprint.issues = sprintIssues;
 
@@ -214,7 +214,7 @@ class IssueStore {
                 sprint[issueCount][issueTypeLayer][issue.fields.issuetype.name] += 1;
 
                 //Components
-                if(issue.fields.components.length == 0) {
+                if(issue.fields.components.length === 0) {
                     sprint[totalStoryPoints][componentLayer]["None"] += issue.storyPoints;
                     if(issue.isResolved) sprint[completedStoryPoints][componentLayer]["None"] += issue.storyPoints;
                     sprint[issueCount][componentLayer]["None"] += 1;
@@ -226,7 +226,7 @@ class IssueStore {
                     })
                 }
             });
-            if(sprint.state == "ACTIVE") {
+            if(sprint.state === "ACTIVE") {
                 self.activeSprint = sprint;
                 self.selectedSprint = sprint;
             }
@@ -256,19 +256,16 @@ class IssueStore {
     getSprints() {return this.sprints;}
     getIssues(){return this.issues;}
     getStoryPointField(){return this.storyPointField;}
-    getBacklogUrl(){
-        if (this.sprints.length <1) return jiraBaseUrl;
-        else return jiraBaseUrl + "secure/RapidBoard.jspa?view=planning.nodetail&rapidView=" + this.sprints[0].rapidViewId;
-    }
+
     getSprintUrlForSprint(sprint){
-        var sprintId;
+        let sprintId;
 
         if(! isNaN(sprint)) sprintId = sprint;
         else if (sprint.id != null) sprintId = sprint.id;
         else return jiraBaseUrl;
 
         const sprintObj = this.getSprints().find(function (d) {
-            return d.id == sprintId;
+            return d.id === sprintId;
         });
 
         if (sprintObj == null) return jiraBaseUrl;
@@ -276,19 +273,18 @@ class IssueStore {
         switch (sprintObj.state) {
             case "FUTURE":
                 return jiraBaseUrl + "secure/RapidBoard.jspa?view=planning.nodetail&rapidView=" + sprintObj.rapidViewId;
-                break;
+
             case "ACTIVE":
                 return jiraBaseUrl + "secure/RapidBoard.jspa?rapidView=" + sprintObj.rapidViewId;
-                break;
+
             case "CLOSED":
                 return jiraBaseUrl + "secure/RapidBoard.jspa?rapidView="+ sprintObj.rapidViewId
                     + "&view=reporting&chart=sprintRetrospective&sprint=" + sprintObj.id;
-                break;
         }
     }
 
     onSelectedIssuePropertyChange (selection, callback) {
-        var self = this;
+        const self = this;
         switch(selection) {
             case "priorities":
                 self.selectedIssueProperty = self.priorities;
@@ -304,36 +300,26 @@ class IssueStore {
     }
 
     onSelectedSprintChange (selection, callback) {
-        var self = this;
+        const self = this;
         //selection = sprint id
-        var newSprint = self.sprints.find((d) => (d.id == selection));
+        const newSprint = self.sprints.find((d) => (d.id === selection));
         if (newSprint != null) {
             self.selectedSprint = newSprint;
             callback();
         }
     }
-    
-    getSelectedIssuePropertyValue (issue) {
-        if (this.selectedIssueProperty == this.issueTypes) return issue.fields[issueTypeLayer].name;
-        else if (this.selectedIssueProperty == this.components) {
-            if(issue.fields[componentLayer] == null || issue.fields[componentLayer].length == 0) return "None";
-            else return issue.fields[componentLayer][0].name;
-        } else return issue.fields[priorityLayer].name;
-
-    }
-
 }
 
 function deserializeSprint(s) {
     if (s == null) return null;
 
-    var sprintData = s.match(/com.atlassian.greenhopper.service.sprint.Sprint@.*\[id=(\d+),rapidViewId=(\d+),state=([A-Z]+),name=(.*),goal=(.*),startDate=(.*),endDate=(.*),completeDate=(.*),sequence=(\d+)\]/);
+    let sprintData = s.match(/com.atlassian.greenhopper.service.sprint.Sprint@.*\[id=(\d+),rapidViewId=(\d+),state=([A-Z]+),name=(.*),goal=(.*),startDate=(.*),endDate=(.*),completeDate=(.*),sequence=(\d+)\]/);
     if (sprintData != null) {
         return { id: sprintData[1] != null ? +sprintData[1] : null,
             rapidViewId: sprintData[2] != null ? +sprintData[2] : null,
             state: sprintData[3] != null ? sprintData[3] : null,
             name: sprintData[4] != null ? sprintData[4] : null,
-            goal: sprintData[5] != null && sprintData[5].length != 0 ? sprintData[5] : null,
+            goal: sprintData[5] != null && sprintData[5].length !== 0 ? sprintData[5] : null,
             startDate: sprintData[6] != null ? parseDate(sprintData[6]) : null,
             endDate: sprintData[7] != null ? parseDate(sprintData[7]) : null,
             completeDate: sprintData[8] != null ? parseDate(sprintData[8]) : null,
@@ -351,7 +337,7 @@ function deserializeSprint(s) {
             endDate: sprintData[6] != null ? parseDate(sprintData[6]) : null,
             completeDate: sprintData[7] != null ? parseDate(sprintData[7]) : null,
             sequence: sprintData[8] != null ? +sprintData[8] : null,
-            goal: sprintData[9] != null && sprintData[9].length != 0 ? sprintData[9] : null
+            goal: sprintData[9] != null && sprintData[9].length !== 0 ? sprintData[9] : null
         };
     }
     if(sprintData == null) {
@@ -400,7 +386,7 @@ function setSprintHelperProperties(sprint, sprintIssues) {
             blockers += 1;
         }
 
-        if (issue.storyPoints == 0) {
+        if (issue.storyPoints === 0) {
             totalAlerts += 1;
         }
     });
