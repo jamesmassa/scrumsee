@@ -1,23 +1,17 @@
 /*jshint esversion: 6 */
 /*globals d3,$,eventHandler:false */
 
-//TODO:  clean up underscore member variable naming convention
 //TODO:  Change to bar chart
 //TODO:  Show/hide controls and chart and Retrospective when switching charts
 //TODO:  Autosize to fit in area below the Scrum Diagram
 //TODO:  Repoint to JiraRepo and decommission issuestore
-
-//references: https://wesbos.com/template-strings-html/ https://tntvis.github.io/tnt.tooltip/
-// https://codepen.io/ashokgowtham/pen/LpnHe lab6 https://www.d3-graph-gallery.com/graph/line_cursor.html
-// https://d3-legend.susielu.com/
-
 
 class VelocityChart {
     constructor(data, parentElement, colorScheme, eventHandler) {
         this._data = data;
         this._eventHandler = eventHandler;
 
-        this.parentElement = parentElement;
+        this._parentElement = parentElement;
         this.issueStore = this.data;
 
         this.margin = { top: 0, right: 0, bottom: 0, left: 0 };
@@ -42,6 +36,7 @@ class VelocityChart {
     set svg(svg){this._svg = svg;}
 
     get eventHandler() {return this._eventHandler;}
+    get parentElement() {return this._parentElement;}
 
 
     initVis() {
