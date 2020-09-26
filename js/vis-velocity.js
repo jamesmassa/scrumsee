@@ -1,8 +1,9 @@
 /*jshint esversion: 6 */
 /*globals d3,$,eventHandler:false */
 
-//TODO:  Use the svg object passed from VelocityChart instead of creating another svg
+//TODO:  clean up underscore member variable naming convention
 //TODO:  Change to bar chart
+//TODO:  Show/hide controls and chart and Retrospective when switching charts
 //TODO:  Autosize to fit in area below the Scrum Diagram
 //TODO:  Repoint to JiraRepo and decommission issuestore
 
@@ -12,18 +13,19 @@
 
 
 class VelocityChart {
-    constructor(data, svg, colorScheme, eventHandler) {
+    constructor(data, parentElement, colorScheme, eventHandler) {
         this._data = data;
-        this._svg = svg;
         this._eventHandler = eventHandler;
 
-        this.parentElement = this.svg.container.substr(1);
+        this.parentElement = parentElement;
         this.issueStore = this.data;
 
-        this.margin = this.svg.margin;
-        this.height = this.svg.height;
-        this.width = this.svg.width;
-        this.coloScheme = colorScheme;
+        this.margin = { top: 0, right: 0, bottom: 0, left: 0 };
+        this.height = (window.innerHeight / 3) ;
+        this.width = window.innerWidth;
+        this.svg = new Svg(this.parentElement, this.width, this.height, this.margin).svg;
+
+        this.colorScheme = colorScheme;
 
         this.priorities = this.issueStore.priorities;
         this.issueTypes = this.issueStore.issueTypes;
@@ -62,15 +64,6 @@ class VelocityChart {
         //set default layer
         vis.currentLayer = priorityLayer;
         vis.currentMetric = totalStoryPoints;
-
-        //vis.width = $("#vis-velocity-chart").width() - vis.margin.left - vis.margin.right;
-        vis.height = (window.innerHeight / 3) - vis.margin.top - vis.margin.bottom;
-
-        vis.svg = d3.select("#vis-velocity-chart").append("svg")
-            .attr("width", vis.width + vis.margin.left + vis.margin.right)
-            .attr("height", vis.height + vis.margin.top + vis.margin.bottom)
-            .append("g")
-            .attr("transform", "translate(" + vis.margin.left + "," + vis.margin.top + ")");
 
         // TO-DO: Overlay with path clipping
         vis.svg.append("defs").append("clipPath")
@@ -142,7 +135,7 @@ class VelocityChart {
             bottom: 0,
             left: 0
         });
-        vis.issuePropertyControl = new IssuePropertyControl(metricSvg.svg, vis.coloScheme, vis.eventHandler, vis.issueStore, "velocity-property-legend");
+        vis.issuePropertyControl = new IssuePropertyControl(metricSvg.svg, vis.colorScheme, vis.eventHandler, vis.issueStore, "velocity-property-legend");
 
         //add event handler
         $(vis.eventHandler).bind("selectedMetricChange", function (event, selection) {
@@ -158,7 +151,7 @@ class VelocityChart {
 
     wrangleData() {
         const vis = this;
-        vis.colorScale.range(vis.coloScheme.filter(function (d, i) {
+        vis.colorScale.range(vis.colorScheme.filter(function (d, i) {
             //needed as the legend needs the domain and range lengths to match
             return i < vis.issueStore.selectedIssueProperty.length;
         }));

@@ -79,15 +79,15 @@ function visualize(error, jiraData, scrumText, retroData, issuesData, epicsData,
 
         const marginScrumSee = { top: 0, right: 0, bottom: 0, left: 0 };
         const marginRetro = { top: 0, right: 0, bottom: 0, left: 0 };
-        const marginVelocity = { top: 0, right: 0, bottom: 0, left: 0 };
+        //const marginVelocity = { top: 0, right: 0, bottom: 0, left: 0 };
         const colorScheme = scrumColorScheme;
 
         const svgScrumSee = new Svg("#scrumsee-svg", 1400, 210, marginScrumSee);
         const svgRetro = new Svg("#retrospective-chart", 0, 0, marginRetro);
-        const svgVelocity = new Svg("#velocity-chart",  800, 400, marginVelocity);
+        //const svgVelocity = new Svg("#velocity-chart",  800, 400, marginVelocity);
 
         const visSeeScrum = new SeeScrum(svgScrumSee, scrumTextStore, retroStore, jiraRepo);
-        const visVelocity = new VelocityChart(issueStore, svgVelocity, colorScheme, eventHandler);
+        const visVelocity = new VelocityChart(issueStore, "#velocity-chart", colorScheme, eventHandler);
         new RetroChart(retroData.slice(16,21), svgRetro);
 
         d3.select(window).on(
