@@ -327,3 +327,5 @@ path.arc:hover {
     font-size: 12pt;
     font-weight: bold;
 }
+
+#chart-area {display: inline}
