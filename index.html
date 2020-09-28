@@ -270,6 +270,27 @@
 
       </main>
 
+      <div class="container">
+
+        <h1>Coffee House Chains</h1>
+        <h2>A ranking of selected leading coffee house chains worldwide</h2>
+
+        <!-- Select box to choose the ranking type -->
+        <form class="form-inline">
+          <div class="form-group">
+            <label for="ranking-type">Group by</label>
+            <select class="form-control" id="ranking-type">
+              <option value="stores">Stores worldwide</option>
+              <option value="revenue">Revenue in billion U.S. dollars</option>
+            </select>
+            <button type="button" class="btn btn-link" id="change-sorting"><i class="glyphicon glyphicon-sort"></i> Sort</button>
+          </div>
+        </form>
+
+        <!-- Parent container for the visualization -->
+        <div id="chart-area"></div>
+
+      </div>
 
 
       <footer class="sticky-footer bg-white">
@@ -307,12 +328,14 @@
   <script src="js/retrostore.js"></script>
   <script src="js/scrumstore.js"></script>
   <script src="js/svg.js"></script>
+  <script src="js/bar-chart.js"></script>
 
   <!-- Page level custom scripts -->
   <script src="js/issue-property-control.js"></script>
   <script src="js/vis-seescrum.js"></script>
   <script src="js/vis-velocity.js"></script>
   <script src="js/vis-retro.js"></script>
+
 
   <!-- Main script -->
   <script src="js/main.js"></script>

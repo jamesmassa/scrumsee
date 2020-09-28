@@ -3,6 +3,7 @@
 let eventHandler = {};
 let jiraRepo = null;
 let gitRepo = null;
+let barChart = null;
 
 document.addEventListener("DOMContentLoaded", () => {
 
@@ -18,7 +19,44 @@ document.addEventListener("DOMContentLoaded", () => {
         .defer(d3.json, "data/git-languages.json")
         .defer(d3.json, "data/git-contributors.json")
         .await(visualize);
+
+
+
+        const margin = {top: 40, right: 10, bottom: 60, left: 60};
+        const svg = new Svg2("#chart-area", 960, 500, margin);
+
+        const x = d3.scaleBand().rangeRound([0, svg.width]);
+        const y = d3.scaleLinear().range([svg.height, 0]);
+
+        d3.csv("data/coffee-house-chains.csv", (error, data) => {
+
+                data.forEach(d => {
+                        d.revenue = +d.revenue;
+                        d.stores = +d.stores;
+                });
+
+                console.log(data);
+
+                barChart = new BarChart(svg, data, x, y, "stores");
+                barChart.render();
+
+                d3.select("#change-sorting").on("click", () => {
+                        barChart.sortOrder = barChart.sortOrder == "descending" ? "ascending" : "descending";
+                        barChart.render();
+                });
+
+                d3.select("#ranking-type").on("change", () => {
+                        const rankingType = d3.select("#ranking-type").property("value");
+                        barChart.rankingType = rankingType;
+                        barChart.render();
+                });
+        });
+
+
+
 });
+
+
 
 function visualize(error, jiraData, scrumText, retroData, issuesData, epicsData, sprintsData, versionsData, commitData, languageData, contributorData) {
 
@@ -124,7 +162,6 @@ function visualize(error, jiraData, scrumText, retroData, issuesData, epicsData,
         d3.select("#issue-metric-selector").on("change", function () {
                 $(eventHandler).trigger("selectedMetricChange", d3.select("#issue-metric-selector").property("value"));
         });
-
 
 }
 
