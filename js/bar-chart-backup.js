@@ -32,12 +32,10 @@ class Svg2 {
 
 
 class BarChart {
-    constructor (svg, xScale, yScale, rankingType, jiraRepo){
+    constructor (svg, data, xScale, yScale, rankingType){
         this._svg = svg;
         this._rankingType = rankingType;
-
-        this._data = jiraRepo.sprints.sprints;
-
+        this._data = data;
         this._x = xScale;
         this._y = yScale;
         this._axisFontSize = "10px";
@@ -45,18 +43,17 @@ class BarChart {
         this._sortOrder = "descending";
         this._duration = 1000;
         this._initialized = false;
-
     }
 
     render() {
         this.sortData();
-        this._x.domain(this._data.map(d => d.number));
+        this._x.domain(this._data.map(d => d.company));
         this._xAxis = d3.axisBottom().scale(this._x);
-        this._y.domain([0, d3.max(this._data, d=>this._rankingType === "completedStoryPoints" ? d.completedStoryPoints : d.completedStories)]);
+        this._y.domain([0, d3.max(this._data, d=>this._rankingType == "stores" ? d.stores : d.revenue)]);
         this._yAxis = d3.axisLeft().scale(this._y);
         this.renderBars();
 
-        if (this._initialized === false) {
+        if (this._initialized == false) {
             this.renderAxis("x");
             this.renderAxis("y");
             this.renderYLabel();
@@ -78,21 +75,21 @@ class BarChart {
             .attr("font-size", "12px")
             .attr("font-weight", "bold")
             .attr("fill", "#8E7060")
-            .text(this._rankingType === "completedStoryPoints" ? "Story Points" : "Stories");
+            .text(this._rankingType == "stores" ? "Stores" : "Revenue");
     }
 
     updateYLabel(){
         this._svg.svg.selectAll(".y-axis-label")
-            .text(this._rankingType === "completedStoryPoints" ? "Story Points" : "Stories");
+            .text(this._rankingType == "stores" ? "Stores" : "Revenue");
     }
 
     sortData() {
-        const sortFunction = this.sortOrder === "descending" ? d3.descending : d3.ascending;
+        const sortFunction = this.sortOrder == "descending" ? d3.descending : d3.ascending;
 
-        if (this.rankingType === "completedStoryPoints") {
-            return this._data.sort((a, b) => sortFunction(a.completedStoryPoints, b.completedStoryPoints));
+        if (this.rankingType == "stores") {
+            return this._data.sort((a, b) => sortFunction(a.stores, b.stores));
         } else {
-            return this._data.sort((a, b) => sortFunction(a.completedStories, b.completedStories));
+            return this._data.sort((a, b) => sortFunction(a.revenue, b.revenue));
         }
     }
 
@@ -112,9 +109,9 @@ class BarChart {
             .style("opacity", 1);
 
         bar.merge(enter)
-            .attr("y", d=> this._rankingType === "completedStoryPoints" ? this._y(d.completedStoryPoints) : this._y(d.completedStories))
+            .attr("y", d=> this._rankingType == "stores" ? this._y(d.stores) : this._y(d.revenue))
             .attr("height", d=>{
-                let rankingValue = this._rankingType === "completedStoryPoints" ? d.completedStoryPoints :  d.completedStories;
+                let rankingValue = this._rankingType == "stores" ? d.stores :  d.revenue;
                 return this._svg.height -  this._y(rankingValue);});
 
         bar.exit().remove();
@@ -125,11 +122,11 @@ class BarChart {
         const axis = this._svg.svg.append("g")
             .attr("class", dimension);
 
-        if (dimension === "x") {
+        if (dimension == "x") {
             axis.attr("transform", "translate(0," + this._svg.height + ")");
         }
 
-        const scale = dimension === "x" ? this._xAxis : this._yAxis;
+        const scale = dimension == "x" ? this._xAxis : this._yAxis;
 
         axis.style("font-size", this._axisFontSize)
             .style("font-weight", this._axisFontWeight)
@@ -139,7 +136,7 @@ class BarChart {
     updateAxis(dimension){
 
         const axis = this._svg.svg.selectAll("." + dimension);
-        const scale = dimension === "x" ? this._xAxis : this._yAxis;
+        const scale = dimension == "x" ? this._xAxis : this._yAxis;
 
         axis.transition()
             .duration(this._duration)
@@ -153,3 +150,37 @@ class BarChart {
     set sortOrder(sortOrder){this._sortOrder = sortOrder;}
 
 }
+
+/*
+document.addEventListener("DOMContentLoaded", () => {
+
+    const margin = {top: 40, right: 10, bottom: 60, left: 60};
+    const svg = new Svg("#chart-area", 960, 500, margin);
+
+    const x = d3.scaleBand().rangeRound([0, svg.width]);
+    const y = d3.scaleLinear().range([svg.height, 0]);
+
+    d3.csv("data/coffee-house-chains.csv", (error, data) => {
+
+        data.forEach(d => {
+            d.revenue = +d.revenue;
+            d.stores = +d.stores;
+        });
+
+        console.log(data);
+
+        barChart = new BarChart(svg, data, x, y, "stores");
+        barChart.render();
+
+        d3.select("#change-sorting").on("click", () => {
+            barChart.sortOrder = barChart.sortOrder == "descending" ? "ascending" : "descending";
+            barChart.render();
+        });
+
+        d3.select("#ranking-type").on("change", () => {
+            const rankingType = d3.select("#ranking-type").property("value");
+            barChart.rankingType = rankingType;
+            barChart.render();
+        });
+    });
+});*/

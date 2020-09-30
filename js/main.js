@@ -20,40 +20,6 @@ document.addEventListener("DOMContentLoaded", () => {
         .defer(d3.json, "data/git-contributors.json")
         .await(visualize);
 
-
-
-        const margin = {top: 40, right: 10, bottom: 60, left: 60};
-        const svg = new Svg2("#chart-area", 960, 500, margin);
-
-        const x = d3.scaleBand().rangeRound([0, svg.width]);
-        const y = d3.scaleLinear().range([svg.height, 0]);
-
-        d3.csv("data/coffee-house-chains.csv", (error, data) => {
-
-                data.forEach(d => {
-                        d.revenue = +d.revenue;
-                        d.stores = +d.stores;
-                });
-
-                console.log(data);
-
-                barChart = new BarChart(svg, data, x, y, "stores");
-                barChart.render();
-
-                d3.select("#change-sorting").on("click", () => {
-                        barChart.sortOrder = barChart.sortOrder == "descending" ? "ascending" : "descending";
-                        barChart.render();
-                });
-
-                d3.select("#ranking-type").on("change", () => {
-                        const rankingType = d3.select("#ranking-type").property("value");
-                        barChart.rankingType = rankingType;
-                        barChart.render();
-                });
-        });
-
-
-
 });
 
 
@@ -116,13 +82,9 @@ function visualize(error, jiraData, scrumText, retroData, issuesData, epicsData,
         const retroStore = new RetroStore(retroData);
 
         const marginScrumSee = { top: 0, right: 0, bottom: 0, left: 0 };
-        //const marginRetro = { top: 0, right: 0, bottom: 0, left: 0 };
-        //const marginVelocity = { top: 0, right: 0, bottom: 0, left: 0 };
         const colorScheme = scrumColorScheme;
 
         const svgScrumSee = new Svg("#scrumsee-svg", 1400, 210, marginScrumSee);
-        //const svgRetro = new Svg("#retrospective-chart", 0, 0, marginRetro);
-        //const svgVelocity = new Svg("#velocity-chart",  800, 400, marginVelocity);
 
         const visSeeScrum = new SeeScrum(svgScrumSee, scrumTextStore, retroStore, jiraRepo);
         const visVelocity = new VelocityChart(issueStore, "#velocity-chart", colorScheme, eventHandler);
@@ -161,6 +123,21 @@ function visualize(error, jiraData, scrumText, retroData, issuesData, epicsData,
 
         d3.select("#issue-metric-selector").on("change", function () {
                 $(eventHandler).trigger("selectedMetricChange", d3.select("#issue-metric-selector").property("value"));
+        });
+
+        const margin = {top: 40, right: 10, bottom: 60, left: 60};
+        const svg = new Svg2("#chart-area", 960, 500, margin);
+
+        const x = d3.scaleBand().rangeRound([0, svg.width]);
+        const y = d3.scaleLinear().range([svg.height, 0]);
+
+
+        barChart = new BarChart(svg, x, y, "completedStoryPoints", jiraRepo);
+        barChart.render();
+
+        d3.select("#ranking-type").on("change", () => {
+                barChart.rankingType = d3.select("#ranking-type").property("value");
+                barChart.render();
         });
 
 }
