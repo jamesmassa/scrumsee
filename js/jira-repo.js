@@ -3,13 +3,7 @@ class Issue {
         this._issue = issue;
     }
 
-    get sprint () {
-        const str = String(this.issue.fields.customfield_10020);
-        const start = str.lastIndexOf('id=') + 3;
-        const length = str.slice(start).indexOf(",");
-
-        return parseInt(str.substring(start, start + length));
-    }
+    get sprintId () { return this.issue.fields.customfield_10020[0].id;}
 
     get epic () {
         return this.issue.fields.customfield_10014;
@@ -66,16 +60,19 @@ class Epic {
         this._summary = data.summary;
         this._url = data.self;
     }
-    get issues(){return jiraRepo._issues.getFilteredIssues(issue => issue.epic.id === this.id);}
+    get issues(){return jiraRepo.issues.getFilteredIssues(issue => issue.epic.id === this.id);}
 
     get id(){return this._id;}
     get name(){return this._name;}
     get summary(){return this._summary;}
     get url(){return this._url;}
 
-    get totalStories(){return this.issues.count();}
+    get blockers(){return jiraRepo.issues.getFilteredIssues( issue => issue.status === "Blocked");}
+    get totalBlockers(){return this.blockers.length;}
+    get totalStories(){return this.issues.length;}
     get totalStoryPoints(){return this.issues.reduce((sum, issue) => {return sum + issue.storyPoints;}, 0);}
     get completedStories(){return this.issues.filter(issue => issue.status === "Done");}
+    get totalCompletedStories(){return this.issues.filter(issue => issue.status === "Done").length;}
     get completedStoryPoints(){return this.completedStories.reduce((sum, issue) => {return sum + issue.storyPoints;}, 0);}
 
     get priorities(){return Array.from(new Set(this.issues.map(issue => issue.priority)));}
@@ -107,12 +104,13 @@ class Sprint {
 
     }
 
-    get issues(){return jiraRepo._issues.getFilteredIssues(issue => issue.sprint === this.id);}
-    get blockers(){return jiraRepo._issues.getFilteredIssues( issue => issue.status === "Blocked");}
+    get issues(){return jiraRepo.issues.getFilteredIssues(issue => issue.sprintId === this.id);}
+    get blockers(){return jiraRepo.issues.getFilteredIssues( issue => issue.status === "Blocked");}
     get totalBlockers(){return this.blockers.length;}
     get totalStories(){return this.issues.length;}
     get totalStoryPoints(){return this.issues.reduce((sum, issue) => {return sum + issue.storyPoints;}, 0);}
     get completedStories(){return this.issues.filter(issue => issue.status === "Done");}
+    get totalCompletedStories(){return this.issues.filter(issue => issue.status === "Done").length;}
     get completedStoryPoints(){return this.completedStories.reduce((sum, issue) => {return sum + issue.storyPoints;}, 0);}
 
     get id(){return this._id;}
@@ -142,7 +140,7 @@ class Sprints {
     get activeSprint() {return this._sprints.find(sprint => sprint.state === "active") ;}
     get previousSprint() {return this._sprints.find(sprint => sprint.id === (this.activeSprint.id - 1));}
     get futureSprints() {return this._sprints.filter(sprint => sprint.state === "future");}
-    get completedSprints() {return this._sprints.filter(sprint => sprint.state === "completed");}
+    get completedSprints() {return this._sprints.filter(sprint => sprint.state === "closed");}
     get sprints(){return this._sprints;}
 }
 
@@ -156,7 +154,7 @@ class JiraRepo {
         this._parseDate = d3.timeParse("%Y-%m-%dT%H:%M:%S.%L%Z");
     }
 
-    get backlog(){return this._issues.getFilteredIssues(issue => issue.sprint.id === null);}
+    get backlog(){return this._issues.getFilteredIssues(issue => issue.sprintId === null);}
     get activeSprint(){return this._sprints.activeSprint;}
     get previousSprint(){return this._sprints.previousSprint;}
     get futureSprints(){return this._sprints.futureSprints;}

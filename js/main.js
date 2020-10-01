@@ -66,6 +66,24 @@ function visualize(error, jiraData, scrumText, retroData, issuesData, epicsData,
         console.log(jiraRepo.epics);
         console.log(jiraRepo.sprints);
 
+        const completedSprints = jiraRepo.sprints.completedSprints;
+        console.log("completedSprints:");
+        console.log(completedSprints);
+
+        console.log("Total Storypoints:")
+        completedSprints.forEach(s => console.log(s.totalStoryPoints));
+
+        console.log("Total Stories:")
+        completedSprints.forEach(sprint => {
+                console.log("Sprint " + sprint.id, sprint.totalStories);
+                });
+
+        console.log("Completed Storypoints:")
+        completedSprints.forEach(s => console.log(s.completedStoryPoints));
+
+        console.log("Completed Stories:")
+        completedSprints.forEach(s => console.log(s.completedStories));
+
         const gitRepoData = {
                 "commits": commitData,
                 "languages": languageData,
@@ -89,6 +107,21 @@ function visualize(error, jiraData, scrumText, retroData, issuesData, epicsData,
         const visSeeScrum = new SeeScrum(svgScrumSee, scrumTextStore, retroStore, jiraRepo);
         const visVelocity = new VelocityChart(issueStore, "#velocity-chart", colorScheme, eventHandler);
         new RetroChart(retroData.slice(16,21), "#retrospective-chart");
+
+
+        const margin = {top: 40, right: 10, bottom: 60, left: 60};
+        const svg = new Svg("#chart-area", 960, 500, margin);
+
+        const x = d3.scaleBand().rangeRound([0, svg.width]);
+        const y = d3.scaleLinear().range([svg.height, 0]);
+
+        barChart = new BarChart(svg, x, y, "completedStoryPoints", jiraRepo);
+        barChart.render();
+
+        d3.select("#ranking-type").on("change", () => {
+                barChart.rankingType = d3.select("#ranking-type").property("value");
+                barChart.render();
+        });
 
         d3.select(window).on(
             'resize.' + svgScrumSee.containerElem.attr('id'),
@@ -125,20 +158,6 @@ function visualize(error, jiraData, scrumText, retroData, issuesData, epicsData,
                 $(eventHandler).trigger("selectedMetricChange", d3.select("#issue-metric-selector").property("value"));
         });
 
-        const margin = {top: 40, right: 10, bottom: 60, left: 60};
-        const svg = new Svg2("#chart-area", 960, 500, margin);
-
-        const x = d3.scaleBand().rangeRound([0, svg.width]);
-        const y = d3.scaleLinear().range([svg.height, 0]);
-
-
-        barChart = new BarChart(svg, x, y, "completedStoryPoints", jiraRepo);
-        barChart.render();
-
-        d3.select("#ranking-type").on("change", () => {
-                barChart.rankingType = d3.select("#ranking-type").property("value");
-                barChart.render();
-        });
 
 }
 
