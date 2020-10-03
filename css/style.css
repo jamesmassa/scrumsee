@@ -340,7 +340,8 @@ path.arc:hover {
 
 .axis {
     font: 10px sans-serif;
-    fill: #333;
+    /*fill: #333;*/
+    fill: darkorange;
 }
 
 .axis-title {

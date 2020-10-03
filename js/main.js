@@ -99,16 +99,16 @@ function visualize(error, jiraData, scrumText, retroData, issuesData, epicsData,
         const scrumTextStore = new ScrumTextStore(scrumText);
         const retroStore = new RetroStore(retroData);
 
-        const margin = {top: 20, right: 20, bottom: 20, left: 20};
+        const marginSeeScrum = {top: 0, right: 0, bottom: 0, left: 0};
         const colorScheme = scrumColorScheme;
-        const svgScrumSee = new Svg("#scrumsee-svg", 1400, 210, margin);
+        const svgSeeScrum = new Svg("#scrumsee-svg", 1400, 210, marginSeeScrum);
 
-        const visSeeScrum = new SeeScrum(svgScrumSee, scrumTextStore, retroStore, jiraRepo);
+        const visSeeScrum = new SeeScrum(svgSeeScrum, scrumTextStore, retroStore, jiraRepo);
         const visVelocity = new VelocityChart(issueStore, "#velocity-chart", colorScheme, eventHandler);
         new RetroChart(retroData.slice(16,21), "#retrospective-chart");
 
-
-        const svgVelocity = new SvgBarChart("#chart-area", 1400, 800, margin);
+        const marginVelocityBarChart = {top: 20, right: 0, bottom: 20, left: 100};
+        const svgVelocity = new SvgBarChart("#chart-area", 1400, 800, marginVelocityBarChart);
 
         const x = d3.scaleBand().rangeRound([0, svgVelocity.width]);
         const y = d3.scaleLinear().range([svgVelocity.height, 0]);
@@ -122,9 +122,9 @@ function visualize(error, jiraData, scrumText, retroData, issuesData, epicsData,
         });
 
         d3.select(window).on(
-            'resize.' + svgScrumSee.containerElem.attr('id'),
+            'resize.' + svgSeeScrum.containerElem.attr('id'),
             () => {
-                    svgScrumSee.width = parseInt(svgScrumSee.containerElem.style('width'));
+                    svgSeeScrum.width = parseInt(svgSeeScrum.containerElem.style('width'));
                     visSeeScrum.drawScrumDiagram();
             }
         );

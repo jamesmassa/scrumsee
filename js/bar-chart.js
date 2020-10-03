@@ -38,8 +38,8 @@ class BarChart {
     renderYLabel(){
         this._svg.svg.append("text")
             .attr("class", "y-axis-label")
-            .attr("x", -10)
-            .attr("y", 10)
+            .attr("x", -100)
+            .attr("y", 0)
             .attr("dy", "2em")
             .attr("font-size", "12px")
             .attr("font-weight", "bold")
@@ -68,7 +68,7 @@ class BarChart {
                 return "translate(" + i * this._x.bandwidth() + ",0)";
             })
             .attr("class", "bar")
-            .attr("width", this._x.bandwidth())
+            .attr("width", this._x.bandwidth() -5)
             .style("opacity", 1);
 
         bar.merge(enter)
@@ -84,7 +84,7 @@ class BarChart {
             .attr("class", dimension);
 
         if (dimension === "x") {
-            const height = this._svg.height - 20;
+            const height = this._svg.height;
             axis.attr("transform", "translate(0," + height + ")");
         }
 
@@ -109,12 +109,12 @@ class BarChart {
         switch (this.rankingType) {
             case "completedStoryPoints":
                 return "Story Points";
-
             case "completedStories":
                 return "Stories";
-
             case "linesOfCode":
                 return "Lines of Code";
+            case "codeCommits":
+                return "Code Commits";
         }
     }
 
@@ -126,6 +126,8 @@ class BarChart {
                 return d.totalCompletedStories;
             case "linesOfCode":
                 return d.linesOfCode;
+            case "codeCommits":
+                return d.codeCommits;
         }
     }
 
