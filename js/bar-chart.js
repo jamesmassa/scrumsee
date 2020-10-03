@@ -1,40 +1,7 @@
-
-
-class Svg2 {
-    constructor(container, width, height, margin) {
-        this._width = width - margin.left - margin.right;
-        this._height = height - margin.top - margin.bottom;
-        this._margin = margin;
-
-        this._svg = d3.select(container)
-            .append("svg")
-            .attr("width", width)
-            .attr("height", height)
-            .append("g")
-            .attr("class", "main-group")
-            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-    }
-
-    get g(){return this._svg.select('.main-group'); }
-
-    get svg(){return this._svg;}
-    set svg(svg){this._svg = svg;}
-
-    get width(){return this._width;}
-    set width(width){this._width = width;}
-
-    get height(){return this._height;}
-    set height(height){this._height = height;}
-
-    get margin(){return this._margin;}
-    set margin(margin){this._margin = margin;}
-}
-
-
 class BarChart {
-    constructor (svg, xScale, yScale, rankingType, jiraRepo){
+    constructor (svg, xScale, yScale, jiraRepo, gitRepo){
         this._svg = svg;
-        this._rankingType = rankingType;
+        this._rankingType = "completedStoryPoints";
 
         this._data = jiraRepo.sprints.sprints;
 
@@ -71,18 +38,18 @@ class BarChart {
     renderYLabel(){
         this._svg.svg.append("text")
             .attr("class", "y-axis-label")
-            .attr("x", -50)
-            .attr("y", -30)
+            .attr("x", -10)
+            .attr("y", 10)
             .attr("dy", "2em")
             .attr("font-size", "12px")
             .attr("font-weight", "bold")
-            .attr("fill", "#8E7060")
-            .text(this._rankingType === "completedStoryPoints" ? "Story Points" : "Stories");
+            .attr("fill", "black")
+            .text(this.getRankingLabel());
     }
 
     updateYLabel(){
         this._svg.svg.selectAll(".y-axis-label")
-            .text(this._rankingType === "completedStoryPoints" ? "Story Points" : "Stories");
+            .text(this.getRankingLabel());
     }
 
     sortData() {
@@ -117,7 +84,8 @@ class BarChart {
             .attr("class", dimension);
 
         if (dimension === "x") {
-            axis.attr("transform", "translate(0," + this._svg.height + ")");
+            const height = this._svg.height - 20;
+            axis.attr("transform", "translate(0," + height + ")");
         }
 
         const scale = dimension === "x" ? this._xAxis : this._yAxis;

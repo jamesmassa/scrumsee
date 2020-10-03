@@ -99,23 +99,21 @@ function visualize(error, jiraData, scrumText, retroData, issuesData, epicsData,
         const scrumTextStore = new ScrumTextStore(scrumText);
         const retroStore = new RetroStore(retroData);
 
-        const marginScrumSee = { top: 0, right: 0, bottom: 0, left: 0 };
+        const margin = {top: 20, right: 20, bottom: 20, left: 20};
         const colorScheme = scrumColorScheme;
-
-        const svgScrumSee = new Svg("#scrumsee-svg", 1400, 210, marginScrumSee);
+        const svgScrumSee = new Svg("#scrumsee-svg", 1400, 210, margin);
 
         const visSeeScrum = new SeeScrum(svgScrumSee, scrumTextStore, retroStore, jiraRepo);
         const visVelocity = new VelocityChart(issueStore, "#velocity-chart", colorScheme, eventHandler);
         new RetroChart(retroData.slice(16,21), "#retrospective-chart");
 
 
-        const margin = {top: 40, right: 10, bottom: 60, left: 60};
-        const svg = new Svg("#chart-area", 960, 500, margin);
+        const svgVelocity = new SvgBarChart("#chart-area", 1400, 800, margin);
 
-        const x = d3.scaleBand().rangeRound([0, svg.width]);
-        const y = d3.scaleLinear().range([svg.height, 0]);
+        const x = d3.scaleBand().rangeRound([0, svgVelocity.width]);
+        const y = d3.scaleLinear().range([svgVelocity.height, 0]);
 
-        barChart = new BarChart(svg, x, y, "completedStoryPoints", jiraRepo);
+        barChart = new BarChart(svgVelocity, x, y, jiraRepo, gitRepo);
         barChart.render();
 
         d3.select("#ranking-type").on("change", () => {
@@ -140,7 +138,7 @@ function visualize(error, jiraData, scrumText, retroData, issuesData, epicsData,
 
         $(eventHandler).bind("selectedSprintChange", (event, selection) => {
                 issueStore.onSelectedSprintChange(selection, ()=> {
-                        //todo update sprint cards
+                        //TODO update sprint cards
                 });
         });
 
