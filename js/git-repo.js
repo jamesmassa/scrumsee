@@ -1,3 +1,5 @@
+//TODO Constructor should connect to the JiraRepo and assign Git data to sprints using sprint and code timestamps
+
 class Commit {
     constructor(commit) {
         this._commit = commit;

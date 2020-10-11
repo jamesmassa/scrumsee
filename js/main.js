@@ -5,6 +5,37 @@ let jiraRepo = null;
 let gitRepo = null;
 let barChart = null;
 
+const refData = {
+        "baseUrl": "https://seescrum.atlassian.net/", //use this for both Jira Screens and Jira API
+        "restUrl": "https://seescrum.atlassian.net/rest/agile/latest/board/1/", //Add resource name to the Rest URL
+        "getIssuesUrl": "https://seescrum.atlassian.net/rest/agile/latest/board/1/issue",
+        "getEpicsUrl": "https://seescrum.atlassian.net/rest/agile/latest/board/1/epic/",
+        "getIssuesWithoutEpicUrl": "https://seescrum.atlassian.net/rest/agile/latest/board/1/epic/none/issue",
+        "getSprintsUrl": "https://seescrum.atlassian.net/rest/agile/latest/board/1/sprint/",
+        "getBacklogUrl": "https://seescrum.atlassian.net/rest/agile/latest/board/1/backlog/",
+        "getVersionsUrl": "https://seescrum.atlassian.net/rest/agile/latest/board/1/version/",
+        "getAllCommitsUrl": "https://api.github.com/repos/jamesmassa/scrumsee/commits/",
+        "getCommitsForTimePeriod": "https://api.github.com/repos/jamesmassa/scrumsee/commits?since=2020-09-30T19:20:30-05:00&until=2020-10-02T19:20:30-05:00",
+        "getCommitUrl": "https://api.github.com/repos/jamesmassa/scrumsee/commits/",
+        //"https://api.github.com/repos/jamesmassa/scrumsee/commits/29dd80185c582c7fef0b4ae02c42d0968e2cae91", //add SHA at end.  Check "stats" key for additions and deletions counts
+        "getAllLanguagesUrl": "https://api.github.com/repos/jamesmassa/scrumsee/languages",
+        "getAllContributorsUrl": "https://api.github.com/repos/jamesmassa/scrumsee/contributors"
+}
+
+//Get all issues for a epic with getEpicsUrl + [epicId] + issue
+//https://seescrum.atlassian.net/rest/agile/latest/board/1/epic/10093/issue
+
+//Get all issues for a sprint with getSprintsUrl + [sprintId] + issue
+//This works: https://seescrum.atlassian.net/rest/agile/latest/board/1/sprint/2/issue
+
+//Unix commands to get Git LOC stats
+//git log --no-merges --pretty=format:%an --numstat -C | awk '/./ && !author { author = $0; next } author { ins[author] += $1; del[author] += $2 } /^$/ { author = ""; next } END { for (a in ins) { printf "%10d %10d %10d %s\n", ins[a] - del[a], ins[a], del[a], a } }' | sort -rn
+//git log --no-merges --oneline --numstat -C
+//git log --no-merges --author="jamesmassa" --oneline --numstat -C
+
+//This gives the number of commits for each user
+//git shortlog -s -n
+
 document.addEventListener("DOMContentLoaded", () => {
 
     queue()
@@ -18,41 +49,29 @@ document.addEventListener("DOMContentLoaded", () => {
         .defer(d3.json, "data/git-commits.json")
         .defer(d3.json, "data/git-languages.json")
         .defer(d3.json, "data/git-contributors.json")
+        //.defer(d3.json, "https://jsonplaceholder.typicode.com/todos/1")
+        .defer(d3.json, "http://127.0.0.1:5000/api/get-json")
         .await(visualize);
 
 });
 
 
 
-function visualize(error, jiraData, scrumText, retroData, issuesData, epicsData, sprintsData, versionsData, commitData, languageData, contributorData) {
+function visualize(error, jiraData, scrumText, retroData, issuesData, epicsData, sprintsData, versionsData, commitData, languageData, contributorData, placeholder) {
 
-        console.log(issuesData);
-        console.log(epicsData);
-        console.log(sprintsData);
+        console.log(placeholder);
 
-        console.log(commitData);
-        console.log(languageData);
-        console.log(contributorData);
-        
-        //Get all issues for a epic with getEpicsUrl + [epicId] + issue
-        //https://seescrum.atlassian.net/rest/agile/latest/board/1/epic/10093/issue
-
-        //Get all issues for a sprint with getSprintsUrl + [sprintId] + issue
-        //This works: https://seescrum.atlassian.net/rest/agile/latest/board/1/sprint/2/issue
-
-        const refData = {
-                "baseUrl": "https://seescrum.atlassian.net/", //use this for both Jira Screens and Jira API
-                "restUrl": "https://seescrum.atlassian.net/rest/agile/latest/board/1/", //Add resource name to the Rest URL
-                "getIssuesUrl": "https://seescrum.atlassian.net/rest/agile/latest/board/1/issue",
-                "getEpicsUrl": "https://seescrum.atlassian.net/rest/agile/latest/board/1/epic/",
-                "getIssuesWithoutEpicUrl": "https://seescrum.atlassian.net/rest/agile/latest/board/1/epic/none/issue",
-                "getSprintsUrl": "https://seescrum.atlassian.net/rest/agile/latest/board/1/sprint/",
-                "getBacklogUrl": "https://seescrum.atlassian.net/rest/agile/latest/board/1/backlog/",
-                "getVersionsUrl": "https://seescrum.atlassian.net/rest/agile/latest/board/1/version/",
-                "getCommitsUrl": "https://api.github.com/repos/jamesmassa/scrumsee/commits",
-                "getLanguagesUrl": "https://api.github.com/repos/jamesmassa/scrumsee/languages",
-                "getContributorsUrl": "https://api.github.com/repos/jamesmassa/scrumsee/contributors"
+        const gitRepoData = {
+                "commits": commitData,
+                "languages": languageData,
+                "contributors": contributorData
         }
+
+        gitRepo = new GitRepo(gitRepoData);
+        console.log(gitRepo.commits);
+        console.log(gitRepo.languages);
+        console.log(gitRepo.contributors);
+
         const jiraRepoData = {
                 "issues": issuesData,
                 "epics": epicsData,
@@ -84,17 +103,6 @@ function visualize(error, jiraData, scrumText, retroData, issuesData, epicsData,
         console.log("Completed Stories:")
         completedSprints.forEach(s => console.log(s.completedStories));
 
-        const gitRepoData = {
-                "commits": commitData,
-                "languages": languageData,
-                "contributors": contributorData
-        }
-
-        gitRepo = new GitRepo(gitRepoData);
-        console.log(gitRepo.commits);
-        console.log(gitRepo.languages);
-        console.log(gitRepo.contributors);
-
         const issueStore = ( new IssueStore(jiraData, "customfield_10020", "customfield_10028" )) ;
         const scrumTextStore = new ScrumTextStore(scrumText);
         const retroStore = new RetroStore(retroData);
@@ -107,7 +115,7 @@ function visualize(error, jiraData, scrumText, retroData, issuesData, epicsData,
         const visVelocity = new VelocityChart(issueStore, "#velocity-chart", colorScheme, eventHandler);
         new RetroChart(retroData.slice(16,21), "#retrospective-chart");
 
-        const marginVelocityBarChart = {top: 20, right: 0, bottom: 20, left: 100};
+        const marginVelocityBarChart = {top: 20, right: 0, bottom: 20, left: 200};
         const svgVelocity = new SvgBarChart("#chart-area", 1400, 800, marginVelocityBarChart);
 
         const x = d3.scaleBand().rangeRound([0, svgVelocity.width]);

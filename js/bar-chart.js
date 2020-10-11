@@ -1,8 +1,8 @@
+//TODO combine jiraRepo and gitRepo in this.data, ensure Jira stuff still works, then add git charts
 class BarChart {
-    constructor (svg, xScale, yScale, jiraRepo, gitRepo){
+    constructor (svg, xScale, yScale, jiraRepo){
         this._svg = svg;
         this._rankingType = "completedStoryPoints";
-
         this._data = jiraRepo.sprints.sprints;
 
         this._x = xScale;
@@ -15,6 +15,7 @@ class BarChart {
     }
 
     render() {
+
         this.sortData();
         this._x.domain(this._data.map(d => d.number));
         this._xAxis = d3.axisBottom().scale(this._x);
@@ -111,9 +112,13 @@ class BarChart {
                 return "Story Points";
             case "completedStories":
                 return "Stories";
-            case "linesOfCode":
-                return "Lines of Code";
-            case "codeCommits":
+            case "gitNetLinesOfCode":
+                return "Net Lines of Code";
+            case "gitLinesOfCodeAdditions":
+                return "Lines of Code Added";
+            case "gitLinesOfCodeDeletions":
+                return "Lines of Code Deleted";
+            case "gitCodeCommits":
                 return "Code Commits";
         }
     }
@@ -124,14 +129,22 @@ class BarChart {
                 return d.completedStoryPoints;
             case "completedStories":
                 return d.totalCompletedStories;
-            case "linesOfCode":
-                return d.linesOfCode;
-            case "codeCommits":
+            case "gitNetLinesOfCode":
+                return d.netLinesOfCode;
+            case "gitLinesOfCodeAdditions":
+                return d.linesOfCodeAdded;
+            case "gitLinesOfCodeDeletions":
+                return d.linesOfCodeDeleted;
+            case "gitCodeCommits":
                 return d.codeCommits;
+
         }
     }
 
     get rankingType(){return this._rankingType;}
     set rankingType(rankingType){this._rankingType = rankingType;}
+
+    get data(){return this._data;}
+    set data(data){this._data = data;}
 
 }
