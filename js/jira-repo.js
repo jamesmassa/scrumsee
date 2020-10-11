@@ -43,7 +43,7 @@ class Issues {
     get totalStories(){return this._issues.count();}
     get totalStoryPoints(){return this._issues.reduce((sum, issue) => sum + issue.storyPoints);}
     get completedStories(){return this._issues.filter(issue => issue.status.name === "Done");}
-    get completedStoryPoints(){return this.completedStories.reduce((sum, issue) => acc + issue.storyPoints);}
+    get completedStoryPoints(){return this.completedStories.reduce((sum, issue) => sum + issue.storyPoints);}
 
     get issues(){return this._issues;}
     set issues(issues){this._issues = issues;}
@@ -102,6 +102,51 @@ class Sprint {
         this._sequence = data.sequence; //positioning of sprint in the board relative to other sprints
         this._rapidViewId = data.rapidViewId; //id of the Jira board that the sprint was created in
 
+        this._codeCommits = gitRepo.commits._commits.filter(commit =>
+            commit._commit.commit.author.date > this._startDate && commit._commit.commit.author.date < this._endDate);
+
+        const calculations = this.calcContributorsAndLOC();
+        this._netLinesOfCode = calculations.netLinesOfCode;
+        this._linesOfCodeDeleted = calculations.LOCDeletions;
+        this._linesOfCodeAdded = calculations.LOCAdditions;
+        this._contributors = calculations.contributors;
+
+    }
+
+    calcContributorsAndLOC(){
+
+        let contributors = new Set();
+        let LOCAdditions = 0;
+        let LOCDeletions = 0;
+
+        let serviceCallCount = 0;
+
+        this.codeCommits.forEach(commit => {
+            const sha = commit._commit.commit.tree.sha;
+            const url = refData.getCommitUrl + sha;
+            console.log(url);
+
+            const getCommit = async () => {
+                const response = await fetch(url);
+                const fullCommit = await response.json();
+                LOCAdditions += fullCommit.stats.additions;
+                LOCDeletions += fullCommit.stats.deletions;
+                contributors.add(fullCommit.author.name);
+            }
+
+            if (serviceCallCount <= 2){
+                serviceCallCount += 1;
+                getCommit();
+            }
+        });
+
+        return {
+            "netLinesOfCode": LOCAdditions - LOCDeletions,
+            "LOCAdditions": LOCAdditions,
+            "LOCDeletions": LOCDeletions,
+            "contributors": contributors
+        }
+
     }
 
     get issues(){return jiraRepo.issues.getFilteredIssues(issue => issue.sprintId === this.id);}
@@ -130,6 +175,12 @@ class Sprint {
     get issueTypes(){return Array.from(new Set(this.issues.map(issue => issue.issuetype)));}
     get statuses(){return Array.from(new Set(this.issues.map(issue => issue.status)));}
 
+    get codeCommits(){return this._codeCommits}
+    get contributors(){return this._contributors}
+    get netLinesOfCode(){return this._netLinesOfCode;}
+    get linesOfCodeDeleted(){return this._LOCDeletions;}
+    get linesOfCodeAdded(){return this._LOCAdditions;}
+
 }
 
 class Sprints {
@@ -150,7 +201,6 @@ class JiraRepo {
         this._issues = new Issues(data.issues.issues);
         this._sprints = new Sprints(data.sprints.values);
         this._epics = new Epics(data.epics.values);
-        this._refData = data.refData;
         this._parseDate = d3.timeParse("%Y-%m-%dT%H:%M:%S.%L%Z");
     }
 
@@ -163,6 +213,5 @@ class JiraRepo {
     get sprints() {return this._sprints;}
     get issues(){return this._issues;}
     get epics(){return this._epics;}
-    get refData(){return this._refData;}
 
 }

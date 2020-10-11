@@ -17,6 +17,13 @@ posts = set()
 channels = set()
 displaynames = set()
 
+@app.route('/api/get-json')
+def hello():
+    response = jsonify(hello='world')  # Returns HTTP Response with {"hello": "world"}
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    return response
+
+
 @app.route("/", methods=["GET"])
 def home():
     return redirect(url_for('index'))
