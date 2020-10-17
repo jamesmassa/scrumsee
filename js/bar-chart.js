@@ -1,4 +1,20 @@
-//TODO combine jiraRepo and gitRepo in this.data, ensure Jira stuff still works, then add git charts
+//TODO
+// 0. Combine jiraRepo and gitRepo in this.data, ensure Jira stuff still works
+// 1. add git data to summary cards
+// 2. add git charts
+// 3. Show breakdowns of completed vs. committed.  (must find committed data)
+// 4. Breakdowns by language
+// 5. Delete the velocity area chart,  Consider leveraging the filters.  Replace sprint planning onclick
+// 6. Sort by sprint Id and set x-axis to increment by 1 sprint
+// 7. Leverage teal and orange
+// 8. Innovate
+//      Set time period to measure
+//      Option to exclude outliers beyond configurable threshold
+//      Negative velocity for bugs
+//      Value add vs. friction
+//      velocity per team member
+//      Trend line with bottom line statement
+
 class BarChart {
     constructor (svg, xScale, yScale, jiraRepo){
         this._svg = svg;
