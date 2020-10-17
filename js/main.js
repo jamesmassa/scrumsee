@@ -49,7 +49,8 @@ document.addEventListener("DOMContentLoaded", () => {
         .defer(d3.json, "data/git-commits.json")
         .defer(d3.json, "data/git-languages.json")
         .defer(d3.json, "data/git-contributors.json")
-        .defer(d3.json, "http://127.0.0.1:5000/api/get-json")
+        //.defer(d3.json, "http://127.0.0.1:5000/api/get-json")
+        .defer(d3.json, "http://127.0.0.1:5000/api/get-future-sprints")
         .await(visualize);
 
 });
