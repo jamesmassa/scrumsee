@@ -2,13 +2,7 @@
 #  JIRA
 #  https://jira.readthedocs.io/en/master/examples.html
 #  Analytics
-#  1. Remove test harness code (print statements at top and test service)
-#  2. sprint.analyze() using hard coded next sprint
-#       a.  Find stories with zero story points
-#       b.  Find stories with non Fibonacci story points
-#       c.  Find stories with no assignee
-#       d.  Find stories with no epic
-#       e.  Find stories with more than 8 story points and need to be split
+#  1. Find unassigned stories
 #  3. Display analytics results in front end
 #  4. Add JQL pagination
 #       a.  Make one call and check "total" field in the results
@@ -146,7 +140,7 @@ def cumulative_flow_chart():
     return get_url_response('https://seescrum.atlassian.net/rest/greenhopper/1.0/rapid/charts/cumulativeflowdiagram.json?rapidViewId=1&swimlaneId=1&columnId=4&columnId=5&columnId=6')
 
 
-# TODO Need to return all analytics in a single json.
+# TODO get unassigned working
 @app.route('/api/ifa')
 def items_for_attention():
     fibonacci = [0, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144]
