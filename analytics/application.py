@@ -2,7 +2,6 @@
 #  JIRA
 #  https://jira.readthedocs.io/en/master/examples.html
 #  Analytics
-#  1. Find unassigned stories
 #  3. Display analytics results in front end
 #  4. Add JQL pagination
 #       a.  Make one call and check "total" field in the results
@@ -129,7 +128,6 @@ def epic_burn_down_chart():
     return get_url_response('https://seescrum.atlassian.net/rest/greenhopper/1.0/rapid/charts/epicprogresschart?rapidViewId=1&epicKey=SS-1')
 
 
-# TODO Load from file
 @app.route('/api/retrospective-chart')
 def retrospecitve_chart():
     return get_json_file_response('retrospective-scores.json')
@@ -140,14 +138,16 @@ def cumulative_flow_chart():
     return get_url_response('https://seescrum.atlassian.net/rest/greenhopper/1.0/rapid/charts/cumulativeflowdiagram.json?rapidViewId=1&swimlaneId=1&columnId=4&columnId=5&columnId=6')
 
 
-# TODO get unassigned working
 @app.route('/api/ifa')
 def items_for_attention():
     fibonacci = [0, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144]
 
-    unestimated = [(issue.id, issue.key) for issue in futureSprintStories if issue.fields.customfield_10026 is None]
-    not_fibonacci = [(issue.id, issue.key) for issue in futureSprintStories if issue.fields.customfield_10026 not in fibonacci]
-#    unassigned = [issue for issue in futureSprintStories if issue.fields.assignee.displayName == "Unassigned"]
+    not_estimated = [(issue.id, issue.key) for issue in futureSprintStories if issue.fields.customfield_10026 is None]
+
+    not_fibonacci = [(issue.id, issue.key) for issue in futureSprintStories
+                     if issue.fields.customfield_10026 not in fibonacci]
+
+    unassigned = [(issue.id, issue.key) for issue in futureSprintStories if issue.fields.assignee is None]
 
     must_split = [(issue.id, issue.key) for issue in futureSprintStories
                   if issue.fields.customfield_10026 is not None and
@@ -155,10 +155,10 @@ def items_for_attention():
 
     no_epic = [(issue.id, issue.key) for issue in futureSprintStories if issue.fields.customfield_10014 is None]
 
-    data = {  #type: dict
-        "unestimated": unestimated, #type list of jira.resources.Issue
+    data = {
+        "notEstimated": not_estimated,
         "notFibonacci": not_fibonacci,
-        # "unassigned": unassigned,
+        "unassigned": unassigned,
         "mustSplit": must_split,
         "noEpic": no_epic
     }
@@ -167,9 +167,6 @@ def items_for_attention():
 
 
 def get_jql_response(jql):
-    print("working type returned by jql:", type(jira.search_issues(jql, json_result=True, maxResults=100)))
-    print("jql payload", jira.search_issues(jql, json_result=True, maxResults=100))
-
     return get_response(jira.search_issues(jql, json_result=True, maxResults=100))
 
 
