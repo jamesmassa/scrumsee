@@ -46,7 +46,6 @@ document.addEventListener("DOMContentLoaded", () => {
     queue()
         .defer(d3.json, "data/JV-12-7-19.json")
         .defer(d3.json, "data/scrum-process.json")
-        .defer(d3.json, "data/retrospective-scores.json")
         .defer(d3.json, "data/jira-issues.json")
         .defer(d3.json, "data/jira-epics.json")
         .defer(d3.json, "data/jira-sprints.json")
@@ -72,7 +71,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 function visualize(error,
                    //Files to remove
-                   jiraData, scrumText, retroData, issuesData, epicsData, sprintsData, versionsData, commitData, languageData, contributorData,
+                   jiraData, scrumText, issuesData, epicsData, sprintsData, versionsData, commitData, languageData, contributorData,
 
                    //Services to keep
                     storyHistoryData, activeStoryData, futureStoryData,
@@ -143,7 +142,7 @@ function visualize(error,
 
         const issueStore = ( new IssueStore(jiraData, "customfield_10020", "customfield_10028" )) ;
         const scrumTextStore = new ScrumTextStore(scrumText);
-        const retroStore = new RetroStore(retroData);
+        const retroStore = new RetroStore(retrospectiveChartData);
 
         const marginSeeScrum = {top: 0, right: 0, bottom: 0, left: 0};
         const colorScheme = scrumColorScheme;
@@ -151,7 +150,7 @@ function visualize(error,
 
         const visSeeScrum = new SeeScrum(svgSeeScrum, scrumTextStore, retroStore, jiraRepo, ifaData);
         const visVelocity = new VelocityChart(issueStore, "#velocity-chart", colorScheme, eventHandler);
-        new RetroChart(retroData.slice(16,21), "#retrospective-chart");
+        new RetroChart(retrospectiveChartData.slice(16,21), "#retrospective-chart");
 
         const marginVelocityBarChart = {top: 20, right: 0, bottom: 20, left: 200};
         const svgVelocity = new SvgBarChart("#chart-area", 1400, 800, marginVelocityBarChart);
