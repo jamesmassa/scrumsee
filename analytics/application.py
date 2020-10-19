@@ -2,19 +2,19 @@
 #  JIRA
 #  https://jira.readthedocs.io/en/master/examples.html
 #  Analytics
-#  3. Display analytics results in front end
-#  4. Add JQL pagination
+#  1. Display analytics results in front end
+#  2. Add JQL pagination
 #       a.  Make one call and check "total" field in the results
 #       b.  Divide by 100 and subract 1 to determine how many more calls are needed
 #       c.  Make all the calls, leveraging "startAt" and keep merging JSON payloads and return the final payload
-#  5. Fix url Jira calls with oAuth
+#  3. Fix url Jira calls with oAuth
 #     Create private/public keys and an application link:  https://developer.atlassian.com/server/jira/platform/oauth/
 #     Authenticate:  https://jira.readthedocs.io/en/master/examples.html#oauth
 #     3 legged auth
-#  6. Decommission jira files for issues and repoint to issue data from the API
-#  7. Create sprint objects for all sprints which have lazy load of collections for stories, tasks, and bugs
-#  8. Loop over future sprints to find active sprint + 1 based up on naming convention, else prompt for next sprint
-#  9. sprint.loadStories(): Get all stories in nextSprint using JQL and add the collection to nextSprint
+#  4. Decommission jira files for issues and repoint to issue data from the API
+#  5. Create sprint objects for all sprints which have lazy load of collections for stories, tasks, and bugs
+#  6. Loop over future sprints to find active sprint + 1 based up on naming convention, else prompt for next sprint
+#  7. sprint.loadStories(): Get all stories in nextSprint using JQL and add the collection to nextSprint
 #  Environment
 #  0. Add pycache to .gitignore
 #  1. Run flask from within pycharm debugger (or other debugger)

@@ -149,7 +149,7 @@ function visualize(error,
         const colorScheme = scrumColorScheme;
         const svgSeeScrum = new Svg("#scrumsee-svg", 1400, 210, marginSeeScrum);
 
-        const visSeeScrum = new SeeScrum(svgSeeScrum, scrumTextStore, retroStore, jiraRepo);
+        const visSeeScrum = new SeeScrum(svgSeeScrum, scrumTextStore, retroStore, jiraRepo, ifaData);
         const visVelocity = new VelocityChart(issueStore, "#velocity-chart", colorScheme, eventHandler);
         new RetroChart(retroData.slice(16,21), "#retrospective-chart");
 

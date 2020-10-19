@@ -2,11 +2,12 @@
 /*globals d3,$,eventHandler:false */
 class SeeScrum {
 
-    constructor(svg, scrumTextStore, retroStore, jiraRepo) {
+    constructor(svg, scrumTextStore, retroStore, jiraRepo, ifaData) {
         this.svg = svg;
         this._scrumTextStore = scrumTextStore;
         this._retroStore = retroStore;
         this._jiraRepo = jiraRepo;
+        this._ifaData = ifaData
 
         this.drawScrumDiagram();
     }
@@ -511,6 +512,12 @@ class SeeScrum {
         const totalAlerts = activeSprint.totalAlerts;
         const burndownPct =  (100 * completed / committed).toFixed()+"%";
 
+        const totalIFAs = this._ifaData.mustSplit.length +
+            this._ifaData.noEpic.length +
+            this._ifaData.notEstimated.length +
+            this._ifaData.notFibonacci.length +
+            this._ifaData.unassigned.length;
+
         this.rectData.forEach(rect => {
 
             let text, text2, text3 = null;
@@ -533,8 +540,7 @@ class SeeScrum {
 
                 case "planning":
                     text = "Sprint Planning ";
-                    text2 = totalAlerts + " unestimated";
-                    text3 = "stories";
+                    text2 = totalIFAs + " Alerts";
                     break;
 
                 case "showcase":
