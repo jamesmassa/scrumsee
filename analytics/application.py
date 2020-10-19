@@ -1,16 +1,7 @@
 # TODO
-#  Fix Bugs
-#  1. Fix url Jira calls with oAuth
-#     Create private/public keys and an application link:  https://developer.atlassian.com/server/jira/platform/oauth/
-#     Authenticate:  https://jira.readthedocs.io/en/master/examples.html#oauth
-#     3 legged auth
 #  JIRA
 #  https://jira.readthedocs.io/en/master/examples.html
 #  Analytics
-#  0. Add JQL pagination
-#       a.  Make one call and check "total" field in the results
-#       b.  Divide by 100 and subract 1 to determine how many more calls are needed
-#       c.  Make all the calls, leveraging "startAt" and keep merging JSON payloads and return the final payload
 #  1. Remove test harness code (print statements at top and test service)
 #  2. sprint.analyze() using hard coded next sprint
 #       a.  Find stories with zero story points
@@ -19,10 +10,18 @@
 #       d.  Find stories with no epic
 #       e.  Find stories with more than 8 story points and need to be split
 #  3. Display analytics results in front end
-#  4. Decommission jira files for issues and repoint to issue data from the API
-#  5. Create sprint objects for all sprints which have lazy load of collections for stories, tasks, and bugs
-#  6. Loop over future sprints to find active sprint + 1 based up on naming convention, else prompt for next sprint
-#  7. sprint.loadStories(): Get all stories in nextSprint using JQL and add the collection to nextSprint
+#  4. Add JQL pagination
+#       a.  Make one call and check "total" field in the results
+#       b.  Divide by 100 and subract 1 to determine how many more calls are needed
+#       c.  Make all the calls, leveraging "startAt" and keep merging JSON payloads and return the final payload
+#  5. Fix url Jira calls with oAuth
+#     Create private/public keys and an application link:  https://developer.atlassian.com/server/jira/platform/oauth/
+#     Authenticate:  https://jira.readthedocs.io/en/master/examples.html#oauth
+#     3 legged auth
+#  6. Decommission jira files for issues and repoint to issue data from the API
+#  7. Create sprint objects for all sprints which have lazy load of collections for stories, tasks, and bugs
+#  8. Loop over future sprints to find active sprint + 1 based up on naming convention, else prompt for next sprint
+#  9. sprint.loadStories(): Get all stories in nextSprint using JQL and add the collection to nextSprint
 #  Environment
 #  0. Add pycache to .gitignore
 #  1. Run flask from within pycharm debugger (or other debugger)
@@ -75,28 +74,12 @@ options = {
 # Manual test:  curl -D- -u jam7652@g.harvard.edu:uJQghNNd6KFGxIAoEnW73385 -X GET -H "Content-Type: application/json" https://seescrum.atlassian.net/rest/agile/latest/board/1/issue
 jira = JIRA(options, basic_auth=(user, apikey))
 
-issueId = 'SS-135'
-issue = jira.issue(issueId)
-summary = issue.fields.summary
-print('ticket: ', issueId, summary)
-
-# Print the story points for every story in the repo
-for issue in jira.search_issues('project = "SS" AND issuetype = Story ORDER BY created ASC'):
-    print('{}: {}'.format(issue.key, issue.fields.customfield_10026))
-
 
 closedSprintStories = jira.search_issues('project = "SS" and Sprint in closedSprints()')
 openSprintStories = jira.search_issues('project = "SS" and Sprint in openSprints()')
 futureSprintStories = jira.search_issues('project = "SS" and Sprint in futureSprints()')
 
-
-fibonacci = [0, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144]
-for issue in futureSprintStories:
-    if issue.fields.customfield_10026 is None:
-        print('{}: {}: {}: {}'.format("UNESTIMATED", issue.key, issue.fields.summary, issue.fields.customfield_10026))
-    elif issue.fields.customfield_10026 not in fibonacci:
-        print('{}: {}: {}: {}'.format("FIBONACCI:", issue.key, issue.fields.summary, issue.fields.customfield_10026))
-
+print("Server Ready")
 
 @app.route('/api/jira-stories-history')
 def jira_stories_history():
@@ -164,13 +147,34 @@ def cumulative_flow_chart():
 
 
 # TODO Need to return all analytics in a single json.
-# TODO Currently only returning issues without epics
 @app.route('/api/ifa')
 def items_for_attention():
-    return get_url_response('https://seescrum.atlassian.net/rest/agile/latest/board/1/epic/none/issue')
+    fibonacci = [0, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144]
+
+    unestimated = [(issue.id, issue.key) for issue in futureSprintStories if issue.fields.customfield_10026 is None]
+    not_fibonacci = [(issue.id, issue.key) for issue in futureSprintStories if issue.fields.customfield_10026 not in fibonacci]
+#    unassigned = [issue for issue in futureSprintStories if issue.fields.assignee.displayName == "Unassigned"]
+
+    must_split = [(issue.id, issue.key) for issue in futureSprintStories
+                  if issue.fields.customfield_10026 is not None and
+                  int(issue.fields.customfield_10026) > 8]
+
+    no_epic = [(issue.id, issue.key) for issue in futureSprintStories if issue.fields.customfield_10014 is None]
+
+    data = {  #type: dict
+        "unestimated": unestimated, #type list of jira.resources.Issue
+        "notFibonacci": not_fibonacci,
+        # "unassigned": unassigned,
+        "mustSplit": must_split,
+        "noEpic": no_epic
+    }
+
+    return get_response(data)
 
 
 def get_jql_response(jql):
+    print("working type returned by jql:", type(jira.search_issues(jql, json_result=True, maxResults=100)))
+    print("jql payload", jira.search_issues(jql, json_result=True, maxResults=100))
 
     return get_response(jira.search_issues(jql, json_result=True, maxResults=100))
 

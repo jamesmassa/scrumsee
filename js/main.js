@@ -66,7 +66,7 @@ document.addEventListener("DOMContentLoaded", () => {
         // .defer(d3.json, "http://127.0.0.1:5000/api/epic-burn-down-chart")
         .defer(d3.json, "http://127.0.0.1:5000/api/retrospective-chart")
         // .defer(d3.json, "http://127.0.0.1:5000/api/cumulative-flow-chart")
-        // .defer(d3.json, "http://127.0.0.1:5000/api/ifa")
+        .defer(d3.json, "http://127.0.0.1:5000/api/ifa")
         .await(visualize);
 });
 
@@ -80,15 +80,16 @@ function visualize(error,
                    epicData,
                         //versionData,
                    // velocityChartData, burnDownChartData, releaseBurnDownChartData, epicBurnDownChartDate,
-                   retrospectiveChartData
-                        //cumulativeFlowChartData, ifaData
+                   retrospectiveChartData,
+                        //cumulativeFlowChartData,
+                  ifaData
                 ) {
 
         console.log("storyHistoryData:", storyHistoryData);
         console.log("activeStoryData:", activeStoryData);
         console.log("futureStoryData:", futureStoryData);
         console.log("sprintData:", sprintData);
-         console.log("epicData", epicData);
+        console.log("epicData", epicData);
         // console.log(versionData);
         // console.log(velocityChartData);
         // console.log(burnDownChartData);
@@ -96,7 +97,7 @@ function visualize(error,
         // console.log(epicBurnDownChartDate);
         console.log("retrospectiveChartData:", retrospectiveChartData);
         // console.log(cumulativeFlowChartData);
-        // console.log(ifaData);
+       console.log("ifaData", ifaData);
 
         const gitRepoData = {
                 "commits": commitData,
