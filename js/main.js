@@ -5,6 +5,7 @@ let jiraRepo = null;
 let gitRepo = null;
 let barChart = null;
 
+//TODO Ultimately need to move all URLs to the python backend
 const refData = {
         "baseUrl": "https://seescrum.atlassian.net/", //use this for both Jira Screens and Jira API
         "restUrl": "https://seescrum.atlassian.net/rest/agile/latest/board/1/", //Add resource name to the Rest URL
@@ -37,6 +38,10 @@ const refData = {
 //git shortlog -s -n
 
 document.addEventListener("DOMContentLoaded", () => {
+// TODO Remove JV data
+// TODO Replace all json files with flask services and move processing to the backend.  Front end is display only logic.
+// TODO Lazy load data which will not be on the initial screen, e.g., chart data
+// TODO Make services for Git data
 
     queue()
         .defer(d3.json, "data/JV-12-7-19.json")
@@ -49,15 +54,49 @@ document.addEventListener("DOMContentLoaded", () => {
         .defer(d3.json, "data/git-commits.json")
         .defer(d3.json, "data/git-languages.json")
         .defer(d3.json, "data/git-contributors.json")
-        //.defer(d3.json, "http://127.0.0.1:5000/api/get-json")
-        .defer(d3.json, "http://127.0.0.1:5000/api/get-future-sprints")
+        .defer(d3.json, "http://127.0.0.1:5000/api/jira-stories-history")
+        .defer(d3.json, "http://127.0.0.1:5000/api/jira-stories-active")
+        .defer(d3.json, "http://127.0.0.1:5000/api/jira-stories-future")
+        .defer(d3.json, "http://127.0.0.1:5000/api/jira-sprints")
+        .defer(d3.json, "http://127.0.0.1:5000/api/jira-epics")
+        // .defer(d3.json, "http://127.0.0.1:5000/api/jira-versions")
+        // .defer(d3.json, "http://127.0.0.1:5000/api/velocity-chart")
+        // .defer(d3.json, "http://127.0.0.1:5000/api/burn-down-chart")
+        // .defer(d3.json, "http://127.0.0.1:5000/api/release-burn-down-chart")
+        // .defer(d3.json, "http://127.0.0.1:5000/api/epic-burn-down-chart")
+        .defer(d3.json, "http://127.0.0.1:5000/api/retrospective-chart")
+        // .defer(d3.json, "http://127.0.0.1:5000/api/cumulative-flow-chart")
+        // .defer(d3.json, "http://127.0.0.1:5000/api/ifa")
         .await(visualize);
-
 });
 
-function visualize(error, jiraData, scrumText, retroData, issuesData, epicsData, sprintsData, versionsData, commitData, languageData, contributorData, placeholder) {
+function visualize(error,
+                   //Files to remove
+                   jiraData, scrumText, retroData, issuesData, epicsData, sprintsData, versionsData, commitData, languageData, contributorData,
 
-        console.log(placeholder);
+                   //Services to keep
+                    storyHistoryData, activeStoryData, futureStoryData,
+                        sprintData,
+                   epicData,
+                        //versionData,
+                   // velocityChartData, burnDownChartData, releaseBurnDownChartData, epicBurnDownChartDate,
+                   retrospectiveChartData
+                        //cumulativeFlowChartData, ifaData
+                ) {
+
+        console.log("storyHistoryData:", storyHistoryData);
+        console.log("activeStoryData:", activeStoryData);
+        console.log("futureStoryData:", futureStoryData);
+        console.log("sprintData:", sprintData);
+         console.log("epicData", epicData);
+        // console.log(versionData);
+        // console.log(velocityChartData);
+        // console.log(burnDownChartData);
+        // console.log(releaseBurnDownChartData);
+        // console.log(epicBurnDownChartDate);
+        console.log("retrospectiveChartData:", retrospectiveChartData);
+        // console.log(cumulativeFlowChartData);
+        // console.log(ifaData);
 
         const gitRepoData = {
                 "commits": commitData,
