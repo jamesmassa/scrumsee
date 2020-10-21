@@ -59,7 +59,7 @@ document.addEventListener("DOMContentLoaded", () => {
         .defer(d3.json, "http://127.0.0.1:5000/api/jira-sprints")
         .defer(d3.json, "http://127.0.0.1:5000/api/jira-epics")
         // .defer(d3.json, "http://127.0.0.1:5000/api/jira-versions")
-        // .defer(d3.json, "http://127.0.0.1:5000/api/velocity-chart")
+        .defer(d3.json, "http://127.0.0.1:5000/api/velocity-chart")
         // .defer(d3.json, "http://127.0.0.1:5000/api/burn-down-chart")
         // .defer(d3.json, "http://127.0.0.1:5000/api/release-burn-down-chart")
         // .defer(d3.json, "http://127.0.0.1:5000/api/epic-burn-down-chart")
@@ -78,7 +78,8 @@ function visualize(error,
                         sprintData,
                    epicData,
                         //versionData,
-                   // velocityChartData, burnDownChartData, releaseBurnDownChartData, epicBurnDownChartDate,
+                   velocityChartData,
+                   // burnDownChartData, releaseBurnDownChartData, epicBurnDownChartDate,
                    retrospectiveChartData,
                         //cumulativeFlowChartData,
                   ifaData
@@ -90,7 +91,7 @@ function visualize(error,
         console.log("sprintData:", sprintData);
         console.log("epicData", epicData);
         // console.log(versionData);
-        // console.log(velocityChartData);
+        console.log(velocityChartData);
         // console.log(burnDownChartData);
         // console.log(releaseBurnDownChartData);
         // console.log(epicBurnDownChartDate);
