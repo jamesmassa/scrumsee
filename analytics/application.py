@@ -1,17 +1,4 @@
 # TODO
-#  Jira Security
-#  1. Create a read only jira user
-#  2. Log in as the read only user and create a new personal access token
-#     https://id.atlassian.com/manage-profile/security/api-tokens
-#  3. Put the token in a file and read in the apikey
-#  4. put the token file in .gitignore
-#  3. Set up Duo for 2 step verification
-#       https://confluence.atlassian.com/cloud/two-step-verification-976161185.html#Secureyouraccountwithtwo-stepverification-saml_gsuite
-#  -------------------------------------------
-#  Git Security
-#  1. Create a new personal access token
-#  2. Put the token in the same token file as the jira token and read in the git apikey
-#  -------------------------------------------
 #  GIT
 #  1. Try using personal access token which used to work.
 #     else use ssh key (oAuth if ssh doesn't work),
@@ -49,18 +36,8 @@
 #  0. Add pycache to .gitignore
 #  1. Run flask from within pycharm debugger (or other debugger)
 #  2. Add unit testing.  Grab framework from CS33a homeworks
-#  -------------------------------------------
-#  Security
-#  1. Read in apikey from a file in .gitignore
-#  2. Create a read only jira user
-#  2. Log in as the read only user and create a new personal access token
-#     https://id.atlassian.com/manage-profile/security/api-tokens
-#  3. Revoke the old token
-#  3. Set up Duo for 2 step verification
+#  3. Set up Duo for 2 step verification in Jira
 #       https://confluence.atlassian.com/cloud/two-step-verification-976161185.html#Secureyouraccountwithtwo-stepverification-saml_gsuite
-#  4. Set read-only permissions on the personal access token
-#  Architecture
-#  1. Replace d3.queue file loads with calls to my flask routes which call the Jira api
 #  -------------------------------------------
 #  GENERAL
 #  1. Migrate more JS logic to the back-end, e.g., "get issues for sprint"
@@ -100,18 +77,6 @@ def jira_login():
     return JIRA(options, basic_auth=(user, apikey))
 
 
-# Git Authentication
-# token = '376a28fc7db53417e5e7da54c11b8199ae36b2ca'
-# owner = "jamesmassa"
-# repo = "scrumsee"
-# query_url = f"https://api.github.com/repos/{owner}/{repo}/issues"
-# params = {
-#     "state": "open",
-# }
-# headers = {'Authorization': f'token {token}', 'Content-Type': 'application/json'}
-# r = requests.get(query_url, headers=headers, params=params)
-# print(r.text)
-
 def get_git_credentials():
     with open('tokens.json') as file:
         login_data = json.load(file)
@@ -126,25 +91,53 @@ closedSprintStories = jira.search_issues('project = "SS" and Sprint in closedSpr
 openSprintStories = jira.search_issues('project = "SS" and Sprint in openSprints()')
 futureSprintStories = jira.search_issues('project = "SS" and Sprint in futureSprints()')
 
-# Test Git data retrieval
 git_credentials = get_git_credentials()
-print(git_credentials)
-git_commit_url = git_credentials['server'] + "/commits"
-print(git_commit_url)
-token =git_credentials['apikey']
-# headers = {'Content-Type: application/json'}
 
-headers = {'Authorization': f'token {token}'}
-r = requests.get(git_commit_url, headers=headers)
-# try:
-#     r = requests.get(git_commit_url, auth=(git_credentials['user'], git_credentials['apikey']), headers=headers)
-# except Exception as err:
-#     print("Exception: {0}".format(err))
-
-print("made request")
-print(r.json())
 
 print("Server Ready")
+
+
+@app.route('/api/git-commits')
+def git_commits():
+    return get_git_url_response("/commits")
+
+
+@app.route('/api/git-languages')
+def git_languages():
+    return get_git_url_response("/languages")
+
+
+@app.route('/api/git-contributors')
+def git_contributors():
+    return get_git_url_response("/contributors")
+
+
+@app.route('/api/git-pulls')
+def git_pulls():
+    return get_git_url_response("/pulls")
+
+
+@app.route('/api/git-releases')
+def git_releases():
+    return get_git_url_response("/releases")
+
+
+@app.route('/api/git-deployments')
+def git_deployments():
+    return get_git_url_response("/deployments")
+
+
+def get_git_url_response(resource):
+
+    git_commit_url = git_credentials['server'] + resource
+    token = git_credentials['apikey']
+    headers = {'Authorization': f'token {token}'}
+    url_response = requests.get(git_commit_url, headers=headers)
+
+    data = url_response.json()
+    response = jsonify(data)
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    return response
 
 
 @app.route('/api/jira-stories-history')

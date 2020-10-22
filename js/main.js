@@ -66,6 +66,12 @@ document.addEventListener("DOMContentLoaded", () => {
         .defer(d3.json, "http://127.0.0.1:5000/api/retrospective-chart")
         // .defer(d3.json, "http://127.0.0.1:5000/api/cumulative-flow-chart")
         .defer(d3.json, "http://127.0.0.1:5000/api/ifa")
+        .defer(d3.json, "http://127.0.0.1:5000/api/git-commits")
+        .defer(d3.json, "http://127.0.0.1:5000/api/git-languages")
+        .defer(d3.json, "http://127.0.0.1:5000/api/git-contributors")
+        .defer(d3.json, "http://127.0.0.1:5000/api/git-pulls")
+        .defer(d3.json, "http://127.0.0.1:5000/api/git-releases")
+        .defer(d3.json, "http://127.0.0.1:5000/api/git-deployments")
         .await(visualize);
 });
 
@@ -82,7 +88,13 @@ function visualize(error,
                    // burnDownChartData, releaseBurnDownChartData, epicBurnDownChartDate,
                    retrospectiveChartData,
                         //cumulativeFlowChartData,
-                  ifaData
+                   ifaData,
+                   commitsData,
+                   languagesData,
+                   contributorsData,
+                   pullsData,
+                   releasesData,
+                   deploymentsData
                 ) {
 
         console.log("storyHistoryData:", storyHistoryData);
@@ -97,7 +109,14 @@ function visualize(error,
         // console.log(epicBurnDownChartDate);
         console.log("retrospectiveChartData:", retrospectiveChartData);
         // console.log(cumulativeFlowChartData);
-       console.log("ifaData", ifaData);
+        console.log("ifaData", ifaData);
+        console.log("commitsData", commitsData);
+        console.log("languagesData", languagesData);
+        console.log("contributorsData", contributorsData);
+        console.log("pullsData", pullsData);
+        console.log("releasesData", releasesData);
+        console.log("deploymentsData", deploymentsData);
+
 
         const gitRepoData = {
                 "commits": commitData,
