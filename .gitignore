@@ -1,0 +1,9 @@
+.DS_Store
+./analytics/tokens.json
+*.log
+*.pot
+*.pyc
+*/*/*/__pycache__/
+*/*/__pycache__/
+*/__pycache__/
+./analytics/__pycache__/*

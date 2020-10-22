@@ -1,12 +1,31 @@
 # TODO
+#  Jira Security
+#  1. Create a read only jira user
+#  2. Log in as the read only user and create a new personal access token
+#     https://id.atlassian.com/manage-profile/security/api-tokens
+#  3. Put the token in a file and read in the apikey
+#  4. put the token file in .gitignore
+#  3. Set up Duo for 2 step verification
+#       https://confluence.atlassian.com/cloud/two-step-verification-976161185.html#Secureyouraccountwithtwo-stepverification-saml_gsuite
+#  -------------------------------------------
+#  Git Security
+#  1. Create a new personal access token
+#  2. Put the token in the same token file as the jira token and read in the git apikey
+#  -------------------------------------------
 #  GIT
-#  1. Install python Git module and use oAuth personal access token to increase to 5,000 daily calls
+#  1. Try using personal access token which used to work.
+#     else use ssh key (oAuth if ssh doesn't work),
+#     or doomsday scenario is switch the repository to HTTPS https://docs.github.com/en/free-pro-team@latest/articles/changing-a-remote-s-url/#switching-remote-urls-from-ssh-to-https
+#     https://stackoverflow.com/questions/28291909/gitpython-and-ssh-keys
 #     https://stackoverflow.com/questions/23659744/access-github-api-using-personal-access-token-with-python-urllib2
 #     https://stackoverflow.com/questions/17622439/how-to-use-github-api-token-in-python-for-requesting
 #     https://gitpython.readthedocs.io/en/stable/search.html?q=authentication&check_keywords=yes&area=default
 #  2. Return Git data to front end and add it to the Velocity chart
-#  3. Save historical Git data and just request new data on-demand.  Degrade gracefully
-#  4. Add Git Analytics, e.g., Jira coming due but no commits
+#  -------------------------------------------
+#  Remove JS file loads
+#  1. Replace d3.queue jira file loads with calls to my flask routes which call the Jira api
+#  2. Replace d3.queue got file loads with calls to my flask routes which call the git api-
+#  3. Migrate any non-presentation logic to Python
 #  -------------------------------------------
 #  JIRA
 #  https://jira.readthedocs.io/en/master/examples.html
@@ -21,8 +40,7 @@
 #     Authenticate:  https://jira.readthedocs.io/en/master/examples.html#oauth
 #     http://blog.appliedinformaticsinc.com/how-to-get-authorize-and-request-access-token-for-jira/
 #     http://blog.appliedinformaticsinc.com/how-to-get-auth-configured-and-consumer-key-for-jira-issue-tracker/
-#  3. Decommission jira files for issues and repoint to issue data from the API
-#  4. Do all the analytics Jiras
+#  4. Do all the sprint planning analytics Jiras
 #  5. Create sprint objects for all sprints which have lazy load of collections for stories, tasks, and bugs
 #  6. Loop over future sprints to find active sprint + 1 based up on naming convention, else prompt for next sprint
 #  7. sprint.loadStories(): Get all stories in nextSprint using JQL and add the collection to nextSprint
@@ -61,26 +79,70 @@ app.config['ENV'] = 'development'
 app.config['DEBUG'] = True
 app.config['TESTING'] = True
 
-# JIRA Authentication
-user = 'jam7652@g.harvard.edu'
-apikey = 'uJQghNNd6KFGxIAoEnW73385'
-server = 'https://seescrum.atlassian.net'
 
-options = {
- 'server': server
-}
+def jira_login():
+    try:
+        with open('tokens.json') as file:
+            login_data = json.load(file)['jira']
+    except IOError as err:
+        print("I/O error: {0}".format(err))
+    except Exception as err:
+        print("Exception: {0}".format(err))
 
-# Manual test:  curl -D- -u jam7652@g.harvard.edu:uJQghNNd6KFGxIAoEnW73385 -X GET -H "Content-Type: application/json" https://seescrum.atlassian.net/rest/agile/latest/board/1/issue
-jira = JIRA(options, basic_auth=(user, apikey))
+    apikey = login_data['apikey']
+    user = login_data['user']
+    server = login_data['server']
+
+    options = {
+     'server': server
+    }
+
+    return JIRA(options, basic_auth=(user, apikey))
+
+
+# Git Authentication
+# token = '376a28fc7db53417e5e7da54c11b8199ae36b2ca'
+# owner = "jamesmassa"
+# repo = "scrumsee"
+# query_url = f"https://api.github.com/repos/{owner}/{repo}/issues"
+# params = {
+#     "state": "open",
+# }
+# headers = {'Authorization': f'token {token}', 'Content-Type': 'application/json'}
+# r = requests.get(query_url, headers=headers, params=params)
+# print(r.text)
+
+def get_git_credentials():
+    with open('tokens.json') as file:
+        login_data = json.load(file)
+
+    return login_data['git']
+
+
+# Load jira issue data into global json objects
+jira = jira_login()
 
 closedSprintStories = jira.search_issues('project = "SS" and Sprint in closedSprints()')
 openSprintStories = jira.search_issues('project = "SS" and Sprint in openSprints()')
 futureSprintStories = jira.search_issues('project = "SS" and Sprint in futureSprints()')
 
-#Git Authentication
-git_commit_url = "https://api.github.com/repos/jamesmassa/scrumsee/commits?since=2020-09-30T19:20:30-05:00&until=2020-10-02T19:20:30-05:00"
-response = requests.get(git_commit_url, auth=('jam7652@g.harvard.edu', '376a28fc7db53417e5e7da54c11b8199ae36b2ca'))
-print("RESPONSE:", response.text)
+# Test Git data retrieval
+git_credentials = get_git_credentials()
+print(git_credentials)
+git_commit_url = git_credentials['server'] + "/commits"
+print(git_commit_url)
+token =git_credentials['apikey']
+# headers = {'Content-Type: application/json'}
+
+headers = {'Authorization': f'token {token}'}
+r = requests.get(git_commit_url, headers=headers)
+# try:
+#     r = requests.get(git_commit_url, auth=(git_credentials['user'], git_credentials['apikey']), headers=headers)
+# except Exception as err:
+#     print("Exception: {0}".format(err))
+
+print("made request")
+print(r.json())
 
 print("Server Ready")
 
@@ -102,7 +164,7 @@ def jira_stories_future():
 
 @app.route('/api/jira-sprints')
 def jira_sprints():
-    return get_url_response('https://seescrum.atlassian.net/rest/agile/latest/board/1/sprint/')
+    return get_jira_url_response('https://seescrum.atlassian.net/rest/agile/latest/board/1/sprint/')
 
 
 @app.route('/api/jira-epics')
@@ -112,24 +174,24 @@ def jira_epics():
 
 @app.route('/api/jira-versions')
 def jira_versions():
-    return get_url_response('https://seescrum.atlassian.net/rest/agile/latest/board/1/version/')
+    return get_jira_url_response('https://seescrum.atlassian.net/rest/agile/latest/board/1/version/')
 
 
 @app.route('/api/velocity-chart')
 def velocity_chart():
-    return get_url_response(
+    return get_jira_url_response(
         'https://seescrum.atlassian.net/rest/greenhopper/1.0/rapid/charts/velocity.json?rapidViewId=1')
 
 
 # TODO Detect active sprint (or receive in param) and set the sprintId value in the url
 @app.route('/api/burn-down-chart')
 def burndown_chart():
-    return get_url_response('https://seescrum.atlassian.net/rest/greenhopper/1.0/rapid/charts/scopechangeburndownchart.json?rapidViewId=1&sprintId=6&statisticFieldId=field_customfield_10026')
+    return get_jira_url_response('https://seescrum.atlassian.net/rest/greenhopper/1.0/rapid/charts/scopechangeburndownchart.json?rapidViewId=1&sprintId=6&statisticFieldId=field_customfield_10026')
 
 
 @app.route('/api/release-burn-down-chart')
 def release_burn_down_chart():
-    return get_url_response(
+    return get_jira_url_response(
         'https://seescrum.atlassian.net/rest/greenhopper/1.0/xboard/plan/backlog/versions.json?rapidViewId=1')
 
 
@@ -138,7 +200,7 @@ def release_burn_down_chart():
 @app.route('/api/epic-burn-down-chart')
 def epic_burn_down_chart():
     # https://seescrum.atlassian.net/rest/greenhopper/1.0/rapid/charts/epicreport?rapidViewId=1&epicKey=SS-94&_=1602620674330
-    return get_url_response(
+    return get_jira_url_response(
         'https://seescrum.atlassian.net/rest/greenhopper/1.0/rapid/charts/epicprogresschart?rapidViewId=1&epicKey=SS-1')
 
 
@@ -149,7 +211,7 @@ def retrospecitve_chart():
 
 @app.route('/api/cumulative-flow-chart')
 def cumulative_flow_chart():
-    return get_url_response(
+    return get_jira_url_response(
         'https://seescrum.atlassian.net/rest/greenhopper/1.0/rapid/charts/cumulativeflowdiagram.json?rapidViewId=1&swimlaneId=1&columnId=4&columnId=5&columnId=6')
 
 
@@ -185,14 +247,24 @@ def get_jql_response(jql):
     return get_response(jira.search_issues(jql, json_result=True, maxResults=100))
 
 
-def get_url_response(url):
-    url += "?os_username=" + user + "&os_password=" + apikey
+def get_jira_url_response(url):
 
-    print("PRE URL CALL")
+    try:
+        with open('tokens.json') as file:
+            login_data = json.load(file)
+    except IOError as err:
+        print("I/O error: {0}".format(err))
+    except Exception as err:
+        print("Exception: {0}".format(err))
+
+# TODO get oAuth credentials for Jira
+    apikey = login_data['jira']['apikey']
+    user = login_data['jira']['user']
+    server = login_data['jira']['server']
+
+    url += "?os_username=" + user + "&os_password=" + apikey
     url_response = requests.get(url)
-    print("POST URL CALL")
     data = url_response.text
-    print("DATA FROM URL:", data)
 
     response = jsonify(data)
     response.headers.add('Access-Control-Allow-Origin', '*')
