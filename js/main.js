@@ -75,6 +75,7 @@ document.addEventListener("DOMContentLoaded", () => {
         .await(visualize);
 });
 
+
 function visualize(error,
                    //Files to remove
                    jiraData, scrumText, issuesData, epicsData, sprintsData, versionsData, commitData, languageData, contributorData,
