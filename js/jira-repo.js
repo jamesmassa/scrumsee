@@ -110,6 +110,9 @@ class Sprint {
         this._linesOfCodeDeleted = calculations.LOCDeletions;
         this._linesOfCodeAdded = calculations.LOCAdditions;
         this._contributors = calculations.contributors;
+        this._gitpulls = data.gitpulls;
+        this._gitReleases = data.gitReleases;
+        this._gitDeployments = data.gitDeployments;
 
     }
 

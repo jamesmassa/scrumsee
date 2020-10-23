@@ -194,6 +194,9 @@ def epic_burn_down_chart():
 def retrospecitve_chart():
     return get_json_file_response('retrospective-scores.json')
 
+@app.route('/api/scrum-help-text')
+def scrum_help_text():
+    return get_json_file_response('scrum-help-text.json')
 
 @app.route('/api/cumulative-flow-chart')
 def cumulative_flow_chart():

@@ -10,7 +10,8 @@
 // 5. Delete the velocity area chart,  Consider leveraging the filters.  Replace sprint planning onclick
 // 6. Sort by sprint Id and set x-axis to increment by 1 sprint
 // 7. Leverage teal and orange
-// 8. Innovate
+// 8. Filters:  Priority, component, issue type.
+// 9. Innovate
 //      Set time period to measure
 //      Option to exclude outliers beyond configurable threshold
 //      Negative velocity for bugs
@@ -128,17 +129,23 @@ class BarChart {
     getRankingLabel(){
         switch (this.rankingType) {
             case "completedStoryPoints":
-                return "Story Points";
+                return "Jira Story Points";
             case "completedStories":
-                return "Stories";
+                return "Jira Stories";
             case "gitNetLinesOfCode":
-                return "Net Lines of Code";
+                return "Git Net Lines of Code";
             case "gitLinesOfCodeAdditions":
-                return "Lines of Code Added";
+                return "Git Lines of Code Added";
             case "gitLinesOfCodeDeletions":
-                return "Lines of Code Deleted";
+                return "Git Lines of Code Deleted";
             case "gitCodeCommits":
-                return "Code Commits";
+                return "Git Code Commits";
+            case "gitPulls":
+                return "Git Pulls";
+            case "gitReleases":
+                return "Git Releases";
+            case "gitDeployments":
+                return "Git Deployments";
         }
     }
 
@@ -156,6 +163,12 @@ class BarChart {
                 return d.linesOfCodeDeleted;
             case "gitCodeCommits":
                 return d.codeCommits;
+            case "gitPulls":
+                return d.gitPulls;
+            case "gitReleases":
+                return d.gitReleases;
+            case "gitDeployments":
+                return gitDeployments;
 
         }
     }

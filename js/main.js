@@ -3,7 +3,7 @@
 let eventHandler = {};
 let jiraRepo = null;
 let gitRepo = null;
-let barChart = null;
+let visVelocity = null;
 
 //TODO Ultimately need to move all URLs to the python backend
 const refData = {
@@ -43,13 +43,8 @@ document.addEventListener("DOMContentLoaded", () => {
 // TODO Lazy load data which will not be on the initial screen, e.g., chart data
 
     queue()
-        .defer(d3.json, "data/JV-12-7-19.json")
-        .defer(d3.json, "data/scrum-process.json")
-        .defer(d3.json, "data/jira-sprints.json")
-        .defer(d3.json, "data/jira-versions.json")
-        .defer(d3.json, "data/git-commits.json")
-        .defer(d3.json, "data/git-languages.json")
-        .defer(d3.json, "data/git-contributors.json")
+        .defer(d3.json, "data/jira-sprints.json")  //TODO call oAuth jira link from flask endpoint
+        .defer(d3.json, "data/jira-versions.json") //TODO call oAuth jira link from flask endpoint
         .defer(d3.json, "http://127.0.0.1:5000/api/jira-stories-history")
         .defer(d3.json, "http://127.0.0.1:5000/api/jira-stories-active")
         .defer(d3.json, "http://127.0.0.1:5000/api/jira-stories-future")
@@ -69,13 +64,14 @@ document.addEventListener("DOMContentLoaded", () => {
         .defer(d3.json, "http://127.0.0.1:5000/api/git-pulls")
         .defer(d3.json, "http://127.0.0.1:5000/api/git-releases")
         .defer(d3.json, "http://127.0.0.1:5000/api/git-deployments")
+        .defer(d3.json, "http://127.0.0.1:5000/api/scrum-help-text")
         .await(visualize);
 });
 
 
 function visualize(error,
                    //Files to remove
-                   jiraData, scrumText, sprintsData, versionsData, commitData, languageData, contributorData,
+                   sprintsData, versionsData,
 
                    //Services to keep
                     storyHistoryData, activeStoryData, futureStoryData,
@@ -92,7 +88,8 @@ function visualize(error,
                    contributorsData,
                    pullsData,
                    releasesData,
-                   deploymentsData
+                   deploymentsData,
+                   scrumHelpText
                 ) {
 
         console.log("storyHistoryData:", storyHistoryData);
@@ -117,9 +114,9 @@ function visualize(error,
 
 
         const gitRepoData = {
-                "commits": commitData,
-                "languages": languageData,
-                "contributors": contributorData
+                "commits": commitsData,
+                "languages": languagesData,
+                "contributors": contributorsData
         }
 
         gitRepo = new GitRepo(gitRepoData);
@@ -158,30 +155,26 @@ function visualize(error,
         console.log("Completed Stories:")
         completedSprints.forEach(s => console.log(s.completedStories));
 
-        const issueStore = ( new IssueStore(jiraData, "customfield_10020", "customfield_10028" )) ;
-        const scrumTextStore = new ScrumTextStore(scrumText);
+        const scrumTextStore = new ScrumTextStore(scrumHelpText);
         const retroStore = new RetroStore(retrospectiveChartData);
 
         const marginSeeScrum = {top: 0, right: 0, bottom: 0, left: 0};
-        const colorScheme = scrumColorScheme;
         const svgSeeScrum = new Svg("#scrumsee-svg", 1400, 210, marginSeeScrum);
 
         const visSeeScrum = new SeeScrum(svgSeeScrum, scrumTextStore, retroStore, jiraRepo, ifaData);
-        const visVelocity = new VelocityChart(issueStore, "#velocity-chart", colorScheme, eventHandler);
-        new RetroChart(retrospectiveChartData.slice(16,21), "#retrospective-chart");
 
-        const marginVelocityBarChart = {top: 20, right: 0, bottom: 20, left: 200};
-        const svgVelocity = new SvgBarChart("#chart-area", 1400, 800, marginVelocityBarChart);
-
+        const marginVelocity = {top: 20, right: 0, bottom: 20, left: 200};
+        const svgVelocity = new SvgBarChart("#chart-area", 1400, 800, marginVelocity);
         const x = d3.scaleBand().rangeRound([0, svgVelocity.width]);
         const y = d3.scaleLinear().range([svgVelocity.height, 0]);
+        const visVelocity = new BarChart(svgVelocity, x, y, jiraRepo, gitRepo);
+        visVelocity.render();
 
-        barChart = new BarChart(svgVelocity, x, y, jiraRepo, gitRepo);
-        barChart.render();
+        new RetroChart(retrospectiveChartData.slice(16,21), "#retrospective-chart");
 
         d3.select("#ranking-type").on("change", () => {
-                barChart.rankingType = d3.select("#ranking-type").property("value");
-                barChart.render();
+                visVelocity.rankingType = d3.select("#ranking-type").property("value");
+                visVelocity.render();
         });
 
         d3.select(window).on(
