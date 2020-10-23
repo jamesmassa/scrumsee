@@ -41,13 +41,10 @@ document.addEventListener("DOMContentLoaded", () => {
 // TODO Remove JV data
 // TODO Replace all json files with flask services and move processing to the backend.  Front end is display only logic.
 // TODO Lazy load data which will not be on the initial screen, e.g., chart data
-// TODO Make services for Git data
 
     queue()
         .defer(d3.json, "data/JV-12-7-19.json")
         .defer(d3.json, "data/scrum-process.json")
-        .defer(d3.json, "data/jira-issues.json")
-        .defer(d3.json, "data/jira-epics.json")
         .defer(d3.json, "data/jira-sprints.json")
         .defer(d3.json, "data/jira-versions.json")
         .defer(d3.json, "data/git-commits.json")
@@ -78,7 +75,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 function visualize(error,
                    //Files to remove
-                   jiraData, scrumText, issuesData, epicsData, sprintsData, versionsData, commitData, languageData, contributorData,
+                   jiraData, scrumText, sprintsData, versionsData, commitData, languageData, contributorData,
 
                    //Services to keep
                     storyHistoryData, activeStoryData, futureStoryData,
@@ -131,8 +128,8 @@ function visualize(error,
         console.log(gitRepo.contributors);
 
         const jiraRepoData = {
-                "issues": issuesData,
-                "epics": epicsData,
+                "issues": storyHistoryData.issues.concat(activeStoryData.issues.concat(futureStoryData.issues)),
+                "epics": epicData,
                 "sprints": sprintsData,
                 "versions": versionsData,
                 "refdata": refData

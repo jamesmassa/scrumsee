@@ -10,7 +10,7 @@ class Issue {
     }
 
     get issue(){return this._issue;}
-
+    get rollovers(){return this.issue.fields.customfield_10020};
     get name() {return this.issue.fields.summary;}
     get type() {return this._issue.type['#text'];}
     get status() {return this._issue.fields.status.name;}
@@ -198,9 +198,9 @@ class Sprints {
 class JiraRepo {
 
     constructor(data) {
-        this._issues = new Issues(data.issues.issues);
+        this._issues = new Issues(data.issues);
         this._sprints = new Sprints(data.sprints.values);
-        this._epics = new Epics(data.epics.values);
+        this._epics = new Epics(data.epics.issues);
         this._parseDate = d3.timeParse("%Y-%m-%dT%H:%M:%S.%L%Z");
     }
 

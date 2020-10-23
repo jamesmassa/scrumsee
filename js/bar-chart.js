@@ -2,7 +2,10 @@
 // 0. Combine jiraRepo and gitRepo in this.data, ensure Jira stuff still works
 // 1. add git data to summary cards
 // 2. add git charts
-// 3. Show breakdowns of completed vs. committed.  (must find committed data)
+// 3. Show breakdowns of completed vs. committed.
+//         Custom field 10020 is an array of all the sprints that a story has been assigned to
+//          <my url>/rest/api/2/search?jql=cf[10020]~xxxxxxx
+//          Instead of having customfield_10020=xxxx, change it to cf[10020]=xxxx
 // 4. Breakdowns by language
 // 5. Delete the velocity area chart,  Consider leveraging the filters.  Replace sprint planning onclick
 // 6. Sort by sprint Id and set x-axis to increment by 1 sprint

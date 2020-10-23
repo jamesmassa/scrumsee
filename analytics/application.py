@@ -1,18 +1,11 @@
 # TODO
-#  GIT
-#  1. Try using personal access token which used to work.
-#     else use ssh key (oAuth if ssh doesn't work),
-#     or doomsday scenario is switch the repository to HTTPS https://docs.github.com/en/free-pro-team@latest/articles/changing-a-remote-s-url/#switching-remote-urls-from-ssh-to-https
-#     https://stackoverflow.com/questions/28291909/gitpython-and-ssh-keys
-#     https://stackoverflow.com/questions/23659744/access-github-api-using-personal-access-token-with-python-urllib2
-#     https://stackoverflow.com/questions/17622439/how-to-use-github-api-token-in-python-for-requesting
-#     https://gitpython.readthedocs.io/en/stable/search.html?q=authentication&check_keywords=yes&area=default
-#  2. Return Git data to front end and add it to the Velocity chart
-#  -------------------------------------------
 #  Remove JS file loads
 #  1. Replace d3.queue jira file loads with calls to my flask routes which call the Jira api
-#  2. Replace d3.queue got file loads with calls to my flask routes which call the git api-
+#  2. Replace d3.queue git file loads with calls to my flask routes which call the git api
 #  3. Migrate any non-presentation logic to Python
+#  -------------------------------------------
+#  GIT
+#  1. Add git data to the Velocity chart
 #  -------------------------------------------
 #  JIRA
 #  https://jira.readthedocs.io/en/master/examples.html
