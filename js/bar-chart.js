@@ -20,11 +20,11 @@
 //      Trend line with bottom line statement
 
 class BarChart {
-    constructor (svg, xScale, yScale, jiraRepo){
+    constructor (svg, xScale, yScale, jiraRepo, gitRepo){
         this._svg = svg;
         this._rankingType = "completedStoryPoints";
-        this._data = jiraRepo.sprints.sprints;
-
+        this._jiraRepo = jiraRepo;
+        this._gitRepo = gitRepo;
         this._x = xScale;
         this._y = yScale;
         this._axisFontSize = "10px";
@@ -35,7 +35,7 @@ class BarChart {
     }
 
     render() {
-
+        this.data = this.setData();
         this.sortData();
         this._x.domain(this._data.map(d => d.number));
         this._xAxis = d3.axisBottom().scale(this._x);
@@ -168,15 +168,38 @@ class BarChart {
             case "gitReleases":
                 return d.gitReleases;
             case "gitDeployments":
-                return gitDeployments;
+                return d.gitDeployments;
 
         }
     }
 
+    setData(){
+        switch (this.rankingType) {
+            case "completedStoryPoints":
+            case "completedStories":
+                return jiraRepo.sprints.sprints;
+            case "gitNetLinesOfCode":
+            case "gitLinesOfCodeAdditions":
+            case "gitLinesOfCodeDeletions":
+            case "gitCodeCommits":
+            case "gitPulls":
+            case "gitReleases":
+            case "gitDeployments":
+                return gitRepo;
+            default:
+                alert("Unknown ranking type!")
+        }
+    }
+
     get rankingType(){return this._rankingType;}
+
     set rankingType(rankingType){this._rankingType = rankingType;}
 
     get data(){return this._data;}
     set data(data){this._data = data;}
 
 }
+
+
+
+

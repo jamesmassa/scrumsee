@@ -102,55 +102,18 @@ class Sprint {
         this._sequence = data.sequence; //positioning of sprint in the board relative to other sprints
         this._rapidViewId = data.rapidViewId; //id of the Jira board that the sprint was created in
 
-        this._codeCommits = gitRepo.commits._commits.filter(commit =>
-            commit._commit.commit.author.date > this._startDate && commit._commit.commit.author.date < this._endDate);
-
-        const calculations = this.calcContributorsAndLOC();
-        this._netLinesOfCode = calculations.netLinesOfCode;
-        this._linesOfCodeDeleted = calculations.LOCDeletions;
-        this._linesOfCodeAdded = calculations.LOCAdditions;
-        this._contributors = calculations.contributors;
-        this._gitpulls = data.gitpulls;
-        this._gitReleases = data.gitReleases;
-        this._gitDeployments = data.gitDeployments;
+// TODO:  Add Git Data
+//         this._codeCommits = gitRepo.getCommitsForSprint(this.number);
+//         this._netLinesOfCode = gitRepo.getNetLocForSprint(this.number);
+//         this._linesOfCodeDeleted = gitRepo.getLocDeletedForSprint(this.number);
+//         this._linesOfCodeAdded = gitRepo.getLocAddedForSprint(this.number);
+//         this._contributors = gitRepo.getContributorsForSprint(this.number);
+//         this._gitPulls = gitRepo.getPullsForSprint(this.number);
+//         this._gitReleases = gitRepo.getReleasesForSprint(this.number);
+//         this._gitDeployments = gitRepo.getDeploymentsForSprint(this.number);
 
     }
 
-    calcContributorsAndLOC(){
-
-        let contributors = new Set();
-        let LOCAdditions = 0;
-        let LOCDeletions = 0;
-
-        let serviceCallCount = 0;
-
-        this.codeCommits.forEach(commit => {
-            const sha = commit._commit.commit.tree.sha;
-            const url = refData.getCommitUrl + sha;
-            console.log(url);
-
-            const getCommit = async () => {
-                const response = await fetch(url);
-                const fullCommit = await response.json();
-                LOCAdditions += fullCommit.stats.additions;
-                LOCDeletions += fullCommit.stats.deletions;
-                contributors.add(fullCommit.author.name);
-            }
-
-            if (serviceCallCount <= 2){
-                serviceCallCount += 1;
-                getCommit();
-            }
-        });
-
-        return {
-            "netLinesOfCode": LOCAdditions - LOCDeletions,
-            "LOCAdditions": LOCAdditions,
-            "LOCDeletions": LOCDeletions,
-            "contributors": contributors
-        }
-
-    }
 
     get issues(){return jiraRepo.issues.getFilteredIssues(issue => issue.sprintId === this.id);}
     get blockers(){return jiraRepo.issues.getFilteredIssues( issue => issue.status === "Blocked");}
@@ -178,11 +141,15 @@ class Sprint {
     get issueTypes(){return Array.from(new Set(this.issues.map(issue => issue.issuetype)));}
     get statuses(){return Array.from(new Set(this.issues.map(issue => issue.status)));}
 
-    get codeCommits(){return this._codeCommits}
-    get contributors(){return this._contributors}
-    get netLinesOfCode(){return this._netLinesOfCode;}
-    get linesOfCodeDeleted(){return this._LOCDeletions;}
-    get linesOfCodeAdded(){return this._LOCAdditions;}
+// TODO add Git data
+//     get codeCommits(){return this._codeCommits}
+//     get contributors(){return this._contributors}
+//     get netLinesOfCode(){return this._netLinesOfCode;}
+//     get linesOfCodeDeleted(){return this._LOCDeletions;}
+//     get linesOfCodeAdded(){return this._LOCAdditions;}
+//     get gitPulls(){return this._gitPulls;}
+//     get gitReleases(){return this._gitReleases;}
+//     get gitDeployments(){return this._gitDeployments;}
 
 }
 

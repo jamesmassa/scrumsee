@@ -5,42 +5,11 @@ let jiraRepo = null;
 let gitRepo = null;
 let visVelocity = null;
 
-//TODO Ultimately need to move all URLs to the python backend
-const refData = {
-        "baseUrl": "https://seescrum.atlassian.net/", //use this for both Jira Screens and Jira API
-        "restUrl": "https://seescrum.atlassian.net/rest/agile/latest/board/1/", //Add resource name to the Rest URL
-        "getIssuesUrl": "https://seescrum.atlassian.net/rest/agile/latest/board/1/issue",
-        "getEpicsUrl": "https://seescrum.atlassian.net/rest/agile/latest/board/1/epic/",
-        "getIssuesWithoutEpicUrl": "https://seescrum.atlassian.net/rest/agile/latest/board/1/epic/none/issue",
-        "getSprintsUrl": "https://seescrum.atlassian.net/rest/agile/latest/board/1/sprint/",
-        "getBacklogUrl": "https://seescrum.atlassian.net/rest/agile/latest/board/1/backlog/",
-        "getVersionsUrl": "https://seescrum.atlassian.net/rest/agile/latest/board/1/version/",
-        "getAllCommitsUrl": "https://api.github.com/repos/jamesmassa/scrumsee/commits/",
-        "getCommitsForTimePeriod": "https://api.github.com/repos/jamesmassa/scrumsee/commits?since=2020-09-30T19:20:30-05:00&until=2020-10-02T19:20:30-05:00",
-        "getCommitUrl": "https://api.github.com/repos/jamesmassa/scrumsee/commits/",
-        //"https://api.github.com/repos/jamesmassa/scrumsee/commits/29dd80185c582c7fef0b4ae02c42d0968e2cae91", //add SHA at end.  Check "stats" key for additions and deletions counts
-        "getAllLanguagesUrl": "https://api.github.com/repos/jamesmassa/scrumsee/languages",
-        "getAllContributorsUrl": "https://api.github.com/repos/jamesmassa/scrumsee/contributors"
-}
-
-//Get all issues for a epic with getEpicsUrl + [epicId] + issue
-//https://seescrum.atlassian.net/rest/agile/latest/board/1/epic/10093/issue
-
-//Get all issues for a sprint with getSprintsUrl + [sprintId] + issue
-//This works: https://seescrum.atlassian.net/rest/agile/latest/board/1/sprint/2/issue
-
-//Unix commands to get Git LOC stats
-//git log --no-merges --pretty=format:%an --numstat -C | awk '/./ && !author { author = $0; next } author { ins[author] += $1; del[author] += $2 } /^$/ { author = ""; next } END { for (a in ins) { printf "%10d %10d %10d %s\n", ins[a] - del[a], ins[a], del[a], a } }' | sort -rn
-//git log --no-merges --oneline --numstat -C
-//git log --no-merges --author="jamesmassa" --oneline --numstat -C
-
-//This gives the number of commits for each user
-//git shortlog -s -n
-
 document.addEventListener("DOMContentLoaded", () => {
-// TODO Remove JV data
-// TODO Replace all json files with flask services and move processing to the backend.  Front end is display only logic.
-// TODO Lazy load data which will not be on the initial screen, e.g., chart data
+
+// TODO: group the api calls into these categories (JQL, Jira API, Jira undocumented, Git API, SeeScrum)
+// TODO: Make a Controller class which which orchestrates 1) JiraRepo 2) GitRepo 3) Charts by Sprint, Epic, or Version
+// TODO: Lazy load data which will not be on the initial screen, e.g., chart data
 
     queue()
         .defer(d3.json, "data/jira-sprints.json")  //TODO call oAuth jira link from flask endpoint
@@ -64,6 +33,11 @@ document.addEventListener("DOMContentLoaded", () => {
         .defer(d3.json, "http://127.0.0.1:5000/api/git-pulls")
         .defer(d3.json, "http://127.0.0.1:5000/api/git-releases")
         .defer(d3.json, "http://127.0.0.1:5000/api/git-deployments")
+
+        .defer(d3.json, "http://127.0.0.1:5000/api/git-stats-commit-activity")
+        .defer(d3.json, "http://127.0.0.1:5000/api/git-stats-code-frequency")
+        .defer(d3.json, "http://127.0.0.1:5000/api/git-stats-contributors")
+
         .defer(d3.json, "http://127.0.0.1:5000/api/scrum-help-text")
         .await(visualize);
 });
@@ -89,9 +63,13 @@ function visualize(error,
                    pullsData,
                    releasesData,
                    deploymentsData,
+                   statsCommitActivityData,
+                   statsCodeFrequencyData,
+                   statsContributorsData,
                    scrumHelpText
                 ) {
 
+// TODO: sort log statements in same order as the queue
         console.log("storyHistoryData:", storyHistoryData);
         console.log("activeStoryData:", activeStoryData);
         console.log("futureStoryData:", futureStoryData);
@@ -112,36 +90,38 @@ function visualize(error,
         console.log("releasesData", releasesData);
         console.log("deploymentsData", deploymentsData);
 
+        console.log("statsCommitActivityData", statsCommitActivityData);
+        console.log("statsCodeFrequencyData", statsCodeFrequencyData);
+        console.log("statsContributorsData", statsContributorsData);
 
         const gitRepoData = {
                 "commits": commitsData,
                 "languages": languagesData,
-                "contributors": contributorsData
+                "contributors": contributorsData,
+                "pulls": pullsData,
+                "releases": releasesData,
+                "deployments": deploymentsData,
+                "statsCommitActivity": statsCommitActivityData,
+                "statsCodeFrequency": statsCodeFrequencyData,
+                "statsContributors": statsContributorsData
         }
 
         gitRepo = new GitRepo(gitRepoData);
-        console.log(gitRepo.commits);
-        console.log(gitRepo.languages);
-        console.log(gitRepo.contributors);
 
         const jiraRepoData = {
                 "issues": storyHistoryData.issues.concat(activeStoryData.issues.concat(futureStoryData.issues)),
                 "epics": epicData,
                 "sprints": sprintsData,
                 "versions": versionsData,
-                "refdata": refData
         }
 
         jiraRepo = new JiraRepo(jiraRepoData);
-        console.log(jiraRepo.issues);
-        console.log(jiraRepo.epics);
-        console.log(jiraRepo.sprints);
 
         const completedSprints = jiraRepo.sprints.completedSprints;
         console.log("completedSprints:");
         console.log(completedSprints);
 
-        console.log("Total Storypoints:")
+        console.log("Total Story Points:")
         completedSprints.forEach(s => console.log(s.totalStoryPoints));
 
         console.log("Total Stories:")
@@ -149,7 +129,7 @@ function visualize(error,
                 console.log("Sprint " + sprint.id, sprint.totalStories);
                 });
 
-        console.log("Completed Storypoints:")
+        console.log("Completed Story Points:")
         completedSprints.forEach(s => console.log(s.completedStoryPoints));
 
         console.log("Completed Stories:")
@@ -184,34 +164,6 @@ function visualize(error,
                     visSeeScrum.drawScrumDiagram();
             }
         );
-
-        //Bind events
-        $(eventHandler).bind("selectedIssuePropertyChange", function(event, selection) {
-                issueStore.onSelectedIssuePropertyChange(selection, function () {
-                        visVelocity.onSelectedLayerChange(selection);
-                });
-        });
-
-        $(eventHandler).bind("selectedSprintChange", (event, selection) => {
-                issueStore.onSelectedSprintChange(selection, ()=> {
-                        //TODO update sprint cards
-                });
-        });
-
-        $(eventHandler).bind("selectedVisualizationChange", (event, selection) => {
-                if (selection === "velocity-visualization") visVelocity.onSelectedVisualizationChange();
-
-        });
-
-        //bind triggers
-        d3.select("#issue-property-selector").on("change", function () {
-                $(eventHandler).trigger("selectedIssuePropertyChange", d3.select("#issue-property-selector").property("value"));
-        });
-
-        d3.select("#issue-metric-selector").on("change", function () {
-                $(eventHandler).trigger("selectedMetricChange", d3.select("#issue-metric-selector").property("value"));
-        });
-
 
 }
 

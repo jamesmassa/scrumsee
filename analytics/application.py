@@ -1,11 +1,9 @@
 # TODO
-#  Remove JS file loads
-#  1. Replace d3.queue jira file loads with calls to my flask routes which call the Jira api
-#  2. Replace d3.queue git file loads with calls to my flask routes which call the git api
-#  3. Migrate any non-presentation logic to Python
-#  -------------------------------------------
 #  GIT
-#  1. Add git data to the Velocity chart
+#  1. Call 3 git stats apis from JS
+#  2. Replace git repo LOC calculations with git stats API
+#  3. Add git stats to the Velocity chart
+#  4. Fine tune git stats to line up with sprints using the /commits-for-time-period endpoint
 #  -------------------------------------------
 #  JIRA
 #  https://jira.readthedocs.io/en/master/examples.html
@@ -86,13 +84,52 @@ futureSprintStories = jira.search_issues('project = "SS" and Sprint in futureSpr
 
 git_credentials = get_git_credentials()
 
-
 print("Server Ready")
 
 
+# weekly and daily commits for the last year
+@app.route('/api/git-stats-commit-activity')
+def git_stats_commit_activity():
+    return get_git_url_response("/stats/commit_activity")
+
+
+# Weekly LOC additions and deletions
+@app.route('/api/git-stats-code-frequency')
+def git_stats_code_frequency():
+    return get_git_url_response("/stats/code_frequency")
+
+
+# Weekly adds, deletes, and changes by author for the last year
+@app.route('/api/git-stats-contributors')
+def git_stats_contributors():
+    return get_git_url_response("/stats/contributors")
+
+
+# Returns all commits
 @app.route('/api/git-commits')
 def git_commits():
     return get_git_url_response("/commits")
+
+
+# Returns all commits between 2 timestamps of format 2020-09-30T19:20:30-05:00
+@app.route('/api/git-commits-for-period', methods=["GET"])
+def git_commits_for_period():
+
+    since = request.args["since"]
+    until = request.args["until"]
+
+    params = {'since': since, 'until': until}
+    return get_git_url_response("/commits", params)
+
+
+# Returns a single commit
+@app.route('/api/git-commit', methods=["GET"])
+def git_commit():
+
+    commit_sha = request.args["sha"]
+
+    params = {'sha': commit_sha}
+    return get_git_url_response("/commits", params)
 
 
 @app.route('/api/git-languages')
@@ -120,12 +157,16 @@ def git_deployments():
     return get_git_url_response("/deployments")
 
 
-def get_git_url_response(resource):
+def get_git_url_response(resource, params=None):
 
     git_commit_url = git_credentials['server'] + resource
     token = git_credentials['apikey']
     headers = {'Authorization': f'token {token}'}
-    url_response = requests.get(git_commit_url, headers=headers)
+
+    if params is None:
+        url_response = requests.get(git_commit_url, headers=headers)
+    else:
+        url_response = requests.get(git_commit_url, headers=headers, params=params)
 
     data = url_response.json()
     response = jsonify(data)
@@ -163,6 +204,18 @@ def jira_versions():
     return get_jira_url_response('https://seescrum.atlassian.net/rest/agile/latest/board/1/version/')
 
 
+@app.route('/api/jira-issues-for-epic', methods=["GET"])
+def jira_issues_for_epic():
+    # Compare JQL results to //https://seescrum.atlassian.net/rest/agile/latest/board/1/epic/10093/issue
+    return get_jql_response('project = "SS" and issuetype = Story and epic = ' + request.args["epic"])
+
+
+@app.route('/api/jira-issues-for-sprint', methods=["GET"])
+def jira_issues_for_sprint():
+    # Compare JQL results to https://seescrum.atlassian.net/rest/agile/latest/board/1/sprint/2/issue
+    return get_jql_response('project = "SS" and issuetype = Story and sprint = ' + request.args["sprint"])
+
+
 @app.route('/api/velocity-chart')
 def velocity_chart():
     return get_jira_url_response(
@@ -171,7 +224,7 @@ def velocity_chart():
 
 # TODO Detect active sprint (or receive in param) and set the sprintId value in the url
 @app.route('/api/burn-down-chart')
-def burndown_chart():
+def burn_down_chart():
     return get_jira_url_response('https://seescrum.atlassian.net/rest/greenhopper/1.0/rapid/charts/scopechangeburndownchart.json?rapidViewId=1&sprintId=6&statisticFieldId=field_customfield_10026')
 
 
@@ -194,9 +247,11 @@ def epic_burn_down_chart():
 def retrospecitve_chart():
     return get_json_file_response('retrospective-scores.json')
 
+
 @app.route('/api/scrum-help-text')
 def scrum_help_text():
     return get_json_file_response('scrum-help-text.json')
+
 
 @app.route('/api/cumulative-flow-chart')
 def cumulative_flow_chart():
