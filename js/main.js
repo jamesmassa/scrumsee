@@ -12,8 +12,6 @@ document.addEventListener("DOMContentLoaded", () => {
 // TODO: Lazy load data which will not be on the initial screen, e.g., chart data
 
     queue()
-        .defer(d3.json, "data/jira-sprints.json")  //TODO call oAuth jira link from flask endpoint
-        .defer(d3.json, "data/jira-versions.json") //TODO call oAuth jira link from flask endpoint
         .defer(d3.json, "http://127.0.0.1:5000/api/jira-stories-history")
         .defer(d3.json, "http://127.0.0.1:5000/api/jira-stories-active")
         .defer(d3.json, "http://127.0.0.1:5000/api/jira-stories-future")
@@ -44,10 +42,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 function visualize(error,
-                   //Files to remove
-                   sprintsData, versionsData,
-
-                   //Services to keep
                    storyHistoryData,
                    activeStoryData,
                    futureStoryData,
@@ -74,15 +68,11 @@ function visualize(error,
                 ) {
 
 // TODO: sort log statements in same order as the queue
-        console.log("sprintsDataLegacy:", sprintsData);
         console.log("sprintData:", sprintData);
-        console.log("versionsDataLegacy", versionsData);
         console.log("versionData", versionData);
-
         console.log("storyHistoryData:", storyHistoryData);
         console.log("activeStoryData:", activeStoryData);
         console.log("futureStoryData:", futureStoryData);
-
         console.log("epicData", epicData);
 
         console.log("velocityChartData", velocityChartData);
@@ -120,8 +110,8 @@ function visualize(error,
         const jiraRepoData = {
                 "issues": storyHistoryData.issues.concat(activeStoryData.issues.concat(futureStoryData.issues)),
                 "epics": epicData,
-                "sprints": sprintsData,
-                "versions": versionsData,
+                "sprints": sprintData,
+                "versions": versionData,
         }
 
         jiraRepo = new JiraRepo(jiraRepoData);
