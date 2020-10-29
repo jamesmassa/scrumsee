@@ -1,9 +1,8 @@
 # TODO
 #  GIT
-#  1. Call 3 git stats apis from JS
-#  2. Replace git repo LOC calculations with git stats API
-#  3. Add git stats to the Velocity chart
-#  4. Fine tune git stats to line up with sprints using the /commits-for-time-period endpoint
+#  1. Replace git repo LOC calculations with git stats API
+#  2. Add git stats to the Velocity chart
+#  3. Fine tune git stats to line up with sprints using the /commits-for-time-period endpoint
 #  -------------------------------------------
 #  JIRA
 #  https://jira.readthedocs.io/en/master/examples.html
@@ -191,7 +190,14 @@ def jira_stories_future():
 
 @app.route('/api/jira-sprints')
 def jira_sprints():
-    return get_jira_url_response('https://seescrum.atlassian.net/rest/agile/latest/board/1/sprint/')
+    sprint_list = []
+
+    sprints = jira.sprints(1)
+    for sprint in sprints:
+        print(sprint.raw)
+        sprint_list.append(sprint.raw)
+
+    return get_response(sprint_list)
 
 
 @app.route('/api/jira-epics')
@@ -201,7 +207,15 @@ def jira_epics():
 
 @app.route('/api/jira-versions')
 def jira_versions():
-    return get_jira_url_response('https://seescrum.atlassian.net/rest/agile/latest/board/1/version/')
+    version_list = []
+
+    versions = jira.project_versions("SS")
+    for version in versions:
+        print(version.raw)
+        version_list.append(version.raw)
+
+    return get_response(version_list)
+    # return get_jira_url_response('https://seescrum.atlassian.net/rest/agile/latest/board/1/version/')
 
 
 @app.route('/api/jira-issues-for-epic', methods=["GET"])
