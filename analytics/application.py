@@ -13,21 +13,18 @@
 #       a.  Make one call and check "total" field in the results
 #       b.  Divide by 100 and subtract 1 to determine how many more calls are needed
 #       c.  Execute a loop using "startAt" to get the next 100 rows, and merge the JSON payload into the final payload
-#       d.  Change the loop to fire off all the API calls needed simultaneously and asynchronously.  Investigate asyncio
-#  2. Fix url Jira calls with oAuth
-#     Create private/public keys and an application link:  https://developer.atlassian.com/server/jira/platform/oauth/
-#     Authenticate:  https://jira.readthedocs.io/en/master/examples.html#oauth
-#     http://blog.appliedinformaticsinc.com/how-to-get-authorize-and-request-access-token-for-jira/
-#     http://blog.appliedinformaticsinc.com/how-to-get-auth-configured-and-consumer-key-for-jira-issue-tracker/
+#       d.  Change the loop to fire off all the API calls needed simultaneously and asynchronously.  Investigat
 #  4. Do all the sprint planning analytics Jira stories
 #  5. Create sprint objects for all sprints which have lazy load of collections for stories, tasks, and bugs
 #  6. Loop over future sprints to find active sprint + 1 based up on naming convention, else prompt for next sprint
 #  7. sprint.loadStories(): Get all stories in nextSprint using JQL and add the collection to nextSprint
 #  -------------------------------------------
 #  Environment
-#  0. Add pycache to .gitignore
 #  1. Run flask from within pycharm debugger (or other debugger)
-#  2. Add unit testing.  Grab framework from CS33a homeworks
+#  2. Add pytest
+#     Try this as the template:
+#     https://github.com/pycontribs/jira/blob/7fa3a454c08a14e2d7d7670fcfa87482e16936ba/tests/test_client.py
+#     Can also grab the framework from CS33a homeworks
 #  3. Set up Duo for 2 step verification in Jira
 #       https://confluence.atlassian.com/cloud/two-step-verification-976161185.html#Secureyouraccountwithtwo-stepverification-saml_gsuite
 #  -------------------------------------------
@@ -186,8 +183,9 @@ def jira_stories_future():
     return get_jql_response('project = "SS" and Sprint in futureSprints()')
 
 
-@app.route('/api/jira-sprints')
-def jira_sprints():
+@app.route('/api/jira-sprints-old')
+def jira_sprints_old():
+    # https://seescrum.atlassian.net/rest/agile/latest/board/1/sprint/
     sprint_list = []
 
     sprints = jira.sprints(1)
@@ -197,14 +195,24 @@ def jira_sprints():
 
     return get_response(sprint_list)
 
+@app.route('/api/jira-sprints')
+def jira_sprints():
+
+    url_response = jira._get_json( 'sprint/', base='https://seescrum.atlassian.net/rest/agile/latest/board/1/sprint')
+    print("SPRINTS:", url_response)
+    data = url_response
+
+    return get_response(data)
+    # https://seescrum.atlassian.net/rest/agile/latest/board/1/sprint/
+
 
 @app.route('/api/jira-epics')
 def jira_epics():
     return get_jql_response('project = "SS" and issuetype = Epic')
 
 
-@app.route('/api/jira-versions')
-def jira_versions():
+@app.route('/api/jira-versions-old')
+def jira_versions_old():
     version_list = []
 
     versions = jira.project_versions("SS")
@@ -213,12 +221,22 @@ def jira_versions():
         version_list.append(version.raw)
 
     return get_response(version_list)
-    # 'https://seescrum.atlassian.net/rest/agile/latest/board/1/version/'
+    # https://seescrum.atlassian.net/rest/agile/latest/board/1/version/'
 
+
+@app.route('/api/jira-versions')
+def jira_versions():
+
+    url_response = jira._get_json( 'version/', base='https://seescrum.atlassian.net/rest/agile/latest/board/1/version')
+    print("VERSION:", url_response)
+    data = url_response
+
+    return get_response(data)
+    # https://seescrum.atlassian.net/rest/agile/latest/board/1/version/'
 
 @app.route('/api/jira-issues-for-epic', methods=["GET"])
 def jira_issues_for_epic():
-    # Compare JQL results to //https://seescrum.atlassian.net/rest/agile/latest/board/1/epic/10093/issue
+    # Compare JQL results to https://seescrum.atlassian.net/rest/agile/latest/board/1/epic/10093/issue
     return get_jql_response('project = "SS" and issuetype = Story and epic = ' + request.args["epic"])
 
 
@@ -235,7 +253,7 @@ def velocity_chart():
     url_response = jira._get_json(
         "rapid/charts/velocity.json?rapidViewId=%s"
         % board_id,
-        base=jira.AGILE_BASE_URL,
+        base=jira.AGILE_BASE_URL
     )
 
     sprints = url_response['sprints']
@@ -263,9 +281,9 @@ def burn_down_chart():
     url_response = jira._get_json(
         "rapid/charts/scopechangeburndownchart.json?rapidViewId=%s&sprintId=%s&statisticFieldId=%s"
         % (board_id, sprint_id, statistic_field_id),
-        base=jira.AGILE_BASE_URL,
+        base=jira.AGILE_BASE_URL
     )
-    print("BURN DOWN CHART:", url_response)
+
     changes = url_response['changes']
     work_rate_data = url_response['workRateData']
 
@@ -283,9 +301,9 @@ def release_burn_down_chart():
     url_response = jira._get_json(
         "xboard/plan/backlog/versions.json?rapidViewId=%s"
         % board_id,
-        base=jira.AGILE_BASE_URL,
+        base=jira.AGILE_BASE_URL
     )
-    print("VERSIONS BURN DOWN:", url_response)
+    
     versions = url_response['versionData']
 
     return get_response(versions)
@@ -306,7 +324,7 @@ def epic_burn_down_chart():
     url_response = jira._get_json(
         "rapid/charts/epicprogresschart?rapidViewId=%s&epicKey=%s"
         % (board_id, epic_key),
-        base=jira.AGILE_BASE_URL,
+        base=jira.AGILE_BASE_URL
     )
 
     changes = url_response['changes']
@@ -338,7 +356,7 @@ def cumulative_flow_chart():
     url_response = jira._get_json(
         "rapid/charts/cumulativeflowdiagram.json?rapidViewId=%s&swimlaneId=1&columnId=4&columnId=5&columnId=6"
         % board_id,
-        base=jira.AGILE_BASE_URL,
+        base=jira.AGILE_BASE_URL
     )
 
     columns = url_response['columns']

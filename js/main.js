@@ -48,8 +48,10 @@ function visualize(error,
                    sprintsData, versionsData,
 
                    //Services to keep
-                    storyHistoryData, activeStoryData, futureStoryData,
-                        sprintData,
+                   storyHistoryData,
+                   activeStoryData,
+                   futureStoryData,
+                   sprintData,
                    epicData,
                    versionData,
                    velocityChartData,
@@ -72,12 +74,17 @@ function visualize(error,
                 ) {
 
 // TODO: sort log statements in same order as the queue
+        console.log("sprintsDataLegacy:", sprintsData);
+        console.log("sprintData:", sprintData);
+        console.log("versionsDataLegacy", versionsData);
+        console.log("versionData", versionData);
+
         console.log("storyHistoryData:", storyHistoryData);
         console.log("activeStoryData:", activeStoryData);
         console.log("futureStoryData:", futureStoryData);
-        console.log("sprintData:", sprintData);
+
         console.log("epicData", epicData);
-        console.log("versionData", versionData);
+
         console.log("velocityChartData", velocityChartData);
         console.log("burnDownChartData", burnDownChartData);
         console.log("releaseBurnDownChartData", releaseBurnDownChartData);
