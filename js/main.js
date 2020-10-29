@@ -21,11 +21,11 @@ document.addEventListener("DOMContentLoaded", () => {
         .defer(d3.json, "http://127.0.0.1:5000/api/jira-epics")
         .defer(d3.json, "http://127.0.0.1:5000/api/jira-versions")
         .defer(d3.json, "http://127.0.0.1:5000/api/velocity-chart")
-        // .defer(d3.json, "http://127.0.0.1:5000/api/burn-down-chart")
-        // .defer(d3.json, "http://127.0.0.1:5000/api/release-burn-down-chart")
-        // .defer(d3.json, "http://127.0.0.1:5000/api/epic-burn-down-chart")
+        .defer(d3.json, "http://127.0.0.1:5000/api/burn-down-chart")
+        .defer(d3.json, "http://127.0.0.1:5000/api/release-burn-down-chart")
+        .defer(d3.json, "http://127.0.0.1:5000/api/epic-burn-down-chart")
         .defer(d3.json, "http://127.0.0.1:5000/api/retrospective-chart")
-        // .defer(d3.json, "http://127.0.0.1:5000/api/cumulative-flow-chart")
+        .defer(d3.json, "http://127.0.0.1:5000/api/cumulative-flow-chart")
         .defer(d3.json, "http://127.0.0.1:5000/api/ifa")
         .defer(d3.json, "http://127.0.0.1:5000/api/git-commits")
         .defer(d3.json, "http://127.0.0.1:5000/api/git-languages")
@@ -53,9 +53,11 @@ function visualize(error,
                    epicData,
                    versionData,
                    velocityChartData,
-                   // burnDownChartData, releaseBurnDownChartData, epicBurnDownChartDate,
+                   burnDownChartData,
+                   releaseBurnDownChartData,
+                   epicBurnDownChartDate,
                    retrospectiveChartData,
-                        //cumulativeFlowChartData,
+                   cumulativeFlowChartData,
                    ifaData,
                    commitsData,
                    languagesData,
@@ -77,11 +79,11 @@ function visualize(error,
         console.log("epicData", epicData);
         console.log("versionData", versionData);
         console.log("velocityChartData", velocityChartData);
-        // console.log(burnDownChartData);
-        // console.log(releaseBurnDownChartData);
-        // console.log(epicBurnDownChartDate);
-        console.log("retrospectiveChartData:", retrospectiveChartData);
-        // console.log(cumulativeFlowChartData);
+        console.log("burnDownChartData", burnDownChartData);
+        console.log("releaseBurnDownChartData", releaseBurnDownChartData);
+        console.log("epicBurnDownChartDate", epicBurnDownChartDate);
+        console.log("retrospectiveChartData", retrospectiveChartData);
+        console.log("cumulativeFlowChartData", cumulativeFlowChartData);
         console.log("ifaData", ifaData);
         console.log("commitsData", commitsData);
         console.log("languagesData", languagesData);

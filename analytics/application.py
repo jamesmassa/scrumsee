@@ -6,10 +6,12 @@
 #  -------------------------------------------
 #  JIRA
 #  https://jira.readthedocs.io/en/master/examples.html
+#  Data acquisition
+#  1. replace file loads for sprints and versions with api calls
 #  Analytics
 #  1. Add JQL pagination
 #       a.  Make one call and check "total" field in the results
-#       b.  Divide by 100 and subract 1 to determine how many more calls are needed
+#       b.  Divide by 100 and subtract 1 to determine how many more calls are needed
 #       c.  Execute a loop using "startAt" to get the next 100 rows, and merge the JSON payload into the final payload
 #       d.  Change the loop to fire off all the API calls needed simultaneously and asynchronously.  Investigate asyncio
 #  2. Fix url Jira calls with oAuth
@@ -17,7 +19,7 @@
 #     Authenticate:  https://jira.readthedocs.io/en/master/examples.html#oauth
 #     http://blog.appliedinformaticsinc.com/how-to-get-authorize-and-request-access-token-for-jira/
 #     http://blog.appliedinformaticsinc.com/how-to-get-auth-configured-and-consumer-key-for-jira-issue-tracker/
-#  4. Do all the sprint planning analytics Jiras
+#  4. Do all the sprint planning analytics Jira stories
 #  5. Create sprint objects for all sprints which have lazy load of collections for stories, tasks, and bugs
 #  6. Loop over future sprints to find active sprint + 1 based up on naming convention, else prompt for next sprint
 #  7. sprint.loadStories(): Get all stories in nextSprint using JQL and add the collection to nextSprint
@@ -36,7 +38,6 @@ import os
 import requests
 import json
 from jira import JIRA
-from jira.resources import GreenHopperResource
 
 from flask import Flask, jsonify, render_template, request, redirect, url_for
 
@@ -77,10 +78,6 @@ def get_git_credentials():
 
 # Load jira issue data into global json objects
 jira = jira_login()
-
-closedSprintStories = jira.search_issues('project = "SS" and Sprint in closedSprints()')
-openSprintStories = jira.search_issues('project = "SS" and Sprint in openSprints()')
-futureSprintStories = jira.search_issues('project = "SS" and Sprint in futureSprints()')
 
 git_credentials = get_git_credentials()
 
@@ -216,7 +213,7 @@ def jira_versions():
         version_list.append(version.raw)
 
     return get_response(version_list)
-    # return get_jira_url_response('https://seescrum.atlassian.net/rest/agile/latest/board/1/version/')
+    # 'https://seescrum.atlassian.net/rest/agile/latest/board/1/version/'
 
 
 @app.route('/api/jira-issues-for-epic', methods=["GET"])
@@ -233,30 +230,93 @@ def jira_issues_for_sprint():
 
 @app.route('/api/velocity-chart')
 def velocity_chart():
-    return get_green_hopper_response(
-        'https://seescrum.atlassian.net/rest/greenhopper/1.0/rapid/charts/velocity.json?rapidViewId=1')
+    board_id = 1
+
+    url_response = jira._get_json(
+        "rapid/charts/velocity.json?rapidViewId=%s"
+        % board_id,
+        base=jira.AGILE_BASE_URL,
+    )
+
+    sprints = url_response['sprints']
+    velocity_stat_entries = url_response['velocityStatEntries']
+
+    data = {"velocityChartData": {
+        "sprints": sprints,
+        "velocityStatEntries": velocity_stat_entries
+    }}
+
+    return get_response(data)
+
     # 'https://seescrum.atlassian.net/rest/greenhopper/1.0/rapid/charts/velocity.json?rapidViewId=1')
 
 
 # TODO Detect active sprint (or receive in param) and set the sprintId value in the url
 @app.route('/api/burn-down-chart')
 def burn_down_chart():
-    return get_jira_url_response('https://seescrum.atlassian.net/rest/greenhopper/1.0/rapid/charts/scopechangeburndownchart.json?rapidViewId=1&sprintId=6&statisticFieldId=field_customfield_10026')
+    # 'https://seescrum.atlassian.net/rest/greenhopper/1.0/rapid/charts/scopechangeburndownchart.json?rapidViewId=1&sprintId=6&statisticFieldId=field_customfield_10026'
+
+    board_id = 1
+    sprint_id = 6
+    statistic_field_id = 'field_customfield_10026'
+
+    url_response = jira._get_json(
+        "rapid/charts/scopechangeburndownchart.json?rapidViewId=%s&sprintId=%s&statisticFieldId=%s"
+        % (board_id, sprint_id, statistic_field_id),
+        base=jira.AGILE_BASE_URL,
+    )
+    print("BURN DOWN CHART:", url_response)
+    changes = url_response['changes']
+    work_rate_data = url_response['workRateData']
+
+    data = {
+        "changes": changes,
+        "work_rate_data": work_rate_data
+    }
+    return get_response(data)
 
 
 @app.route('/api/release-burn-down-chart')
 def release_burn_down_chart():
-    return get_jira_url_response(
-        'https://seescrum.atlassian.net/rest/greenhopper/1.0/xboard/plan/backlog/versions.json?rapidViewId=1')
+    board_id = 1
+
+    url_response = jira._get_json(
+        "xboard/plan/backlog/versions.json?rapidViewId=%s"
+        % board_id,
+        base=jira.AGILE_BASE_URL,
+    )
+    print("VERSIONS BURN DOWN:", url_response)
+    versions = url_response['versionData']
+
+    return get_response(versions)
+
+    #  'https://seescrum.atlassian.net/rest/greenhopper/1.0/xboard/plan/backlog/versions.json?rapidViewId=1')
 
 
 # TODO Decide which of the 2 URLs to use
 # TODO Accept GET parameter with the epic ID/Key
 @app.route('/api/epic-burn-down-chart')
 def epic_burn_down_chart():
-    # https://seescrum.atlassian.net/rest/greenhopper/1.0/rapid/charts/epicreport?rapidViewId=1&epicKey=SS-94&_=1602620674330
-    return get_jira_url_response(
-        'https://seescrum.atlassian.net/rest/greenhopper/1.0/rapid/charts/epicprogresschart?rapidViewId=1&epicKey=SS-1')
+    # https://seescrum.atlassian.net/rest/greenhopper/1.0/rapid/charts/epicreport?rapidViewId=1&epicKey=SS-94
+    # https://seescrum.atlassian.net/rest/greenhopper/1.0/rapid/charts/epicprogresschart?rapidViewId=1&epicKey=SS-1
+
+    board_id = 1
+    epic_key = 'SS-1'
+
+    url_response = jira._get_json(
+        "rapid/charts/epicprogresschart?rapidViewId=%s&epicKey=%s"
+        % (board_id, epic_key),
+        base=jira.AGILE_BASE_URL,
+    )
+
+    changes = url_response['changes']
+    work_rate_data = url_response['workRateData']
+
+    data = {
+        "changes": changes,
+        "work_rate_data": work_rate_data
+    }
+    return get_response(data)
 
 
 @app.route('/api/retrospective-chart')
@@ -271,26 +331,49 @@ def scrum_help_text():
 
 @app.route('/api/cumulative-flow-chart')
 def cumulative_flow_chart():
-    return get_jira_url_response(
-        'https://seescrum.atlassian.net/rest/greenhopper/1.0/rapid/charts/cumulativeflowdiagram.json?rapidViewId=1&swimlaneId=1&columnId=4&columnId=5&columnId=6')
+    # https://seescrum.atlassian.net/rest/greenhopper/1.0/rapid/charts/cumulativeflowdiagram.json?rapidViewId=1&swimlaneId=1&columnId=4&columnId=5&columnId=6
+
+    board_id = 1
+
+    url_response = jira._get_json(
+        "rapid/charts/cumulativeflowdiagram.json?rapidViewId=%s&swimlaneId=1&columnId=4&columnId=5&columnId=6"
+        % board_id,
+        base=jira.AGILE_BASE_URL,
+    )
+
+    columns = url_response['columns']
+    column_changes = url_response['columnChanges']
+    first_change_time = url_response['firstChangeTime']
+    now = url_response['now']
+
+    data = {"cumulativeFlowChartData": {
+        "columns": columns,
+        "columnChanges": column_changes,
+        "firstChangeTime": first_change_time,
+        "now": now,
+    }}
+
+    return get_response(data)
 
 
 @app.route('/api/ifa')
 def items_for_attention():
+    future_sprint_stories = jira.search_issues('project = "SS" and Sprint in futureSprints()')
+
     fibonacci = [0, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144]
 
-    not_estimated = [(issue.id, issue.key) for issue in futureSprintStories if issue.fields.customfield_10026 is None]
+    not_estimated = [(issue.id, issue.key) for issue in future_sprint_stories if issue.fields.customfield_10026 is None]
 
-    not_fibonacci = [(issue.id, issue.key) for issue in futureSprintStories
+    not_fibonacci = [(issue.id, issue.key) for issue in future_sprint_stories
                      if issue.fields.customfield_10026 not in fibonacci]
 
-    unassigned = [(issue.id, issue.key) for issue in futureSprintStories if issue.fields.assignee is None]
+    unassigned = [(issue.id, issue.key) for issue in future_sprint_stories if issue.fields.assignee is None]
 
-    must_split = [(issue.id, issue.key) for issue in futureSprintStories
+    must_split = [(issue.id, issue.key) for issue in future_sprint_stories
                   if issue.fields.customfield_10026 is not None and
                   int(issue.fields.customfield_10026) > 8]
 
-    no_epic = [(issue.id, issue.key) for issue in futureSprintStories if issue.fields.customfield_10014 is None]
+    no_epic = [(issue.id, issue.key) for issue in future_sprint_stories if issue.fields.customfield_10014 is None]
 
     data = {
         "notEstimated": not_estimated,
@@ -305,53 +388,6 @@ def items_for_attention():
 
 def get_jql_response(jql):
     return get_response(jira.search_issues(jql, json_result=True, maxResults=100))
-
-
-def get_jira_url_response(url):
-
-    url_response = jira.find(url)
-    data = url_response.text
-    print("URL RESPONSE", data)
-
-    response = jsonify(data)
-    response.headers.add('Access-Control-Allow-Origin', '*')
-    return response
-
-
-def get_green_hopper_response(url):
-
-    # url_response = jira.removedIssuesEstimateSum(1, 1)
-    board_id = 1
-    sprint_id = 1
-    url_response = jira._get_json(
-            "rapid/charts/sprintreport?rapidViewId=%s&sprintId=%s"
-            % (board_id, sprint_id),
-            base=jira.AGILE_BASE_URL,
-        )
-
-    url_response = jira._get_json(
-            "rapid/charts/velocity.json?rapidViewId=%s"
-            % (board_id),
-            base=jira.AGILE_BASE_URL,
-        )
-
-
-    print("response type", type(url_response))
-    print("URL RESPONSE", url_response)
-
-    # data = url_response['velocityStatEntries']
-
-    sprints = url_response['sprints']
-    velocity_stat_entries =url_response['velocityStatEntries']
-
-    data = {"velocityChartData": {
-                "sprints": sprints,
-                "velocityStatEntries": velocity_stat_entries
-            }}
-
-    response = jsonify(data)
-    response.headers.add('Access-Control-Allow-Origin', '*')
-    return response
 
 
 def get_json_file_response(path):
@@ -374,4 +410,3 @@ def home():
 def error():
     errormessage = request.args.get("errormessage")
     return render_template("error.html", errormessage=errormessage)
-
