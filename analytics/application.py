@@ -36,6 +36,7 @@ import os
 import requests
 import json
 from jira import JIRA
+from jira.resources import GreenHopperResource
 
 from flask import Flask, jsonify, render_template, request, redirect, url_for
 
@@ -232,8 +233,9 @@ def jira_issues_for_sprint():
 
 @app.route('/api/velocity-chart')
 def velocity_chart():
-    return get_jira_url_response(
+    return get_green_hopper_response(
         'https://seescrum.atlassian.net/rest/greenhopper/1.0/rapid/charts/velocity.json?rapidViewId=1')
+    # 'https://seescrum.atlassian.net/rest/greenhopper/1.0/rapid/charts/velocity.json?rapidViewId=1')
 
 
 # TODO Detect active sprint (or receive in param) and set the sprintId value in the url
@@ -307,22 +309,45 @@ def get_jql_response(jql):
 
 def get_jira_url_response(url):
 
-    try:
-        with open('tokens.json') as file:
-            login_data = json.load(file)
-    except IOError as err:
-        print("I/O error: {0}".format(err))
-    except Exception as err:
-        print("Exception: {0}".format(err))
-
-# TODO get oAuth credentials for Jira
-    apikey = login_data['jira']['apikey']
-    user = login_data['jira']['user']
-    server = login_data['jira']['server']
-
-    url += "?os_username=" + user + "&os_password=" + apikey
-    url_response = requests.get(url)
+    url_response = jira.find(url)
     data = url_response.text
+    print("URL RESPONSE", data)
+
+    response = jsonify(data)
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    return response
+
+
+def get_green_hopper_response(url):
+
+    # url_response = jira.removedIssuesEstimateSum(1, 1)
+    board_id = 1
+    sprint_id = 1
+    url_response = jira._get_json(
+            "rapid/charts/sprintreport?rapidViewId=%s&sprintId=%s"
+            % (board_id, sprint_id),
+            base=jira.AGILE_BASE_URL,
+        )
+
+    url_response = jira._get_json(
+            "rapid/charts/velocity.json?rapidViewId=%s"
+            % (board_id),
+            base=jira.AGILE_BASE_URL,
+        )
+
+
+    print("response type", type(url_response))
+    print("URL RESPONSE", url_response)
+
+    # data = url_response['velocityStatEntries']
+
+    sprints = url_response['sprints']
+    velocity_stat_entries =url_response['velocityStatEntries']
+
+    data = {"velocityChartData": {
+                "sprints": sprints,
+                "velocityStatEntries": velocity_stat_entries
+            }}
 
     response = jsonify(data)
     response.headers.add('Access-Control-Allow-Origin', '*')
@@ -349,3 +374,4 @@ def home():
 def error():
     errormessage = request.args.get("errormessage")
     return render_template("error.html", errormessage=errormessage)
+

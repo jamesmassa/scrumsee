@@ -1,5 +1,10 @@
 .DS_Store
 ./analytics/tokens.json
+./analytics/jira_privatekey.pcks8
+./analytics/jira_privatekey.pem
+./analytics/jira_publickey.cer
+./analytics/jira_publickey.pem
+./analytics/jira_*
 *.log
 *.pot
 *.pyc
