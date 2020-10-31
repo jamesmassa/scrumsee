@@ -7,11 +7,20 @@ let visVelocity = null;
 
 document.addEventListener("DOMContentLoaded", () => {
 
-// TODO: group the api calls into these categories (JQL, Jira API, Jira undocumented, Git API, SeeScrum)
-// TODO: Make a Controller class which which orchestrates 1) JiraRepo 2) GitRepo 3) Charts by Sprint, Epic, or Version
+// TODO: Velocity Chart
+//      1. Use completed data from the Velocity Chart Data service and remove my JS calculations
+//      2. Tag Git data with sprints and visualize it
+//      3. Add estimated (committed) bars
+//      4. Add reliability index (committed vs. completed)
+//      5. Normalize for team size, i.e., December has a lower absolute velocity but may be higher relative to team size
+//      6. Add selectors for Assignee, story size, component, epic, time period
+//
+// TODO: Auto-Tag the retro data with the same sprint names as Jira and automate the same number of completed sprints
 // TODO: Lazy load data which will not be on the initial screen, e.g., chart data
 
     queue()
+
+        //Jira Data
         .defer(d3.json, "http://127.0.0.1:5000/api/jira-stories-history")
         .defer(d3.json, "http://127.0.0.1:5000/api/jira-stories-active")
         .defer(d3.json, "http://127.0.0.1:5000/api/jira-stories-future")
@@ -22,26 +31,30 @@ document.addEventListener("DOMContentLoaded", () => {
         .defer(d3.json, "http://127.0.0.1:5000/api/burn-down-chart")
         .defer(d3.json, "http://127.0.0.1:5000/api/release-burn-down-chart")
         .defer(d3.json, "http://127.0.0.1:5000/api/epic-burn-down-chart")
-        .defer(d3.json, "http://127.0.0.1:5000/api/retrospective-chart")
         .defer(d3.json, "http://127.0.0.1:5000/api/cumulative-flow-chart")
-        .defer(d3.json, "http://127.0.0.1:5000/api/ifa")
+
+        //Git Data
         .defer(d3.json, "http://127.0.0.1:5000/api/git-commits")
         .defer(d3.json, "http://127.0.0.1:5000/api/git-languages")
         .defer(d3.json, "http://127.0.0.1:5000/api/git-contributors")
         .defer(d3.json, "http://127.0.0.1:5000/api/git-pulls")
         .defer(d3.json, "http://127.0.0.1:5000/api/git-releases")
         .defer(d3.json, "http://127.0.0.1:5000/api/git-deployments")
-
         .defer(d3.json, "http://127.0.0.1:5000/api/git-stats-commit-activity")
         .defer(d3.json, "http://127.0.0.1:5000/api/git-stats-code-frequency")
         .defer(d3.json, "http://127.0.0.1:5000/api/git-stats-contributors")
 
+        //See Scrum Other Data
+        .defer(d3.json, "http://127.0.0.1:5000/api/ifa")
+        .defer(d3.json, "http://127.0.0.1:5000/api/retrospective-chart")
         .defer(d3.json, "http://127.0.0.1:5000/api/scrum-help-text")
         .await(visualize);
 });
 
 
 function visualize(error,
+
+                   //Jira Data
                    storyHistoryData,
                    activeStoryData,
                    futureStoryData,
@@ -52,9 +65,9 @@ function visualize(error,
                    burnDownChartData,
                    releaseBurnDownChartData,
                    epicBurnDownChartDate,
-                   retrospectiveChartData,
                    cumulativeFlowChartData,
-                   ifaData,
+
+                   //Git Data
                    commitsData,
                    languagesData,
                    contributorsData,
@@ -64,34 +77,41 @@ function visualize(error,
                    statsCommitActivityData,
                    statsCodeFrequencyData,
                    statsContributorsData,
+
+                   //See Scrum Other Data
+                   ifaData,
+                   retrospectiveChartData,
                    scrumHelpText
                 ) {
 
-// TODO: sort log statements in same order as the queue
-        console.log("sprintData:", sprintData);
-        console.log("versionData", versionData);
+        //Jira Data
         console.log("storyHistoryData:", storyHistoryData);
         console.log("activeStoryData:", activeStoryData);
         console.log("futureStoryData:", futureStoryData);
+        console.log("sprintData:", sprintData);
         console.log("epicData", epicData);
-
+        console.log("versionData", versionData);
         console.log("velocityChartData", velocityChartData);
         console.log("burnDownChartData", burnDownChartData);
         console.log("releaseBurnDownChartData", releaseBurnDownChartData);
         console.log("epicBurnDownChartDate", epicBurnDownChartDate);
-        console.log("retrospectiveChartData", retrospectiveChartData);
         console.log("cumulativeFlowChartData", cumulativeFlowChartData);
-        console.log("ifaData", ifaData);
+
+        //Git Data
         console.log("commitsData", commitsData);
         console.log("languagesData", languagesData);
         console.log("contributorsData", contributorsData);
         console.log("pullsData", pullsData);
         console.log("releasesData", releasesData);
         console.log("deploymentsData", deploymentsData);
-
         console.log("statsCommitActivityData", statsCommitActivityData);
         console.log("statsCodeFrequencyData", statsCodeFrequencyData);
         console.log("statsContributorsData", statsContributorsData);
+
+        //See Scrum Other Data
+        console.log("ifaData", ifaData);
+        console.log("retrospectiveChartData", retrospectiveChartData);
+        console.log("Scrum Text", scrumHelpText);
 
         const gitRepoData = {
                 "commits": commitsData,
@@ -108,31 +128,20 @@ function visualize(error,
         gitRepo = new GitRepo(gitRepoData);
 
         const jiraRepoData = {
-                "issues": storyHistoryData.issues.concat(activeStoryData.issues.concat(futureStoryData.issues)),
+                "storyHistoryData": storyHistoryData,
+                "activeStoryData": activeStoryData,
+                "futureStoryData": futureStoryData,
                 "epics": epicData,
                 "sprints": sprintData,
                 "versions": versionData,
+                "velocityChartData": velocityChartData,
+                "burnDownChartData": burnDownChartData,
+                "releaseBurnDownChartData": releaseBurnDownChartData,
+                "epicBurnDownChartDate": epicBurnDownChartDate,
+                "cumulativeFlowChartData": cumulativeFlowChartData
         }
 
         jiraRepo = new JiraRepo(jiraRepoData);
-
-        const completedSprints = jiraRepo.sprints.completedSprints;
-        console.log("completedSprints:");
-        console.log(completedSprints);
-
-        console.log("Total Story Points:")
-        completedSprints.forEach(s => console.log(s.totalStoryPoints));
-
-        console.log("Total Stories:")
-        completedSprints.forEach(sprint => {
-                console.log("Sprint " + sprint.id, sprint.totalStories);
-                });
-
-        console.log("Completed Story Points:")
-        completedSprints.forEach(s => console.log(s.completedStoryPoints));
-
-        console.log("Completed Stories:")
-        completedSprints.forEach(s => console.log(s.completedStories));
 
         const scrumTextStore = new ScrumTextStore(scrumHelpText);
         const retroStore = new RetroStore(retrospectiveChartData);

@@ -101,17 +101,6 @@ class Sprint {
         this._completeDate = data.completeDate; //actual
         this._sequence = data.sequence; //positioning of sprint in the board relative to other sprints
         this._rapidViewId = data.rapidViewId; //id of the Jira board that the sprint was created in
-
-// TODO:  Add Git Data
-//         this._codeCommits = gitRepo.getCommitsForSprint(this.number);
-//         this._netLinesOfCode = gitRepo.getNetLocForSprint(this.number);
-//         this._linesOfCodeDeleted = gitRepo.getLocDeletedForSprint(this.number);
-//         this._linesOfCodeAdded = gitRepo.getLocAddedForSprint(this.number);
-//         this._contributors = gitRepo.getContributorsForSprint(this.number);
-//         this._gitPulls = gitRepo.getPullsForSprint(this.number);
-//         this._gitReleases = gitRepo.getReleasesForSprint(this.number);
-//         this._gitDeployments = gitRepo.getDeploymentsForSprint(this.number);
-
     }
 
 
@@ -141,16 +130,6 @@ class Sprint {
     get issueTypes(){return Array.from(new Set(this.issues.map(issue => issue.issuetype)));}
     get statuses(){return Array.from(new Set(this.issues.map(issue => issue.status)));}
 
-// TODO add Git data
-//     get codeCommits(){return this._codeCommits}
-//     get contributors(){return this._contributors}
-//     get netLinesOfCode(){return this._netLinesOfCode;}
-//     get linesOfCodeDeleted(){return this._LOCDeletions;}
-//     get linesOfCodeAdded(){return this._LOCAdditions;}
-//     get gitPulls(){return this._gitPulls;}
-//     get gitReleases(){return this._gitReleases;}
-//     get gitDeployments(){return this._gitDeployments;}
-
 }
 
 class Sprints {
@@ -168,20 +147,25 @@ class Sprints {
 class JiraRepo {
 
     constructor(data) {
-        this._issues = new Issues(data.issues);
+        this._issues = new Issues(data.storyHistoryData.issues.concat(
+            data.activeStoryData.issues.concat(data.futureStoryData.issues)));
+
+        this._historicalStories = data.storyHistoryData;
+        this._activeStories = data.activeStoryData;
+        this._futureStories = data.futureStoryData;
+
         this._sprints = new Sprints(data.sprints.values);
         this._epics = new Epics(data.epics.issues);
         this._parseDate = d3.timeParse("%Y-%m-%dT%H:%M:%S.%L%Z");
     }
 
-    get backlog(){return this._issues.getFilteredIssues(issue => issue.sprintId === null);}
-    get activeSprint(){return this._sprints.activeSprint;}
-    get previousSprint(){return this._sprints.previousSprint;}
-    get futureSprints(){return this._sprints.futureSprints;}
-    get completedSprints(){return this._sprints.completedSprints;}
+    get backlog(){return this.issues.getFilteredIssues(issue => issue.sprintId === null);}
+    get activeSprint(){return this.sprints.activeSprint;}
+    get previousSprint(){return this.sprints.previousSprint;}
+    get futureSprints(){return this.sprints.futureSprints;}
+    get completedSprints(){return this.sprints.completedSprints;}
 
     get sprints() {return this._sprints;}
     get issues(){return this._issues;}
     get epics(){return this._epics;}
-
 }

@@ -1,4 +1,11 @@
 # TODO
+#  -------------------------------------------
+#  GENERAL
+#  1. Combine all JQL routes and pass JQL from main.js in querystring
+#  2. Combine all Git routes and pass relative url from main.js
+#  3. Make a global variable for board_id = 1
+#  4. Migrate all JS logic to the back-end and, where possible, leverage the Jira and Git APIs rather than writing bespoke code
+#  -------------------------------------------
 #  GIT
 #  1. Replace git repo LOC calculations with git stats API
 #  2. Add git stats to the Velocity chart
@@ -6,14 +13,12 @@
 #  -------------------------------------------
 #  JIRA
 #  https://jira.readthedocs.io/en/master/examples.html
-#  Data acquisition
-#  1. replace file loads for sprints and versions with api calls
 #  Analytics
 #  1. Add JQL pagination
 #       a.  Make one call and check "total" field in the results
 #       b.  Divide by 100 and subtract 1 to determine how many more calls are needed
 #       c.  Execute a loop using "startAt" to get the next 100 rows, and merge the JSON payload into the final payload
-#       d.  Change the loop to fire off all the API calls needed simultaneously and asynchronously.  Investigat
+#       d.  Change the loop to fire off all the API calls needed simultaneously and asynchronously.
 #  4. Do all the sprint planning analytics Jira stories
 #  5. Create sprint objects for all sprints which have lazy load of collections for stories, tasks, and bugs
 #  6. Loop over future sprints to find active sprint + 1 based up on naming convention, else prompt for next sprint
@@ -28,8 +33,6 @@
 #  3. Set up Duo for 2 step verification in Jira
 #       https://confluence.atlassian.com/cloud/two-step-verification-976161185.html#Secureyouraccountwithtwo-stepverification-saml_gsuite
 #  -------------------------------------------
-#  GENERAL
-#  1. Migrate more JS logic to the back-end, e.g., "get issues for sprint"
 
 import os
 import requests
@@ -82,25 +85,25 @@ print("Server Ready")
 
 
 # weekly and daily commits for the last year
-@app.route('/api/git-stats-commit-activity')
+@app.route('/api/git-stats-commit-activity', methods=["GET"])
 def git_stats_commit_activity():
     return get_git_url_response("/stats/commit_activity")
 
 
 # Weekly LOC additions and deletions
-@app.route('/api/git-stats-code-frequency')
+@app.route('/api/git-stats-code-frequency', methods=["GET"])
 def git_stats_code_frequency():
     return get_git_url_response("/stats/code_frequency")
 
 
 # Weekly adds, deletes, and changes by author for the last year
-@app.route('/api/git-stats-contributors')
+@app.route('/api/git-stats-contributors', methods=["GET"])
 def git_stats_contributors():
     return get_git_url_response("/stats/contributors")
 
 
 # Returns all commits
-@app.route('/api/git-commits')
+@app.route('/api/git-commits', methods=["GET"])
 def git_commits():
     return get_git_url_response("/commits")
 
@@ -126,27 +129,27 @@ def git_commit():
     return get_git_url_response("/commits", params)
 
 
-@app.route('/api/git-languages')
+@app.route('/api/git-languages', methods=["GET"])
 def git_languages():
     return get_git_url_response("/languages")
 
 
-@app.route('/api/git-contributors')
+@app.route('/api/git-contributors', methods=["GET"])
 def git_contributors():
     return get_git_url_response("/contributors")
 
 
-@app.route('/api/git-pulls')
+@app.route('/api/git-pulls', methods=["GET"])
 def git_pulls():
     return get_git_url_response("/pulls")
 
 
-@app.route('/api/git-releases')
+@app.route('/api/git-releases', methods=["GET"])
 def git_releases():
     return get_git_url_response("/releases")
 
 
-@app.route('/api/git-deployments')
+@app.route('/api/git-deployments', methods=["GET"])
 def git_deployments():
     return get_git_url_response("/deployments")
 
@@ -168,68 +171,38 @@ def get_git_url_response(resource, params=None):
     return response
 
 
-@app.route('/api/jira-stories-history')
+@app.route('/api/jira-stories-history', methods=["GET"])
 def jira_stories_history():
     return get_jql_response('project = "SS" and Sprint in closedSprints()')
 
 
-@app.route('/api/jira-stories-active')
+@app.route('/api/jira-stories-active', methods=["GET"])
 def jira_stories_active():
     return get_jql_response('project = "SS" and Sprint in openSprints()')
 
 
-@app.route('/api/jira-stories-future')
+@app.route('/api/jira-stories-future', methods=["GET"])
 def jira_stories_future():
     return get_jql_response('project = "SS" and Sprint in futureSprints()')
 
 
-@app.route('/api/jira-sprints-old')
-def jira_sprints_old():
-    # https://seescrum.atlassian.net/rest/agile/latest/board/1/sprint/
-    sprint_list = []
-
-    sprints = jira.sprints(1)
-    for sprint in sprints:
-        print(sprint.raw)
-        sprint_list.append(sprint.raw)
-
-    return get_response(sprint_list)
-
-@app.route('/api/jira-sprints')
+@app.route('/api/jira-sprints', methods=["GET"])
 def jira_sprints():
 
-    url_response = jira._get_json( 'sprint/', base='https://seescrum.atlassian.net/rest/agile/latest/board/1/sprint')
-    print("SPRINTS:", url_response)
-    data = url_response
-
+    data = jira._get_json( 'sprint/', base='https://seescrum.atlassian.net/rest/agile/latest/board/1/sprint')
     return get_response(data)
     # https://seescrum.atlassian.net/rest/agile/latest/board/1/sprint/
 
 
-@app.route('/api/jira-epics')
+@app.route('/api/jira-epics', methods=["GET"])
 def jira_epics():
     return get_jql_response('project = "SS" and issuetype = Epic')
 
 
-@app.route('/api/jira-versions-old')
-def jira_versions_old():
-    version_list = []
-
-    versions = jira.project_versions("SS")
-    for version in versions:
-        print(version.raw)
-        version_list.append(version.raw)
-
-    return get_response(version_list)
-    # https://seescrum.atlassian.net/rest/agile/latest/board/1/version/'
-
-
-@app.route('/api/jira-versions')
+@app.route('/api/jira-versions',  methods=["GET"])
 def jira_versions():
 
-    url_response = jira._get_json( 'version/', base='https://seescrum.atlassian.net/rest/agile/latest/board/1/version')
-    print("VERSION:", url_response)
-    data = url_response
+    data = jira._get_json( 'version/', base='https://seescrum.atlassian.net/rest/agile/latest/board/1/version')
 
     return get_response(data)
     # https://seescrum.atlassian.net/rest/agile/latest/board/1/version/'
@@ -246,7 +219,7 @@ def jira_issues_for_sprint():
     return get_jql_response('project = "SS" and issuetype = Story and sprint = ' + request.args["sprint"])
 
 
-@app.route('/api/velocity-chart')
+@app.route('/api/velocity-chart', methods=["GET"])
 def velocity_chart():
     board_id = 1
 
@@ -270,7 +243,7 @@ def velocity_chart():
 
 
 # TODO Detect active sprint (or receive in param) and set the sprintId value in the url
-@app.route('/api/burn-down-chart')
+@app.route('/api/burn-down-chart', methods=["GET"])
 def burn_down_chart():
     # 'https://seescrum.atlassian.net/rest/greenhopper/1.0/rapid/charts/scopechangeburndownchart.json?rapidViewId=1&sprintId=6&statisticFieldId=field_customfield_10026'
 
@@ -294,7 +267,7 @@ def burn_down_chart():
     return get_response(data)
 
 
-@app.route('/api/release-burn-down-chart')
+@app.route('/api/release-burn-down-chart', methods=["GET"])
 def release_burn_down_chart():
     board_id = 1
 
@@ -303,7 +276,7 @@ def release_burn_down_chart():
         % board_id,
         base=jira.AGILE_BASE_URL
     )
-    
+
     versions = url_response['versionData']
 
     return get_response(versions)
@@ -313,7 +286,7 @@ def release_burn_down_chart():
 
 # TODO Decide which of the 2 URLs to use
 # TODO Accept GET parameter with the epic ID/Key
-@app.route('/api/epic-burn-down-chart')
+@app.route('/api/epic-burn-down-chart', methods=["GET"])
 def epic_burn_down_chart():
     # https://seescrum.atlassian.net/rest/greenhopper/1.0/rapid/charts/epicreport?rapidViewId=1&epicKey=SS-94
     # https://seescrum.atlassian.net/rest/greenhopper/1.0/rapid/charts/epicprogresschart?rapidViewId=1&epicKey=SS-1
@@ -337,17 +310,17 @@ def epic_burn_down_chart():
     return get_response(data)
 
 
-@app.route('/api/retrospective-chart')
+@app.route('/api/retrospective-chart', methods=["GET"])
 def retrospecitve_chart():
     return get_json_file_response('retrospective-scores.json')
 
 
-@app.route('/api/scrum-help-text')
+@app.route('/api/scrum-help-text', methods=["GET"])
 def scrum_help_text():
     return get_json_file_response('scrum-help-text.json')
 
 
-@app.route('/api/cumulative-flow-chart')
+@app.route('/api/cumulative-flow-chart', methods=["GET"])
 def cumulative_flow_chart():
     # https://seescrum.atlassian.net/rest/greenhopper/1.0/rapid/charts/cumulativeflowdiagram.json?rapidViewId=1&swimlaneId=1&columnId=4&columnId=5&columnId=6
 
@@ -374,7 +347,7 @@ def cumulative_flow_chart():
     return get_response(data)
 
 
-@app.route('/api/ifa')
+@app.route('/api/ifa', methods=["GET"])
 def items_for_attention():
     future_sprint_stories = jira.search_issues('project = "SS" and Sprint in futureSprints()')
 
@@ -418,11 +391,10 @@ def get_response(data):
     response.headers.add('Access-Control-Allow-Origin', '*')
     return response
 
-
+#TODO Route to homepage
 @app.route("/", methods=["GET"])
 def home():
     return redirect(url_for('/api/get-json'))
-
 
 @app.route("/error", methods=["GET"])
 def error():
