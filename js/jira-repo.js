@@ -154,9 +154,17 @@ class JiraRepo {
         this._activeStories = data.activeStoryData;
         this._futureStories = data.futureStoryData;
 
+        this._velocityChartData = data.velocityChartData;
+        this._burnDownChartData = data.burnDownChartData;
+        this._releaseBurnDownChartData = data.releaseBurnDownChartData;
+        this._epicBurnDownChartData = data.epicBurnDownChartData;
+        this._cumulativeFlowChartData = data.cumulativeFlowChartData;
+
         this._sprints = new Sprints(data.sprints.values);
         this._epics = new Epics(data.epics.issues);
+
         this._parseDate = d3.timeParse("%Y-%m-%dT%H:%M:%S.%L%Z");
+
     }
 
     get backlog(){return this.issues.getFilteredIssues(issue => issue.sprintId === null);}
@@ -168,4 +176,21 @@ class JiraRepo {
     get sprints() {return this._sprints;}
     get issues(){return this._issues;}
     get epics(){return this._epics;}
+
+    // VELOCITY CHART GETTERS
+    get velocityStatEntries(){return Object.values(this._velocityChartData.velocityChartData.velocityStatEntries);}
+
+    get velocitySprints() {
+        const sortedSprints = this._velocityChartData.velocityChartData.sprints.sort((a, b) => (a.id > b.id) ? 1 : -1);
+        return sortedSprints.map(sprint => sprint.name);
+    }
+
+    get velocityCompletedStoryPoints() {
+        return this.velocityStatEntries.map(stat => stat.completed.value);}
+    get velocityCommittedStoryPoints() {
+        return this.velocityStatEntries.map(stat => stat.estimated.value);}
+    get velocityCompletedStoryCount() {
+        return this.velocityStatEntries.map(stat => stat.completedEntries.length);}
+    get velocityCommittedStoryCount() {
+        return this.velocityStatEntries.map(stat => stat.estimatedEntries.length);}
 }

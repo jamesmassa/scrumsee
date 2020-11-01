@@ -1,4 +1,7 @@
 //TODO
+// Use jiraRepo methods which return VelocityChartData for:
+// 2. set y-axis to either completed story points or completed story count
+// -----------------------------------------
 // 0. Combine jiraRepo and gitRepo in this.data, ensure Jira stuff still works
 // 1. add git data to summary cards
 // 2. add git charts
@@ -37,7 +40,8 @@ class BarChart {
     render() {
         this.data = this.setData();
         this.sortData();
-        this._x.domain(this._data.map(d => d.number));
+        //this._x.domain(this._data.map(d => d.number));
+        this._x.domain(this.jiraRepo.velocitySprints);
         this._xAxis = d3.axisBottom().scale(this._x);
         this._y.domain([0, d3.max(this._data, d=>this.getRankingValue(d))]);
         this._yAxis = d3.axisLeft().scale(this._y);
@@ -152,9 +156,8 @@ class BarChart {
     getRankingValue(d){
         switch (this.rankingType) {
             case "completedStoryPoints":
-                return d.completedStoryPoints;
             case "completedStories":
-                return d.totalCompletedStories;
+                return d;
             case "gitNetLinesOfCode":
                 return d.netLinesOfCode;
             case "gitLinesOfCodeAdditions":
@@ -176,8 +179,9 @@ class BarChart {
     setData(){
         switch (this.rankingType) {
             case "completedStoryPoints":
+                return jiraRepo.velocityCompletedStoryPoints;
             case "completedStories":
-                return jiraRepo.sprints.sprints;
+                return jiraRepo.velocityCompletedStoryCount;
             case "gitNetLinesOfCode":
             case "gitLinesOfCodeAdditions":
             case "gitLinesOfCodeDeletions":
@@ -198,6 +202,7 @@ class BarChart {
     get data(){return this._data;}
     set data(data){this._data = data;}
 
+    get jiraRepo(){return this._jiraRepo;}
 }
 
 

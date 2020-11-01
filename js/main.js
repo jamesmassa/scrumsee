@@ -64,7 +64,7 @@ function visualize(error,
                    velocityChartData,
                    burnDownChartData,
                    releaseBurnDownChartData,
-                   epicBurnDownChartDate,
+                   epicBurnDownChartData,
                    cumulativeFlowChartData,
 
                    //Git Data
@@ -94,7 +94,7 @@ function visualize(error,
         console.log("velocityChartData", velocityChartData);
         console.log("burnDownChartData", burnDownChartData);
         console.log("releaseBurnDownChartData", releaseBurnDownChartData);
-        console.log("epicBurnDownChartDate", epicBurnDownChartDate);
+        console.log("epicBurnDownChartData", epicBurnDownChartData);
         console.log("cumulativeFlowChartData", cumulativeFlowChartData);
 
         //Git Data
@@ -137,7 +137,7 @@ function visualize(error,
                 "velocityChartData": velocityChartData,
                 "burnDownChartData": burnDownChartData,
                 "releaseBurnDownChartData": releaseBurnDownChartData,
-                "epicBurnDownChartDate": epicBurnDownChartDate,
+                "epicBurnDownChartData": epicBurnDownChartData,
                 "cumulativeFlowChartData": cumulativeFlowChartData
         }
 

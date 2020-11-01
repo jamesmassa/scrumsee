@@ -1,10 +1,7 @@
 # TODO
 #  -------------------------------------------
 #  GENERAL
-#  1. Combine all JQL routes and pass JQL from main.js in querystring
-#  2. Combine all Git routes and pass relative url from main.js
-#  3. Make a global variable for board_id = 1
-#  4. Migrate all JS logic to the back-end and, where possible, leverage the Jira and Git APIs rather than writing bespoke code
+#  1. Migrate all JS logic to the back-end and, where possible, leverage the Jira and Git APIs rather than writing bespoke code
 #  -------------------------------------------
 #  GIT
 #  1. Replace git repo LOC calculations with git stats API
@@ -47,6 +44,7 @@ app.config["SECRET_KEY"] = os.getenv("SECRET_KEY")
 app.config['ENV'] = 'development'
 app.config['DEBUG'] = True
 app.config['TESTING'] = True
+board_id = 1
 
 
 def jira_login():
@@ -221,7 +219,6 @@ def jira_issues_for_sprint():
 
 @app.route('/api/velocity-chart', methods=["GET"])
 def velocity_chart():
-    board_id = 1
 
     url_response = jira._get_json(
         "rapid/charts/velocity.json?rapidViewId=%s"
@@ -247,7 +244,6 @@ def velocity_chart():
 def burn_down_chart():
     # 'https://seescrum.atlassian.net/rest/greenhopper/1.0/rapid/charts/scopechangeburndownchart.json?rapidViewId=1&sprintId=6&statisticFieldId=field_customfield_10026'
 
-    board_id = 1
     sprint_id = 6
     statistic_field_id = 'field_customfield_10026'
 
@@ -269,7 +265,6 @@ def burn_down_chart():
 
 @app.route('/api/release-burn-down-chart', methods=["GET"])
 def release_burn_down_chart():
-    board_id = 1
 
     url_response = jira._get_json(
         "xboard/plan/backlog/versions.json?rapidViewId=%s"
@@ -291,7 +286,6 @@ def epic_burn_down_chart():
     # https://seescrum.atlassian.net/rest/greenhopper/1.0/rapid/charts/epicreport?rapidViewId=1&epicKey=SS-94
     # https://seescrum.atlassian.net/rest/greenhopper/1.0/rapid/charts/epicprogresschart?rapidViewId=1&epicKey=SS-1
 
-    board_id = 1
     epic_key = 'SS-1'
 
     url_response = jira._get_json(
@@ -323,8 +317,6 @@ def scrum_help_text():
 @app.route('/api/cumulative-flow-chart', methods=["GET"])
 def cumulative_flow_chart():
     # https://seescrum.atlassian.net/rest/greenhopper/1.0/rapid/charts/cumulativeflowdiagram.json?rapidViewId=1&swimlaneId=1&columnId=4&columnId=5&columnId=6
-
-    board_id = 1
 
     url_response = jira._get_json(
         "rapid/charts/cumulativeflowdiagram.json?rapidViewId=%s&swimlaneId=1&columnId=4&columnId=5&columnId=6"
