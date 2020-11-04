@@ -113,20 +113,6 @@ function visualize(error,
         console.log("retrospectiveChartData", retrospectiveChartData);
         console.log("Scrum Text", scrumHelpText);
 
-        const gitRepoData = {
-                "commits": commitsData,
-                "languages": languagesData,
-                "contributors": contributorsData,
-                "pulls": pullsData,
-                "releases": releasesData,
-                "deployments": deploymentsData,
-                "statsCommitActivity": statsCommitActivityData,
-                "statsCodeFrequency": statsCodeFrequencyData,
-                "statsContributors": statsContributorsData
-        }
-
-        gitRepo = new GitRepo(gitRepoData);
-
         const jiraRepoData = {
                 "storyHistoryData": storyHistoryData,
                 "activeStoryData": activeStoryData,
@@ -142,6 +128,20 @@ function visualize(error,
         }
 
         jiraRepo = new JiraRepo(jiraRepoData);
+
+        const gitRepoData = {
+                "commits": commitsData,
+                "languages": languagesData,
+                "contributors": contributorsData,
+                "pulls": pullsData,
+                "releases": releasesData,
+                "deployments": deploymentsData,
+                "statsCommitActivity": statsCommitActivityData,
+                "statsCodeFrequency": statsCodeFrequencyData,
+                "statsContributors": statsContributorsData
+        }
+
+        gitRepo = new GitRepo(gitRepoData);
 
         const scrumTextStore = new ScrumTextStore(scrumHelpText);
         const retroStore = new RetroStore(retrospectiveChartData);

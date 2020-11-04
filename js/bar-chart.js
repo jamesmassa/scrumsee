@@ -1,20 +1,11 @@
 //TODO
-// Use jiraRepo methods which return VelocityChartData for:
-// 2. set y-axis to either completed story points or completed story count
-// -----------------------------------------
-// 0. Combine jiraRepo and gitRepo in this.data, ensure Jira stuff still works
 // 1. add git data to summary cards
 // 2. add git charts
 // 3. Show breakdowns of completed vs. committed.
-//         Custom field 10020 is an array of all the sprints that a story has been assigned to
-//          <my url>/rest/api/2/search?jql=cf[10020]~xxxxxxx
-//          Instead of having customfield_10020=xxxx, change it to cf[10020]=xxxx
 // 4. Breakdowns by language
-// 5. Delete the velocity area chart,  Consider leveraging the filters.  Replace sprint planning onclick
-// 6. Sort by sprint Id and set x-axis to increment by 1 sprint
-// 7. Leverage teal and orange
-// 8. Filters:  Priority, component, issue type.
-// 9. Innovate
+// 5. Leverage teal and orange
+// 6. Filters:  Priority, component, issue type.
+// 7. Innovate
 //      Set time period to measure
 //      Option to exclude outliers beyond configurable threshold
 //      Negative velocity for bugs
@@ -39,9 +30,7 @@ class BarChart {
 
     render() {
         this.data = this.setData();
-        this.sortData();
-        //this._x.domain(this._data.map(d => d.number));
-        this._x.domain(this.jiraRepo.velocitySprints);
+        this._x.domain(this.jiraRepo.velocitySprintNames);
         this._xAxis = d3.axisBottom().scale(this._x);
         this._y.domain([0, d3.max(this._data, d=>this.getRankingValue(d))]);
         this._yAxis = d3.axisLeft().scale(this._y);
@@ -64,7 +53,7 @@ class BarChart {
         this._svg.svg.append("text")
             .attr("class", "y-axis-label")
             .attr("x", -100)
-            .attr("y", 0)
+            .attr("y", -20)
             .attr("dy", "2em")
             .attr("font-size", "12px")
             .attr("font-weight", "bold")
@@ -75,10 +64,6 @@ class BarChart {
     updateYLabel(){
         this._svg.svg.selectAll(".y-axis-label")
             .text(this.getRankingLabel());
-    }
-
-    sortData() {
-        return this._data.sort((a, b) => d3.ascending(a.id, b.id));
     }
 
     renderBars(){
@@ -165,7 +150,7 @@ class BarChart {
             case "gitLinesOfCodeDeletions":
                 return d.linesOfCodeDeleted;
             case "gitCodeCommits":
-                return d.codeCommits;
+                return d.gitCommits;
             case "gitPulls":
                 return d.gitPulls;
             case "gitReleases":
@@ -183,13 +168,19 @@ class BarChart {
             case "completedStories":
                 return jiraRepo.velocityCompletedStoryCount;
             case "gitNetLinesOfCode":
+                return gitRepo.velocityChartNetLoc;
             case "gitLinesOfCodeAdditions":
+                return gitRepo.velocityChartAdditions;
             case "gitLinesOfCodeDeletions":
+                return gitRepo.velocityChartDeletions;
             case "gitCodeCommits":
+                return gitRepo.velocityChartCommitActivity;
             case "gitPulls":
+                return gitRepo.pulls;
             case "gitReleases":
+                return gitRepo.releases;
             case "gitDeployments":
-                return gitRepo;
+                return gitRepo.deployments;
             default:
                 alert("Unknown ranking type!")
         }

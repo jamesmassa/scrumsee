@@ -117,26 +117,101 @@ class Deployments {
     }
 }
 
-
 class GitRepo {
 
     constructor(data) {
-        this._commits = new Commits(data.commits);
-        this._languages = new Languages(data.languages);
-        this._contributors = new Contributors(data.contributors);
+        this._commits = new Commits(data.commits);  //last 30 commits
+        this._languages = new Languages(data.languages); //LOC by language for the current state
+        this._contributors = new Contributors(data.contributors); //Total all time commits for each user
         this._pulls = new Pulls(data.pulls);
         this._releases = new Releases(data.releases);
         this._deploymentss = new Deployments(data.deployments);
 
-// TODO Process stats data
-//         this._statsCommitActivity = new StatsCommitActivityWeek(data.statsCommitActivity);
-//         this._statsCodeFrequency =  new StatsLocWeek(data.statsCodeFrequency);
-//         this._statsContributors = new StatsLocByAuthorWeek(data.statsContributors);
+        this._statsCommitActivity = data.statsCommitActivity; //Last 52 weeks array of 7 day arrays of daily commits
+        this._statsCodeFrequency =  data.statsCodeFrequency;  //Last 52 weeks array of weekly additions & deletions
+        this._statsContributors = data.statsContributors;     //Last 52 weeks array of weekly additions, deletions, and changes by author
+
+        this._velocityChartSprints = jiraRepo.velocityChartSprints;
     }
 
-    get commits() {return this._commits;}
-    get languages(){return this._languages;}
-    get contributors(){return this._contributors;}
 
+    // VELOCITY CHART GETTERS
 
+    get velocityChartCommitActivity() {
+
+        this.maxVelocityChartDate = this.velocityChartSprints[0].velocityStartDate;
+        this.minVelocityChartDate = this.velocityChartSprints.slice(-1)[0].completeDate;
+
+        //convert unix timestamps for the weeks into JS Dates
+        this._statsCommitActivity.forEach(stat => stat.week = new Date(stat.week * 1000))
+
+        this._statsCommitActivity.forEach(stat => {
+            for (let i = 0; i < 7; i++ ){
+                // Replace the native JS int for commits with JS objects carrying more fields:
+                let date = new Date(stat.week) + i;
+                let commits = stat.days[i];
+                let sprintId = this.getSprintIdForDay(new Date(date));
+                stat.days[i] = new Object({"date": date, "commits": commits, "sprintId": sprintId,});
+            }
+        })
+
+        //Turn nested array of weeks and days into an array of 365 days, i.e., remove outer array of weeks
+        let dailyCommits = [];
+        this._statsCommitActivity.forEach(stat => dailyCommits = dailyCommits.concat(stat.days))
+
+        //Get only days with commits during the particular sprints on the velocity chart
+        let commitsDuringSprints = dailyCommits.filter(day => day.sprintId != null && day.commits > 0)
+
+        // Sum the commits for each velocity chart sprint into a data structure with one entry per sprint:
+        // {"sprintId": sprintId, "commits":, commits}
+        let velocityChartCommitActivity = [];
+
+        let totalCommitsForSprint = 0;
+        let sprintIdToSum = commitsDuringSprints[0].sprintId;
+
+        for (let i = 0; i < commitsDuringSprints.length; i++) {
+
+            if (commitsDuringSprints[i].sprintId !== sprintIdToSum) {
+                velocityChartCommitActivity.push(
+                    new Object({"sprintId": sprintIdToSum, "gitCodeCommits": totalCommitsForSprint}));
+                totalCommitsForSprint = 0;
+                sprintIdToSum = commitsDuringSprints[i].sprintId;
+            }
+
+            totalCommitsForSprint += commitsDuringSprints[i].commits;
+        }
+        velocityChartCommitActivity.push(totalCommitsForSprint);
+
+        return velocityChartCommitActivity;
+    }
+
+    getSprintIdForDay(day){
+
+        if (day < this.minVelocityChartDate || day > this.maxVelocityChartDate) {
+            return null;}
+
+        for (let i = 0; i < this.velocityChartSprints.length; i++){
+            const sprint = this.velocityChartSprints[i];
+            const startDate = new Date(sprint.velocityStartDate);
+            const completeDate = new Date(sprint.completeDate);
+
+            if (startDate <= day && day <= completeDate) {
+                return sprint.id;
+            }
+        }
+    }
+
+    get velocityChartSprints(){return this._velocityChartSprints;}
+
+    get velocityChartAdditions(){return this._velocityChartAdditions;}
+    get velocityChartDeletions(){return this._velocityChartDeletions;}
+    get velocityChartNetLoc(){return this._velocityChartNetLoc;}
+    get velocityChartContributors(){return this._velocityChartContributors}
+    get velocityChartLanguages(){return this._languages;}
+
+    get minVelocityChartDate(){return this._minVelocityChartDate;}
+    get maxVelocityChartDate(){return this._maxVelocityChartDate;}
+
+    set minVelocityChartDate(date){this._minVelocityChartDate = new Date(date);}
+    set maxVelocityChartDate(date){this._maxVelocityChartDate = new Date(date);}
 }

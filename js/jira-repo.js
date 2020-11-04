@@ -177,10 +177,10 @@ class JiraRepo {
     get issues(){return this._issues;}
     get epics(){return this._epics;}
 
-    // VELOCITY CHART GETTERS
+    // VELOCITY CHART METHODS
     get velocityStatEntries(){return Object.values(this._velocityChartData.velocityChartData.velocityStatEntries);}
 
-    get velocitySprints() {
+    get velocitySprintNames() {
         const sortedSprints = this._velocityChartData.velocityChartData.sprints.sort((a, b) => (a.id > b.id) ? 1 : -1);
         return sortedSprints.map(sprint => sprint.name);
     }
@@ -193,4 +193,28 @@ class JiraRepo {
         return this.velocityStatEntries.map(stat => stat.completedEntries.length);}
     get velocityCommittedStoryCount() {
         return this.velocityStatEntries.map(stat => stat.estimatedEntries.length);}
+
+
+    get velocityChartSprints() {
+
+        //Take the list of sprints required by the velocity chart and get the full data for the sprints
+        //which includes startDate and CompletedDate
+        //TODO eliminate redundant JSON nesting "_velocityChartData.velocityChartData" and double "sprints.sprints"
+        let velocityChartSprints =
+            this._velocityChartData.velocityChartData.sprints.map(sprint => this.sprints.sprints[sprint.id - 1]);
+
+        // Add the velocityStartDate property to each sprints to ensure that the sprint dates don't overlap
+        for (let i = 0; i < velocityChartSprints.length; i++) {
+            if (i === velocityChartSprints.length - 1) {
+                velocityChartSprints[i].velocityStartDate = velocityChartSprints[i].startDate
+            } else {
+                velocityChartSprints[i].velocityStartDate = velocityChartSprints[i + 1].completeDate;
+            }
+        }
+
+        return velocityChartSprints;
+    }
+
+
+
 }
