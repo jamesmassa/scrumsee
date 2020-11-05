@@ -136,7 +136,6 @@ class GitRepo {
 
 
     // VELOCITY CHART GETTERS
-
     get velocityChartCommitActivity() {
 
         this.maxVelocityChartDate = this.velocityChartSprints[0].velocityStartDate;
@@ -150,17 +149,33 @@ class GitRepo {
                 // Replace the native JS int for commits with JS objects carrying more fields:
                 let date = new Date(stat.week) + i;
                 let commits = stat.days[i];
-                let sprintId = this.getSprintIdForDay(new Date(date));
-                stat.days[i] = new Object({"date": date, "commits": commits, "sprintId": sprintId,});
+                let sprint = this.getSprintForDay(new Date(date));
+
+                stat.days[i] = new Object({
+                    "date": date,
+                    "commits": commits,
+                    "sprintId": sprint.sprintId,
+                    "sprintName": sprint.sprintName
+                });
+
+                console.log("stat.days[" + i + "]: ", stat.days[i]);
             }
         })
+        //TODO Only sprints 1 through 4 returned but need sprint 0 and 5 with zero commits
+        //TODO getting sprint Ids which apparently are 1 larger than the SS Sprint Name and 1 less than sprint number
+        console.log("AUG 17 SPRINT ID: ", this.getSprintForDay((new Date("Sat Aug 17 2020 20:00:00"))))
+        console.log("OCT 11 SPRINT ID: ", this.getSprintForDay((new Date("Sat Oct 11 2020 20:00:00"))))
 
         //Turn nested array of weeks and days into an array of 365 days, i.e., remove outer array of weeks
         let dailyCommits = [];
         this._statsCommitActivity.forEach(stat => dailyCommits = dailyCommits.concat(stat.days))
 
+        console.log("this._statsCommitActivity", this._statsCommitActivity);
+        console.log("dailyCommits", dailyCommits);
+
         //Get only days with commits during the particular sprints on the velocity chart
-        let commitsDuringSprints = dailyCommits.filter(day => day.sprintId != null && day.commits > 0)
+        let commitsDuringSprints = dailyCommits.filter(day => day.sprintId !== "none")
+        console.log("commitsDuringSprints", commitsDuringSprints);
 
         // Sum the commits for each velocity chart sprint into a data structure with one entry per sprint:
         // {"sprintId": sprintId, "commits":, commits}
@@ -169,6 +184,7 @@ class GitRepo {
         let totalCommitsForSprint = 0;
         let sprintIdToSum = commitsDuringSprints[0].sprintId;
 
+        console.log("commitsDuringSprints", commitsDuringSprints);
         for (let i = 0; i < commitsDuringSprints.length; i++) {
 
             if (commitsDuringSprints[i].sprintId !== sprintIdToSum) {
@@ -180,15 +196,18 @@ class GitRepo {
 
             totalCommitsForSprint += commitsDuringSprints[i].commits;
         }
-        velocityChartCommitActivity.push(totalCommitsForSprint);
+        velocityChartCommitActivity.push(new Object(
+            {"sprintId": sprintIdToSum,
+                "gitCodeCommits": totalCommitsForSprint}));
 
+        console.log("velocityChartCommitActivity", velocityChartCommitActivity)
         return velocityChartCommitActivity;
     }
 
-    getSprintIdForDay(day){
+    getSprintForDay(day){
 
         if (day < this.minVelocityChartDate || day > this.maxVelocityChartDate) {
-            return null;}
+            return new Object({"sprintId": "none", "sprintName": "notAVelocitySprint"});}
 
         for (let i = 0; i < this.velocityChartSprints.length; i++){
             const sprint = this.velocityChartSprints[i];
@@ -196,7 +215,7 @@ class GitRepo {
             const completeDate = new Date(sprint.completeDate);
 
             if (startDate <= day && day <= completeDate) {
-                return sprint.id;
+                return new Object({"sprintId": sprint.id, "sprintName": sprint.name});
             }
         }
     }

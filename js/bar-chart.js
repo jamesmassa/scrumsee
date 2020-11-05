@@ -1,17 +1,24 @@
-//TODO
+//TODO  GET THE DATA
 // 1. add git data to summary cards
 // 2. add git charts
-// 3. Show breakdowns of completed vs. committed.
-// 4. Breakdowns by language
-// 5. Leverage teal and orange
-// 6. Filters:  Priority, component, issue type.
-// 7. Innovate
-//      Set time period to measure
-//      Option to exclude outliers beyond configurable threshold
-//      Negative velocity for bugs
-//      Value add vs. friction
-//      velocity per team member
-//      Trend line with bottom line statement
+
+//TODO DISPLAY DATA
+// 1. Label bar chart with values including
+//      Completed: Blue bar with value label at top above the bar
+//      Committed Gray bar with value label at top above the bar
+//      Incomplete draw a line inside the committed bar. Give the top of the bar an orange fill and put the incomplete label inside the orange tip
+//      Completed + Incomplete = Committed
+// 2. Gradient Trend line with bottom line summary statement
+
+//TODO INTERACTION
+// 1. Filters:  Priority, component, issue type.
+// 2. Set time period to measure by sprint but drop down shows the date, i.e., SS Sprint 1 8/12 - 9/2
+// 3. Hover over a bar to see the list of completed stories
+// 4. Option to exclude outliers beyond configurable threshold
+// 5. Negative velocity for bugs
+// 6. Value Add vs. friction
+// 7. Velocity per team member
+
 
 class BarChart {
     constructor (svg, xScale, yScale, jiraRepo, gitRepo){
@@ -32,7 +39,11 @@ class BarChart {
         this.data = this.setData();
         this._x.domain(this.jiraRepo.velocitySprintNames);
         this._xAxis = d3.axisBottom().scale(this._x);
-        this._y.domain([0, d3.max(this._data, d=>this.getRankingValue(d))]);
+        this._y.domain([0, d3.max(this._data, d=> {
+            console.log("Y DOMAIN RANKING VALUE: ", this.getRankingValue(d));
+            return this.getRankingValue(d);
+
+        })]);
         this._yAxis = d3.axisLeft().scale(this._y);
         this.renderBars();
 
@@ -150,7 +161,7 @@ class BarChart {
             case "gitLinesOfCodeDeletions":
                 return d.linesOfCodeDeleted;
             case "gitCodeCommits":
-                return d.gitCommits;
+                return d.gitCodeCommits;
             case "gitPulls":
                 return d.gitPulls;
             case "gitReleases":
