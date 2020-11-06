@@ -134,6 +134,21 @@ class GitRepo {
     }
 
 
+
+    formatDate(date) {
+        let d = new Date(date),
+            month = '' + (d.getMonth() + 1),
+            day = '' + d.getDate(),
+            year = d.getFullYear();
+
+        if (month.length < 2)
+            month = '0' + month;
+        if (day.length < 2)
+            day = '0' + day;
+
+        return [year, month, day].join('-');
+    }
+
     // VELOCITY CHART
     get statsCodeFrequency(){
 
@@ -141,8 +156,10 @@ class GitRepo {
 
         this._statsCodeFrequency.forEach(stat => {
             //Convert unix timestamps for weeks to JS Dates
-            const d = new Date(stat[0] * 1000)
-            const week = d.getFullYear() + '-' + (d.getMonth()+1) + '-' + d.getDate()
+            //const d = new Date(stat[0] * 1000)
+            //const week = d.getFullYear() + '-' + (d.getMonth()+1) + '-' + d.getDate()
+
+            const week = this.formatDate(stat[0] * 1000)
             const netLoc = stat[1] + stat[2];
 
             let statObj = new Object({

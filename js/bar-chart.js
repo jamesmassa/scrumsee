@@ -38,15 +38,14 @@ class BarChart {
     render() {
         this.data = this.setData();
 
-
-        this._x.domain(this.jiraRepo.velocitySprintNames);
-
+        this.setXDomain();
         this._xAxis = d3.axisBottom().scale(this._x);
+
         this._y.domain([0, d3.max(this._data, d=> {
             console.log("Y DOMAIN RANKING VALUE: ", this.getRankingValue(d));
             return this.getRankingValue(d);
-
         })]);
+
         this._yAxis = d3.axisLeft().scale(this._y);
         this.renderBars();
 
@@ -63,6 +62,27 @@ class BarChart {
 
     }
 
+    setXDomain(){
+        switch (this.rankingType) {
+            case "completedStoryPoints":
+            case "completedStories":
+            case "gitCodeCommits":
+                this._x.domain(this.jiraRepo.velocitySprintNames);
+                break;
+            case "gitNetLinesOfCode":
+            case "gitLinesOfCodeAdditions":
+            case "gitLinesOfCodeDeletions":
+                console.log("X DOMAIN: ", this.gitRepo.statsCodeFrequency.map(stat => stat.week))
+                this._x.domain(this.gitRepo.statsCodeFrequency.map(stat => stat.week));
+                break;
+            case "gitPulls":
+            case "gitReleases":
+            case "gitDeployments":
+                alert("Under Construction")
+                this._x.domain(this.gitRepo.statsCodeFrequency.map(stat => stat.week));
+                break;
+        }
+    }
     renderYLabel(){
         this._svg.svg.append("text")
             .attr("class", "y-axis-label")
@@ -105,28 +125,48 @@ class BarChart {
     renderAxis(dimension){
 
         const axis = this._svg.svg.append("g")
-            .attr("class", dimension);
+            .attr("class", dimension + "-axis");
 
         if (dimension === "x") {
             const height = this._svg.height;
             axis.attr("transform", "translate(0," + height + ")");
+
         }
 
         const scale = dimension === "x" ? this._xAxis : this._yAxis;
 
         axis.style("font-size", this._axisFontSize)
             .style("font-weight", this._axisFontWeight)
-            .call(scale);
+            .call(scale)
+
+        if (dimension === "x" &&
+            (this.rankingType === "gitNetLinesOfCode" ||
+             this.rankingType === "gitLinesOfCodeAdditions" ||
+             this.rankingType === "gitLinesOfCodeDeletions")
+        ) {
+            axis.selectAll("text")
+                .attr("transform", "rotate(270)")
+        }
+
     }
 
     updateAxis(dimension){
 
-        const axis = this._svg.svg.selectAll("." + dimension);
+        const axis = this._svg.svg.selectAll("." + dimension + "-axis");
         const scale = dimension === "x" ? this._xAxis : this._yAxis;
 
         axis.transition()
             .duration(this._duration)
             .call(scale);
+
+        if (dimension === "x" &&
+            (this.rankingType === "gitNetLinesOfCode" ||
+                this.rankingType === "gitLinesOfCodeAdditions" ||
+                this.rankingType === "gitLinesOfCodeDeletions")
+        ) {
+            axis.selectAll("text")
+                .attr("transform", "rotate(270)")
+        }
     }
 
     getRankingLabel(){
@@ -162,7 +202,7 @@ class BarChart {
             case "gitLinesOfCodeAdditions":
                 return d.linesOfCodeAdded;
             case "gitLinesOfCodeDeletions":
-                return d.linesOfCodeDeleted;
+                return Math.abs(d.linesOfCodeDeleted)
             case "gitCodeCommits":
                 return d.gitCodeCommits;
             case "gitPulls":
