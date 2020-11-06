@@ -4,9 +4,11 @@
 #  1. Migrate all JS logic to the back-end and, where possible, leverage the Jira and Git APIs rather than writing bespoke code
 #  -------------------------------------------
 #  GIT
-#  1. Replace git repo LOC calculations with git stats API
-#  2. Add git stats to the Velocity chart
-#  3. Fine tune git stats to line up with sprints using the /commits-for-time-period endpoint
+#  1. Add git stats for weekly additions and deletions to the Velocity chart
+#       a. Set x axis to weeks
+#       c. feed additions, deletions and make the charts
+#       b. calculate net LOC and put on Y-axis
+#  2. Delete gitRepo LOC calculations that are no longer needed because using the git stats API in Step 1
 #  -------------------------------------------
 #  JIRA
 #  https://jira.readthedocs.io/en/master/examples.html

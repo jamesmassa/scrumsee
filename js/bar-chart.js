@@ -1,6 +1,6 @@
 //TODO  GET THE DATA
-// 1. add git data to summary cards
-// 2. add git charts
+// 1. add git charts
+// 2. add git data to summary cards
 
 //TODO DISPLAY DATA
 // 1. Label bar chart with values including
@@ -37,7 +37,10 @@ class BarChart {
 
     render() {
         this.data = this.setData();
+
+
         this._x.domain(this.jiraRepo.velocitySprintNames);
+
         this._xAxis = d3.axisBottom().scale(this._x);
         this._y.domain([0, d3.max(this._data, d=> {
             console.log("Y DOMAIN RANKING VALUE: ", this.getRankingValue(d));
@@ -179,11 +182,9 @@ class BarChart {
             case "completedStories":
                 return jiraRepo.velocityCompletedStoryCount;
             case "gitNetLinesOfCode":
-                return gitRepo.velocityChartNetLoc;
             case "gitLinesOfCodeAdditions":
-                return gitRepo.velocityChartAdditions;
             case "gitLinesOfCodeDeletions":
-                return gitRepo.velocityChartDeletions;
+                return gitRepo.statsCodeFrequency;
             case "gitCodeCommits":
                 return gitRepo.velocityChartCommitActivity;
             case "gitPulls":
@@ -205,6 +206,7 @@ class BarChart {
     set data(data){this._data = data;}
 
     get jiraRepo(){return this._jiraRepo;}
+    get gitRepo(){return this._gitRepo;}
 }
 
 

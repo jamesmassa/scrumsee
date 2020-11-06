@@ -1,4 +1,3 @@
-//TODO Constructor should connect to the JiraRepo and assign Git data to sprints using sprint and code timestamps
 //Unix commands to get Git LOC stats
 //git log --no-merges --pretty=format:%an --numstat -C | awk '/./ && !author { author = $0; next } author { ins[author] += $1; del[author] += $2 } /^$/ { author = ""; next } END { for (a in ins) { printf "%10d %10d %10d %s\n", ins[a] - del[a], ins[a], del[a], a } }' | sort -rn
 //git log --no-merges --oneline --numstat -C
@@ -132,11 +131,34 @@ class GitRepo {
         this._statsContributors = data.statsContributors;     //Last 52 weeks array of weekly additions, deletions, and changes by author
 
         this._velocityChartSprints = jiraRepo.velocityChartSprints;
-        console.log('velocityChartSprints', this.velocityChartSprints);
     }
 
 
-    // VELOCITY CHART GETTERS
+    // VELOCITY CHART
+    get statsCodeFrequency(){
+
+        let retVal = [];
+
+        this._statsCodeFrequency.forEach(stat => {
+            //Convert unix timestamps for weeks to JS Dates
+            const d = new Date(stat[0] * 1000)
+            const week = d.getFullYear() + '-' + (d.getMonth()+1) + '-' + d.getDate()
+            const netLoc = stat[1] + stat[2];
+
+            let statObj = new Object({
+                "week": week,
+                "linesOfCodeAdded": stat[1],
+                "linesOfCodeDeleted": stat[2],
+                "netLinesOfCode": netLoc});
+
+            retVal.push(statObj);
+        })
+
+        return retVal;
+    }
+
+    get statsContributors(){return this._statsContributors;}
+
     get velocityChartCommitActivity() {
 
         this.maxVelocityChartDate = this.velocityChartSprints[0].completeDate;
@@ -151,8 +173,8 @@ class GitRepo {
         this._statsCommitActivity.forEach(stat => {
             for (let i = 0; i < 7; i++ ){
                 // Replace the native JS int for commits with JS objects carrying more fields:
-                let date = new Date(stat.week)
-                date.setDate(date.getDate() + i)
+                let date = new Date(stat.week);
+                date.setDate(date.getDate() + i);
                 let commits = stat.days[i];
                 let sprint = this.getSprintForDay(new Date(date));
 
