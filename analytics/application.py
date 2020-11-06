@@ -154,14 +154,14 @@ def git_deployments():
 
 def get_git_url_response(resource, params=None):
 
-    git_commit_url = git_credentials['server'] + resource
+    git_url = git_credentials['server'] + resource
     token = git_credentials['apikey']
     headers = {'Authorization': f'token {token}'}
 
     if params is None:
-        url_response = requests.get(git_commit_url, headers=headers)
+        url_response = requests.get(git_url, headers=headers)
     else:
-        url_response = requests.get(git_commit_url, headers=headers, params=params)
+        url_response = requests.get(git_url, headers=headers, params=params)
 
     data = url_response.json()
     response = jsonify(data)

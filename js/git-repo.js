@@ -132,22 +132,27 @@ class GitRepo {
         this._statsContributors = data.statsContributors;     //Last 52 weeks array of weekly additions, deletions, and changes by author
 
         this._velocityChartSprints = jiraRepo.velocityChartSprints;
+        console.log('velocityChartSprints', this.velocityChartSprints);
     }
 
 
     // VELOCITY CHART GETTERS
     get velocityChartCommitActivity() {
 
-        this.maxVelocityChartDate = this.velocityChartSprints[0].velocityStartDate;
-        this.minVelocityChartDate = this.velocityChartSprints.slice(-1)[0].completeDate;
+        this.maxVelocityChartDate = this.velocityChartSprints[0].completeDate;
+        this.minVelocityChartDate = this.velocityChartSprints.slice(-1)[0].velocityStartDate;
 
         //convert unix timestamps for the weeks into JS Dates
-        this._statsCommitActivity.forEach(stat => stat.week = new Date(stat.week * 1000))
+        this._statsCommitActivity.forEach(stat => {
+            stat.week = new Date(stat.week * 1000)
+        })
+
 
         this._statsCommitActivity.forEach(stat => {
             for (let i = 0; i < 7; i++ ){
                 // Replace the native JS int for commits with JS objects carrying more fields:
-                let date = new Date(stat.week) + i;
+                let date = new Date(stat.week)
+                date.setDate(date.getDate() + i)
                 let commits = stat.days[i];
                 let sprint = this.getSprintForDay(new Date(date));
 
@@ -157,25 +162,15 @@ class GitRepo {
                     "sprintId": sprint.sprintId,
                     "sprintName": sprint.sprintName
                 });
-
-                console.log("stat.days[" + i + "]: ", stat.days[i]);
             }
         })
-        //TODO Only sprints 1 through 4 returned but need sprint 0 and 5 with zero commits
-        //TODO getting sprint Ids which apparently are 1 larger than the SS Sprint Name and 1 less than sprint number
-        console.log("AUG 17 SPRINT ID: ", this.getSprintForDay((new Date("Sat Aug 17 2020 20:00:00"))))
-        console.log("OCT 11 SPRINT ID: ", this.getSprintForDay((new Date("Sat Oct 11 2020 20:00:00"))))
 
         //Turn nested array of weeks and days into an array of 365 days, i.e., remove outer array of weeks
         let dailyCommits = [];
         this._statsCommitActivity.forEach(stat => dailyCommits = dailyCommits.concat(stat.days))
 
-        console.log("this._statsCommitActivity", this._statsCommitActivity);
-        console.log("dailyCommits", dailyCommits);
-
         //Get only days with commits during the particular sprints on the velocity chart
         let commitsDuringSprints = dailyCommits.filter(day => day.sprintId !== "none")
-        console.log("commitsDuringSprints", commitsDuringSprints);
 
         // Sum the commits for each velocity chart sprint into a data structure with one entry per sprint:
         // {"sprintId": sprintId, "commits":, commits}
@@ -183,24 +178,25 @@ class GitRepo {
 
         let totalCommitsForSprint = 0;
         let sprintIdToSum = commitsDuringSprints[0].sprintId;
+        let sprintNameToSum = commitsDuringSprints[0].sprintName;
 
-        console.log("commitsDuringSprints", commitsDuringSprints);
         for (let i = 0; i < commitsDuringSprints.length; i++) {
 
             if (commitsDuringSprints[i].sprintId !== sprintIdToSum) {
                 velocityChartCommitActivity.push(
-                    new Object({"sprintId": sprintIdToSum, "gitCodeCommits": totalCommitsForSprint}));
+                    new Object({"sprintId": sprintIdToSum, "sprintName": sprintNameToSum, "gitCodeCommits": totalCommitsForSprint}));
                 totalCommitsForSprint = 0;
                 sprintIdToSum = commitsDuringSprints[i].sprintId;
+                sprintNameToSum = commitsDuringSprints[i].sprintName;
             }
 
             totalCommitsForSprint += commitsDuringSprints[i].commits;
         }
         velocityChartCommitActivity.push(new Object(
             {"sprintId": sprintIdToSum,
+                "sprintName": sprintNameToSum,
                 "gitCodeCommits": totalCommitsForSprint}));
 
-        console.log("velocityChartCommitActivity", velocityChartCommitActivity)
         return velocityChartCommitActivity;
     }
 
