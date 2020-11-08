@@ -16,7 +16,6 @@
 // 3. add git data to summary cards
 
 //TODO DISPLAY DATA
-// 0. Move chart to left
 // 1. Label bar chart with values including
 //      Completed: Blue bar with value label at top above the bar
 //      Committed Gray bar with value label at top above the bar

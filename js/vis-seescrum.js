@@ -36,16 +36,7 @@ class SeeScrum {
                 window.open("https://seescrum.atlassian.net/secure/RapidBoard.jspa?rapidView=1&projectKey=SS&view=planning&&epics=visible", "_blank");
                 break;
             case "planning":
-                document.querySelectorAll(".velocity-selector").forEach(element => {
-                    element.style.display = "block";
-                });
-                $(eventHandler).trigger("selectedVisualizationChange", "velocity-visualization");
-                if (activeChart) {
-                    activeChart.style.display = "none";
-                }
-                let velocityChart = document.querySelector("#velocity-chart");
-                velocityChart.style.display = "block";
-                velocityChart.className = velocityChart.className += " active-chart";
+                this.handleChartClick("#velocity-chart", "Velocity Chart");
                 break;
             case "sprint-backlog":
                 window.open("https://seescrum.atlassian.net/secure/RapidBoard.jspa?rapidView=1&projectKey=SS", "_blank");
@@ -56,7 +47,7 @@ class SeeScrum {
             case "showcase":
                 break;
             case "retrospective":
-                this.handleRetroClick();
+                this.handleChartClick("#retrospective-chart", "Retrospective Chart");
                 break;
             default:
                 alert ("unhandled click for " + d.name);
@@ -615,15 +606,21 @@ class SeeScrum {
 
     }
 
-    handleRetroClick(){
-        const activeChart = document.querySelector(".active-chart");
+    handleChartClick(chartElemId, chartName){
 
+        //If a chart is already showing, hide it
+        const activeChart = document.querySelector(".active-chart");
         if (activeChart) {
             activeChart.style.display = "none";
+            activeChart.className = "viz";
         }
-        let retroChart = document.querySelector("#retrospective-chart");
-        retroChart.style.display = "block";
-        retroChart.className += " active-chart";
+
+        let chartNameElement = document.querySelector("#chart-name");
+        chartNameElement.innerText = chartName;
+
+        let chartElement = document.querySelector(chartElemId);
+        chartElement.style.display = "block";
+        chartElement.className = "viz active-chart";
     }
 
     appendHTML(g, html, width, height, x, y, cursor, callback, backgroundColor){

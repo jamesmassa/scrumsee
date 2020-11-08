@@ -152,7 +152,9 @@ function visualize(error,
         const visSeeScrum = new SeeScrum(svgSeeScrum, scrumTextStore, retroStore, jiraRepo, ifaData);
 
         const marginVelocity = {top: 20, right: 0, bottom: 20, left: 200};
-        const svgVelocity = new SvgBarChart("#chart-area", 1400, 800, marginVelocity);
+        const velocityHeight = (window.innerHeight / 2) - marginVelocity.top - marginVelocity.bottom;
+
+        const svgVelocity = new SvgBarChart("#velocity-chart", 1400, velocityHeight, marginVelocity);
         const visVelocity = new BarChart(svgVelocity, jiraRepo, gitRepo);
         visVelocity.render();
 
