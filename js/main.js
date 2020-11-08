@@ -153,9 +153,7 @@ function visualize(error,
 
         const marginVelocity = {top: 20, right: 0, bottom: 20, left: 200};
         const svgVelocity = new SvgBarChart("#chart-area", 1400, 800, marginVelocity);
-        const x = d3.scaleBand().rangeRound([0, svgVelocity.width]);
-        const y = d3.scaleLinear().range([svgVelocity.height, 0]);
-        const visVelocity = new BarChart(svgVelocity, x, y, jiraRepo, gitRepo);
+        const visVelocity = new BarChart(svgVelocity, jiraRepo, gitRepo);
         visVelocity.render();
 
         new RetroChart(retrospectiveChartData.slice(16,21), "#retrospective-chart");

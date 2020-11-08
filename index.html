@@ -205,34 +205,32 @@
                 <div class="card-header">
                   <div class="row">
                     <div class="col-md-3">
+                      <h1>Velocity Chart</h1>
+                    </div>
+                    <div class="col-md-3">
+                      <form class="form-inline">
+                        <div class="form-group">
+                          <label for="ranking-type">Measure with &nbsp</label>
+                          <select class="form-control" id="ranking-type">
+                            <option value="completedStoryPoints">Story Points</option>
+                            <option value="completedStories">Stories</option>
+                            <option value="gitCodeCommits">Code Commits</option>
+                            <option value="gitNetLinesOfCode">Net Lines of Code</option>
+                            <option value="gitLinesOfCodeAdditions">LOC Added</option>
+                            <option value="gitLinesOfCodeDeletions">LOC Deleted</option>
+                            <option value="gitPulls">Git Pulls</option>
+                            <option value="gitReleases">Git Releases</option>
+                            <option value="gitDeployments">Git Deplyments</option>
+
+                          </select>
+                        </div>
+                      </form>
+                    </div>
+                    <div class="col-md-3">
                       <div class="scrum-selector scope-selector" style="display: none">
                         <div class="row">
                           <div class="col-md-1"><label for="sprint-selector">Sprint</label></div>
                           <div class="col-md-11"><select id="sprint-selector" name="sprint-selector"></select></div>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="col-md-3">
-                      <div class="scrum-selector scope-selector velocity-selector" style="display: none">
-                        <div class="row">
-                          <div class="col-md-5"><label for="issue-property-selector">Issue Property</label></div>
-                          <div class="col-md-7"> <select id="issue-property-selector" name="issue-property-selector">
-                            <option value="priorities" selected>Priorities</option>
-                            <option value="components">Components</option>
-                            <option value="issueType">Issue Type</option>
-                          </select></div>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="col-md-3">
-                      <div class="scrum-selector velocity-selector" style="display: none">
-                        <div class="row">
-                          <div class="col-md-4"><label for="issue-metric-selector">Issue Metric</label></div>
-                          <div class="col-md-8"> <select id="issue-metric-selector" name="issue-metric-selector">
-                            <option value="totalStoryPoints" selected>Total Story Points</option>
-                            <option value="completedStoryPoints" >Completed Story Points</option>
-                            <option value="issueCount">Issue Count</option>
-                          </select></div>
                         </div>
                       </div>
                     </div>
@@ -246,17 +244,7 @@
                     Burn Down Chart
                   </div>
                   <div id="velocity-chart" class="viz">
-                    <div class="container">
-                      <div class="row">
-                        <div class="col-md-2" id="velocityIssuePropertyLegend"></div>
-                        <div class="col-md-1"></div>
-                        <div class="col-md-9" >
-                          <div class="row">
-                            <div class="col-md-12" id="vis-velocity-chart"></div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
+                            <div  id="chart-area"></div>
                   </div>
                   <div id="retrospective-chart" class="viz"></div>
                 </div>
@@ -269,34 +257,6 @@
       </div>
 
       </main>
-
-      <div class="container">
-
-        <h1>Velocity Chart</h1>
-
-        <!-- Select box to choose the ranking type -->
-        <form class="form-inline">
-          <div class="form-group">
-            <label for="ranking-type">Measure with &nbsp</label>
-            <select class="form-control" id="ranking-type">
-              <option value="completedStoryPoints">Story Points</option>
-              <option value="completedStories">Stories</option>
-              <option value="gitCodeCommits">Code Commits</option>
-              <option value="gitNetLinesOfCode">Net Lines of Code</option>
-              <option value="gitLinesOfCodeAdditions">LOC Added</option>
-              <option value="gitLinesOfCodeDeletions">LOC Deleted</option>
-              <option value="gitPulls">Git Pulls</option>
-              <option value="gitReleases">Git Releases</option>
-              <option value="gitDeployments">Git Deplyments</option>
-
-            </select>
-          </div>
-        </form>
-
-        <!-- Parent container for the visualization -->
-        <div id="chart-area"></div>
-
-      </div>
 
 
       <footer class="sticky-footer bg-white">
