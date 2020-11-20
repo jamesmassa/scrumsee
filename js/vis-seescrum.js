@@ -42,7 +42,8 @@ class SeeScrum {
                 window.open("https://seescrum.atlassian.net/secure/RapidBoard.jspa?rapidView=1&projectKey=SS", "_blank");
                 break;
             case "increment":
-                window.open("https://seescrum.atlassian.net/issues/?jql=project%20%3D%20SS%20and%20status%20%3D%20Done%20and%20sprint%3D" + this.jiraRepo.activeSprint.number, "_blank");
+                const activeSprint = this.jiraRepo.activeSprint.number - 1;
+                window.open("https://seescrum.atlassian.net/issues/?jql=project%20%3D%20SS%20and%20status%20%3D%20Done%20and%20sprint%3D" + activeSprint, "_blank");
                 break;
             case "showcase":
                 break;
@@ -495,12 +496,12 @@ class SeeScrum {
 
     renderRectText(){
         const activeSprint = this.jiraRepo.activeSprint;
-        const committed = activeSprint.totalStoryPoints;
-        const completed = activeSprint.completedStoryPoints;
-        const backlogStoryCount = this.jiraRepo.backlog.length +
-            this.jiraRepo.futureSprints.reduce((sum, sprint) => sum + sprint.issues.length, 0);
+        const committed = this.jiraRepo.activeStories.totalStoryPoints;
+        const committedStoryCount = this.jiraRepo.activeStories.issues.length;
+        const completed = this.jiraRepo.activeStories.completedStoryPoints;
+        const completedStoryCount = this.jiraRepo.activeStories.issues.filter(issue=> issue.status.name === "Done").length;
+        const backlogStoryCount = this.jiraRepo.backlog.issues.length;
         const averageHappiness = this.retroStore.getSprintHappiness(activeSprint).toFixed(2);
-        const totalAlerts = activeSprint.totalAlerts;
         const burndownPct =  (100 * completed / committed).toFixed()+"%";
 
         const totalIFAs = this._ifaData.mustSplit.length +
@@ -517,6 +518,7 @@ class SeeScrum {
                 case "sprint-backlog":
                     text = "Sprint Backlog";
                     text2 = committed + " points";
+                    text3 = committedStoryCount + " stories";
                     break;
 
                 case "increment":
@@ -579,7 +581,9 @@ class SeeScrum {
     }
 
     handleFireClick(){
-        window.open("https://seescrum.atlassian.net/issues/?jql=project%20%3D%20SS%20and%20status%20%3D%20Done%20and%20sprint%3D5", "_blank");
+        //TODO Clicking on fire can open the burn down chart instead of story list
+        const activeSprint = jiraRepo.activeSprint.number - 1;
+        window.open("https://seescrum.atlassian.net/issues/?jql=project%20%3D%20SS%20and%20status%20%3D%20Done%20and%20sprint%3D" + activeSprint, "_blank");
     }
 
     appendFaceIcon(g, averageHappiness) {
@@ -621,6 +625,14 @@ class SeeScrum {
         let chartElement = document.querySelector(chartElemId);
         chartElement.style.display = "block";
         chartElement.className = "viz active-chart";
+
+        if (chartElement.id === "velocity-chart") {
+            document.querySelector("#ranking-type").style.display = "block";
+            document.querySelector("#ranking-type-label").style.display = "block";
+        } else {
+            document.querySelector("#ranking-type").style.display = "none";
+            document.querySelector("#ranking-type-label").style.display = "none  ";
+        }
     }
 
     appendHTML(g, html, width, height, x, y, cursor, callback, backgroundColor){

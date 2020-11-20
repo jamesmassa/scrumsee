@@ -3,14 +3,17 @@ class Issue {
         this._issue = issue;
     }
 
-    get sprintId () { return this.issue.fields.customfield_10020[0].id;}
+    get sprintId () {
+        let sprints = this.issue.fields.customfield_10020;
+        return sprints[sprints.length - 1].id;
+    }
 
     get epic () {
         return this.issue.fields.customfield_10014;
     }
 
     get issue(){return this._issue;}
-    get rollovers(){return this.issue.fields.customfield_10020};
+    get rollovers(){return this.issue.fields.customfield_10020.slice(0, -1)};
     get name() {return this.issue.fields.summary;}
     get type() {return this._issue.type['#text'];}
     get status() {return this._issue.fields.status.name;}
@@ -35,18 +38,28 @@ class Issues {
     }
 
     addIssue(issue){
-        this._issues.push(issue);
+        this.issues.push(issue);
     }
 
-    getFilteredIssues(filterFunc){return this._issues.filter(filterFunc)};
+    getFilteredIssues(filterFunc){return this.issues.filter(filterFunc)};
 
-    get totalStories(){return this._issues.count();}
-    get totalStoryPoints(){return this._issues.reduce((sum, issue) => sum + issue.storyPoints);}
-    get completedStories(){return this._issues.filter(issue => issue.status.name === "Done");}
-    get completedStoryPoints(){return this.completedStories.reduce((sum, issue) => sum + issue.storyPoints);}
+    get totalStories(){return this.issues.count();}
+    //get totalStoryPoints(){return this.issues.reduce((sum, issue) => sum + issue.storyPoints);}
+    get totalStoryPoints(){
+        let total = 0;
+        this.issues.forEach(issue => total += issue.storyPoints);
+        return total;
+    }
+
+    get completedStories(){return this.issues.filter(issue => issue.status === "Done");}
+    get completedStoryPoints() {
+        let total = 0;
+        this.completedStories.forEach(issue => total += issue.storyPoints);
+        return total;
+    }
 
     get issues(){return this._issues;}
-    set issues(issues){this._issues = issues;}
+    set issues(issues){this.issues = issues;}
 
     get priorities(){return Array.from(new Set(this.issues.map(issue => issue.priority)));}
     get issueTypes(){return Array.from(new Set(this.issues.map(issue => issue.issuetype)));}
@@ -150,9 +163,9 @@ class JiraRepo {
         this._issues = new Issues(data.storyHistoryData.issues.concat(
             data.activeStoryData.issues.concat(data.futureStoryData.issues)));
 
-        this._historicalStories = data.storyHistoryData;
-        this._activeStories = data.activeStoryData;
-        this._futureStories = data.futureStoryData;
+        this._historicalStories = new Issues(data.storyHistoryData.issues);
+        this._activeStories = new Issues(data.activeStoryData.issues);
+        this._futureStories = new Issues(data.futureStoryData.issues);
 
         this._velocityChartData = data.velocityChartData;
         this._burnDownChartData = data.burnDownChartData;
@@ -167,11 +180,13 @@ class JiraRepo {
 
     }
 
-    get backlog(){return this.issues.getFilteredIssues(issue => issue.sprintId === null);}
+    get backlog(){return this.futureStories;}
     get activeSprint(){return this.sprints.activeSprint;}
     get previousSprint(){return this.sprints.previousSprint;}
     get futureSprints(){return this.sprints.futureSprints;}
     get completedSprints(){return this.sprints.completedSprints;}
+    get activeStories(){return this._activeStories;}
+    get futureStories(){return this._futureStories;}
 
     get sprints() {return this._sprints;}
     get issues(){return this._issues;}

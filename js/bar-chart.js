@@ -17,6 +17,7 @@
 
 //TODO DISPLAY DATA
 // 1. Label bar chart with values including
+//      https://jsfiddle.net/nordible/pmyu26ss/
 //      Completed: Blue bar with value label at top above the bar
 //      Committed Gray bar with value label at top above the bar
 //      Incomplete draw a line inside the committed bar. Give the top of the bar an orange fill and put the incomplete label inside the orange tip
