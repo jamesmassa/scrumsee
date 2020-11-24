@@ -26,8 +26,18 @@ class SeeScrum {
         this.populateSprintSelector();
         this.setSummaryStats();
         this.setClickHandlers();
+        this.setIfaModalData();
     }
 
+    setIfaModalData(){
+        const div = document.querySelector('#sprint-planning-alerts');
+        const data = this._ifaData;
+        const mustSplit = "<h5>Large Stories to Split</h5><br>" +JSON.stringify(data.mustSplit);
+        const noEpic = "<h5>Stories with no Epic</h5><br>" +JSON.stringify(data.noEpic);
+        const unassigned = "<h5>Stories with no Assignee</h5><br>" +JSON.stringify(data.unassigned);
+        const notFibonacci = "<h5>Stories Whose Estimate is Not in Fibonacci Sequence</h5><br>" +JSON.stringify(data.notFibonacci);
+        div.innerHTML = mustSplit + noEpic + unassigned + notFibonacci;
+    }
 
     handleRectClick(d) {
 
