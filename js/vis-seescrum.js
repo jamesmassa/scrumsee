@@ -32,10 +32,10 @@ class SeeScrum {
     setIfaModalData(){
         const div = document.querySelector('#sprint-planning-alerts');
         const data = this._ifaData;
-        const mustSplit = "<h5>Large Stories to Split</h5><br>" +JSON.stringify(data.mustSplit);
-        const noEpic = "<h5>Stories with no Epic</h5><br>" +JSON.stringify(data.noEpic);
-        const unassigned = "<h5>Stories with no Assignee</h5><br>" +JSON.stringify(data.unassigned);
-        const notFibonacci = "<h5>Stories Whose Estimate is Not in Fibonacci Sequence</h5><br>" +JSON.stringify(data.notFibonacci);
+        const mustSplit = "<h5>Large Stories to Split</h5><br>" + JSON.stringify(data.mustSplit) + "<br>";
+        const noEpic = "<br><h5>Stories with no Epic</h5><br>" + JSON.stringify(data.noEpic) + "<br>";
+        const unassigned = "<br><h5>Stories with no Assignee</h5><br>" + JSON.stringify(data.unassigned) + "<br>";
+        const notFibonacci = "<br><h5>Stories Whose Estimate is Not in Fibonacci Sequence</h5><br>" + JSON.stringify(data.notFibonacci) + "<br>";
         div.innerHTML = mustSplit + noEpic + unassigned + notFibonacci;
     }
 
@@ -511,7 +511,6 @@ class SeeScrum {
 
                 case "planning":
                     text = "Sprint Planning ";
-                    text2 = totalIFAs + " Alerts";
                     break;
 
                 case "sprint-backlog":
@@ -555,8 +554,15 @@ class SeeScrum {
 
             let html = "";
             switch (rect.name) {
+
                 case "backlog":
+                    break;
+
                 case "planning":
+                    html = '<button class="btn btn-primary" data-toggle="modal" data-target="#sprintPlanningAlertsModal">' + totalIFAs + ' Alerts</button>';
+                    this.appendHTML(g, html, 100, 40, -50, -10, "pointer", null, this.dataRectColor);
+                    break;
+
                 case "sprint-backlog":
                     break;
 
