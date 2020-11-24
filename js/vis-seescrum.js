@@ -19,7 +19,7 @@ class SeeScrum {
         this.renderRectangles();
         this.renderCircles();
         this.renderCircleText();
-        this.renderCircleIcons();
+        this.renderVideoAndInfoIcons();
         this.renderRectText();
         this.renderSprintArc();
         this.renderScrumArc();
@@ -31,7 +31,6 @@ class SeeScrum {
 
     handleRectClick(d) {
 
-        const activeChart = document.querySelector(".active-chart");
         switch (d.name) {
             case "backlog":
                 window.open("https://seescrum.atlassian.net/secure/RapidBoard.jspa?rapidView=1&projectKey=SS&view=planning&&epics=visible", "_blank");
@@ -64,27 +63,15 @@ class SeeScrum {
         const data = this.scrumTextStore.data;
 
         switch (d.name) {
-            case "info-scrum":
+            case "scrum":
                 alert("Scrum Under Construction");
                 return;
-            case "info-sprint":
+            case "sprint":
                 alert("Sprint Under Construction");
                 return;
-            case "info-sm":
-                text = data.text.scrumMaster;
-                url = data.url.scrumMaster;
-                break;
-            case "info-po":
-                text = data.text.productOwner;
-                url = data.url.productOwner;
-                break;
-            case "info-team":
-                text = data.text.team;
-                url = data.url.team;
-                break;
             default:
-                text = data.text[d.name];
-                url = data.url[d.name];
+                text = data.text[d.name.slice(5)];
+                url = data.url[d.name.slice(5)];
                 break;
         }
 
@@ -182,7 +169,6 @@ class SeeScrum {
         const dataRectHeight = 100 * yPct;
         const dataRectY = (100 * yPct) - dataRectHeight;
 
-        const roleHeight = this.svg.height - heightBottomArrowRect;
         this.sprintArcData  = [
             { "name": "sprint-arc", "innerRadius": 80, "outerRadius": 105, startAngle: -0.33, endAngle: 0.5, "x": 2, "y": 2 }
         ];
@@ -207,20 +193,6 @@ class SeeScrum {
             { "name": "help-increment", "text": "?", "cx":125, "cy": circleCy, "r": this.circleHelpRadius },
             { "name": "help-showcase", "text": "?", "cx":150, "cy": circleCy, "r": this.circleHelpRadius },
             { "name": "help-retrospective", "text": "?", "cx":175, "cy": circleCy, "r": this.circleHelpRadius },
-
-            { "name": "info-backlog", "text": "", "cx":50, "cy": circleCy, "r": this.circleHelpRadius },
-            { "name": "info-planning", "text": "", "cx":75, "cy": circleCy, "r": this.circleHelpRadius },
-            { "name": "info-sprint-backlog", "text": "", "cx":100, "cy": circleCy, "r": this.circleHelpRadius },
-            { "name": "info-increment", "text": "", "cx":125, "cy": circleCy, "r": this.circleHelpRadius },
-            { "name": "info-showcase", "text": "", "cx":150, "cy": circleCy, "r": this.circleHelpRadius },
-            { "name": "info-retrospective", "text": "", "cx":175, "cy": circleCy, "r": this.circleHelpRadius },
-
-            { "name": "video-backlog", "text": "", "cx":50, "cy": circleCy, "r": this.circleHelpRadius },
-            { "name": "video-planning", "text": "", "cx":75, "cy": circleCy, "r": this.circleHelpRadius },
-            { "name": "video-sprint-backlog", "text": "", "cx":100, "cy": circleCy, "r": this.circleHelpRadius },
-            { "name": "video-increment", "text": "", "cx":125, "cy": circleCy, "r": this.circleHelpRadius },
-            { "name": "video-showcase", "text": "", "cx":150, "cy": circleCy, "r": this.circleHelpRadius },
-            { "name": "video-retrospective", "text": "", "cx":175, "cy": circleCy, "r": this.circleHelpRadius },
 
             {
                 "name": "scrum",
@@ -290,23 +262,8 @@ class SeeScrum {
             case "help-increment":
             case "help-showcase":
             case "help-retrospective":
-                return this.rectData.find(rect => rect.name === name.slice(5)).x + (this.circleHelpRadius);
-
-            case "info-backlog":
-            case "info-planning":
-            case "info-sprint-backlog":
-            case "info-increment":
-            case "info-showcase":
-            case "info-retrospective":
-                return this.rectData.find(rect => rect.name === name.slice(5)).x + (this.circleHelpRadius*3);
-
-            case "video-backlog":
-            case "video-planning":
-            case "video-sprint-backlog":
-            case "video-increment":
-            case "video-showcase":
-            case "video-retrospective":
-                return this.rectData.find(rect => rect.name === name.slice(6)).x + (this.circleHelpRadius*5);
+                let rectangle = this.rectData.find(rect => rect.name === name.slice(5));
+                return rectangle.x + this.circleHelpRadius;
 
             default:
                 alert("unrecognized circle");
@@ -537,6 +494,16 @@ class SeeScrum {
             let text, text2, text3 = null;
 
             switch (rect.name) {
+                case "backlog":
+                    text = "Product Backlog ";
+                    text2 = backlogStoryCount + " stories ";
+                    break;
+
+                case "planning":
+                    text = "Sprint Planning ";
+                    text2 = totalIFAs + " Alerts";
+                    break;
+
                 case "sprint-backlog":
                     text = "Sprint Backlog";
                     text2 = committed + " points";
@@ -546,16 +513,6 @@ class SeeScrum {
                 case "increment":
                     text = "Product Increment ";
                     text2 = completed + " points ";
-                    break;
-
-                case "backlog":
-                    text = "Product Backlog ";
-                    text2 = backlogStoryCount + " stories ";
-                    break;
-
-                case "planning":
-                    text = "Sprint Planning ";
-                    text2 = totalIFAs + " Alerts";
                     break;
 
                 case "showcase":
@@ -570,8 +527,8 @@ class SeeScrum {
                     break;
             }
 
-            const xPos = rect.x + ( rect.width / 2 );
-            const yPos = rect.y + ( rect.height / 2 );
+            const xPos = rect.x + (rect.width / 2);
+            const yPos = rect.y + (rect.height / 2);
             const g = this.svg.svg.append('g')
                 .attr("transform", "translate(" + xPos + "," + yPos + ")");
 
@@ -579,30 +536,38 @@ class SeeScrum {
                 this.appendRectText(g, -18, text, rect.name);
                 this.appendRectText(g, 0, text2, rect.name);
                 this.appendRectText(g, 18, text3, rect.name);
-            } else if (text && text2 ) {
+            } else if (text && text2) {
                 this.appendRectText(g, -18, text, rect.name);
                 this.appendRectText(g, 0, text2, rect.name);
             } else if (text) {
                 this.appendRectText(g, -18, text, rect.name);
             }
 
-            if (rect.name === "showcase") {
-                let html = '<a id="showcase-video"><img src="img/yt_icon_rgb.png" width="50" </a>';
-                this.appendHTML(g, html, 50, 40, -25, 10 , "pointer", this.handleShowcaseClick, this.dataRectColor);
-            }
+            let html = "";
+            switch (rect.name) {
+                case "backlog":
+                case "planning":
+                case "sprint-backlog":
+                    break;
 
-            if (rect.name === "retrospective") {
+                case "increment":
+                    const y = this.svg.height * 0.3;
+                    const textElem = this.appendRectText(g, y, burndownPct + " Done", rect.name);
+                    textElem.attr("font-size", "x-large");
+                    textElem.attr("x", -15);
+
+                    html = '<i class="fas fa-fire fa-2x" style="color:orange; background-color: ' + this.dataRectColor + ';"></i>';
+                    this.appendHTML(g, html, 30, 31.8, 50, y * 0.5, "pointer", this.handleFireClick, this.dataRectColor);
+                    break;
+
+                case "showcase":
+                    html = '<a id="showcase-video"><img src="img/yt_icon_rgb.png" alt="YouTube video" width="50" </a>';
+                    this.appendHTML(g, html, 50, 40, -25, 10, "pointer", this.handleShowcaseClick, this.dataRectColor);
+                    break;
+
+                case "retrospective":
                     this.appendFaceIcon(g, averageHappiness);
-            }
-
-            if (rect.name === "increment") {
-                const y = this.svg.height * 0.3;
-                const textElem = this.appendRectText(g, y , burndownPct + " Done", rect.name);
-                textElem.attr("font-size", "x-large");
-                textElem.attr("x", -15);
-
-                let html = '<i class="fas fa-fire fa-2x" style="color:orange; background-color: ' + this.dataRectColor + ';"></i>';
-                this.appendHTML(g, html, 30, 31.8, 50, y * 0.5, "pointer", this.handleFireClick, this.dataRectColor);
+                    break;
             }
         });
     }
@@ -638,24 +603,12 @@ class SeeScrum {
 
         const html = '<span style="color:' + color + '">' +
             averageHappiness +
-            '&nbsp;&nbsp;<i class="fas ' + icon + ' fa-2x"</i></span>';
+            '&nbsp;&nbsp;<i class="fas ' + icon + ' fa-1x" style="font-size: xx-large"</i></span>';
 
-        this.appendHTML(g, html, 120, 50, -50,-85, "pointer", this.handleRetroClick, this.dataRectColor);
-
-    }
-
-    appendInfoIcon(g, x, y) {
-
-        const html = '<i class="fas fa-info-circle fa-1x"</i>';
-        this.appendHTML(g, html, 120, 50, x,y, "pointer", this.handleInfoClick, this.dataRectColor);
+        this.appendHTML(g, html, 120, 50, -50,-8.5, "pointer", this.handleRetroClick, this.dataRectColor);
 
     }
 
-    appendVideoIcon(g, x, y) {
-        const html = '<img src="img/yt_icon_mono_dark.png" alt="YouTube Video">';
-        this.appendHTML(g, html, 120, 50, x,y, "pointer", this.handleInfoClick, this.dataRectColor);
-
-    }
 
     handleChartClick(chartElemId, chartName){
 
@@ -722,7 +675,6 @@ class SeeScrum {
     }
 
     renderCircleText(){
-
         const circleText = this.svg.svg.selectAll("text")
             .data(this.circleData);
 
@@ -773,8 +725,82 @@ class SeeScrum {
             .on ("mouseover",function() {d3.select(this).style("cursor", "pointer");});
     }
 
-    renderCircleIcons(){
-        
+    renderVideoAndInfoIcons() {
+        this.circleData.forEach(circle => {
+            if (circle.name.slice(0,4) === "help") {
+
+                const xPosInfo = this.getCircleCx(circle.name, circle.cx);
+                const yPosInfo = circle.cy;
+                const gInfo = this.svg.svg.append('g')
+                    .attr("transform", "translate(" + xPosInfo + "," + yPosInfo + ")");
+                const infoName = "info" + circle.name.slice(4);
+
+                this.appendInfoIcon(gInfo, infoName,12, -13);
+
+                const xPosVideo = this.getCircleCx(circle.name, circle.cx) + this.circleHelpRadius + 2;
+                const yPosVideo = circle.cy;
+                const gVideo = this.svg.svg.append('g')
+                    .attr("transform", "translate(" + xPosVideo + "," + yPosVideo + ")");
+                const videoName = "video" + circle.name.slice(4);
+
+                this.appendVideoIcon(gVideo, videoName,40, -0);
+            }
+        });
+    }
+
+
+    appendInfoIcon(g, infoName, x, y) {
+        const html = '<i class="fas fa-info-circle fa-1x" id="' + infoName + '" </i>';
+        this.appendHTML(g, html, 20, 25, x,y, "pointer", this.handleInfoClick(infoName), this.dataRectColor);
+
+        g.append('svg:foreignObject')
+            .attr("width", 20)
+            .attr("height", 25)
+            .attr("text-anchor", "middle")
+            .attr("x", x)
+            .attr("y", y)
+            .append("xhtml:body")
+            .html(html)
+            .style("font-weight", "bold")
+            .style("font-size", "larger")
+            .style("background-color", this.dataRectColor)
+            .on("click", d => this.handleInfoClick(infoName))
+            .on("mouseover", function () {
+                d3.select(this).style("cursor", "pointer");
+            });
+    }
+
+    appendVideoIcon(g, videoName, x, y) {
+        const html = '<img src="img/yt_icon_mono_light.png" id="' + videoName + '" alt="YouTube Video" height="32">';
+
+        g.append('svg:foreignObject')
+            .attr("width", 50)
+            .attr("height", 32)
+            .attr("text-anchor", "middle")
+            .attr("x", x)
+            .attr("y", y)
+            .append("xhtml:body")
+            .html(html)
+            .style("font-weight", "bold")
+            .style("font-size", "larger")
+            .style("background-color", this.dataRectColor)
+            .on("click", d => this.handleVideoClick(videoName))
+            .on("mouseover", function () {
+                d3.select(this).style("cursor", "pointer");
+            });
+    }
+
+    handleInfoClick(name){
+
+    }
+
+    handleVideoClick(videoName){
+        //TODO replace hard coding of video name with detection of name
+
+        switch (videoName) {
+            case("video-planning"):
+                window.open("https://youtu.be/GLHcTmXSftQ", "_blank");
+        }
     }
 
     setSummaryStats(){
