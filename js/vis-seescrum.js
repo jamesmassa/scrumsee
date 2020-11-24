@@ -19,6 +19,7 @@ class SeeScrum {
         this.renderRectangles();
         this.renderCircles();
         this.renderCircleText();
+        this.renderCircleIcons();
         this.renderRectText();
         this.renderSprintArc();
         this.renderScrumArc();
@@ -63,21 +64,21 @@ class SeeScrum {
         const data = this.scrumTextStore.data;
 
         switch (d.name) {
-            case "scrum":
+            case "info-scrum":
                 alert("Scrum Under Construction");
                 return;
-            case "sprint":
+            case "info-sprint":
                 alert("Sprint Under Construction");
                 return;
-            case "sm":
+            case "info-sm":
                 text = data.text.scrumMaster;
                 url = data.url.scrumMaster;
                 break;
-            case "po":
+            case "info-po":
                 text = data.text.productOwner;
                 url = data.url.productOwner;
                 break;
-            case "team":
+            case "info-team":
                 text = data.text.team;
                 url = data.url.team;
                 break;
@@ -200,15 +201,27 @@ class SeeScrum {
         const sprintArcData = this.sprintArcData[0];
         const scrumArcData = this.scrumArcData[0];
         this.circleData = [
-            { "name": "backlog", "text": "?", "cx":50, "cy": circleCy, "r": this.circleHelpRadius },
-            { "name": "planning", "text": "?", "cx":75, "cy": circleCy, "r": this.circleHelpRadius },
-            { "name": "sprint-backlog", "text": "?", "cx":100, "cy": circleCy, "r": this.circleHelpRadius },
-            { "name": "increment", "text": "?", "cx":125, "cy": circleCy, "r": this.circleHelpRadius },
-            { "name": "showcase", "text": "?", "cx":150, "cy": circleCy, "r": this.circleHelpRadius },
-            { "name": "retrospective", "text": "?", "cx":175, "cy": circleCy, "r": this.circleHelpRadius },
-            { "name": "po", "text": "?", "cx":225, "cy": roleHeight, "r": this.circleHelpRadius },
-            { "name": "sm", "text": "?", "cx":200, "cy": roleHeight - (2 * this.circleHelpRadius), "r": this.circleHelpRadius },
-            { "name": "team", "text": "?", "cx":250, "cy": roleHeight - (4 * this.circleHelpRadius) , "r": this.circleHelpRadius },
+            { "name": "help-backlog", "text": "?", "cx":50, "cy": circleCy, "r": this.circleHelpRadius },
+            { "name": "help-planning", "text": "?", "cx":75, "cy": circleCy, "r": this.circleHelpRadius },
+            { "name": "help-sprint-backlog", "text": "?", "cx":100, "cy": circleCy, "r": this.circleHelpRadius },
+            { "name": "help-increment", "text": "?", "cx":125, "cy": circleCy, "r": this.circleHelpRadius },
+            { "name": "help-showcase", "text": "?", "cx":150, "cy": circleCy, "r": this.circleHelpRadius },
+            { "name": "help-retrospective", "text": "?", "cx":175, "cy": circleCy, "r": this.circleHelpRadius },
+
+            { "name": "info-backlog", "text": "", "cx":50, "cy": circleCy, "r": this.circleHelpRadius },
+            { "name": "info-planning", "text": "", "cx":75, "cy": circleCy, "r": this.circleHelpRadius },
+            { "name": "info-sprint-backlog", "text": "", "cx":100, "cy": circleCy, "r": this.circleHelpRadius },
+            { "name": "info-increment", "text": "", "cx":125, "cy": circleCy, "r": this.circleHelpRadius },
+            { "name": "info-showcase", "text": "", "cx":150, "cy": circleCy, "r": this.circleHelpRadius },
+            { "name": "info-retrospective", "text": "", "cx":175, "cy": circleCy, "r": this.circleHelpRadius },
+
+            { "name": "video-backlog", "text": "", "cx":50, "cy": circleCy, "r": this.circleHelpRadius },
+            { "name": "video-planning", "text": "", "cx":75, "cy": circleCy, "r": this.circleHelpRadius },
+            { "name": "video-sprint-backlog", "text": "", "cx":100, "cy": circleCy, "r": this.circleHelpRadius },
+            { "name": "video-increment", "text": "", "cx":125, "cy": circleCy, "r": this.circleHelpRadius },
+            { "name": "video-showcase", "text": "", "cx":150, "cy": circleCy, "r": this.circleHelpRadius },
+            { "name": "video-retrospective", "text": "", "cx":175, "cy": circleCy, "r": this.circleHelpRadius },
+
             {
                 "name": "scrum",
                 "text": "24 Hr",
@@ -267,24 +280,33 @@ class SeeScrum {
     getCircleCx(name, cx){
 
         switch (name) {
-            case "po":
-            case "sm":
-            case "team":
-                return this.rectData.find(rect =>
-                    rect.name === "increment").x - (8 * this.circleHelpRadius);
-
             case "sprint":
             case "scrum":
                 return cx;
 
-            case "backlog":
-            case "planning":
-            case "sprint-backlog":
-            case "increment":
-            case "showcase":
-            case "retrospective":
-                return this.rectData.find(rect => rect.name === name).x +
-                    (this.circleHelpRadius);
+            case "help-backlog":
+            case "help-planning":
+            case "help-sprint-backlog":
+            case "help-increment":
+            case "help-showcase":
+            case "help-retrospective":
+                return this.rectData.find(rect => rect.name === name.slice(5)).x + (this.circleHelpRadius);
+
+            case "info-backlog":
+            case "info-planning":
+            case "info-sprint-backlog":
+            case "info-increment":
+            case "info-showcase":
+            case "info-retrospective":
+                return this.rectData.find(rect => rect.name === name.slice(5)).x + (this.circleHelpRadius*3);
+
+            case "video-backlog":
+            case "video-planning":
+            case "video-sprint-backlog":
+            case "video-increment":
+            case "video-showcase":
+            case "video-retrospective":
+                return this.rectData.find(rect => rect.name === name.slice(6)).x + (this.circleHelpRadius*5);
 
             default:
                 alert("unrecognized circle");
@@ -564,6 +586,11 @@ class SeeScrum {
                 this.appendRectText(g, -18, text, rect.name);
             }
 
+            if (rect.name === "showcase") {
+                let html = '<a id="showcase-video"><img src="img/yt_icon_rgb.png" width="50" </a>';
+                this.appendHTML(g, html, 50, 40, -25, 10 , "pointer", this.handleShowcaseClick, this.dataRectColor);
+            }
+
             if (rect.name === "retrospective") {
                     this.appendFaceIcon(g, averageHappiness);
             }
@@ -584,6 +611,13 @@ class SeeScrum {
         //TODO Clicking on fire can open the burn down chart instead of story list
         const activeSprint = jiraRepo.activeSprint.number - 1;
         window.open("https://seescrum.atlassian.net/issues/?jql=project%20%3D%20SS%20and%20status%20%3D%20Done%20and%20sprint%3D" + activeSprint, "_blank");
+    }
+
+    handleShowcaseClick()
+    {
+        //TODO replace hardcoding of showcase video with picking the right video for the particular showcase
+        //Need a historical sprint selector too to make this more valuable
+        window.open("https://youtu.be/3dg86TigI0w", "_blank");
     }
 
     appendFaceIcon(g, averageHappiness) {
@@ -607,6 +641,19 @@ class SeeScrum {
             '&nbsp;&nbsp;<i class="fas ' + icon + ' fa-2x"</i></span>';
 
         this.appendHTML(g, html, 120, 50, -50,-85, "pointer", this.handleRetroClick, this.dataRectColor);
+
+    }
+
+    appendInfoIcon(g, x, y) {
+
+        const html = '<i class="fas fa-info-circle fa-1x"</i>';
+        this.appendHTML(g, html, 120, 50, x,y, "pointer", this.handleInfoClick, this.dataRectColor);
+
+    }
+
+    appendVideoIcon(g, x, y) {
+        const html = '<img src="img/yt_icon_mono_dark.png" alt="YouTube Video">';
+        this.appendHTML(g, html, 120, 50, x,y, "pointer", this.handleInfoClick, this.dataRectColor);
 
     }
 
@@ -724,6 +771,10 @@ class SeeScrum {
             .style("font-size", "x-large")
             .on("click", d => this.handleCircleClick(d))
             .on ("mouseover",function() {d3.select(this).style("cursor", "pointer");});
+    }
+
+    renderCircleIcons(){
+        
     }
 
     setSummaryStats(){
