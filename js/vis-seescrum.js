@@ -552,40 +552,60 @@ class SeeScrum {
                 this.appendRectText(g, -18, text, rect.name);
             }
 
-            let html = "";
-            switch (rect.name) {
+            this.renderRectButtons(g, xPos, yPos, rect, totalIFAs, burndownPct, averageHappiness);
 
-                case "backlog":
-                    break;
-
-                case "planning":
-                    html = '<button class="btn btn-primary" data-toggle="modal" data-target="#sprintPlanningAlertsModal">' + totalIFAs + ' Alerts</button>';
-                    this.appendHTML(g, html, 100, 40, -50, -10, "pointer", null, this.dataRectColor);
-                    break;
-
-                case "sprint-backlog":
-                    break;
-
-                case "increment":
-                    const y = this.svg.height * 0.3;
-                    const textElem = this.appendRectText(g, y, burndownPct + " Done", rect.name);
-                    textElem.attr("font-size", "x-large");
-                    textElem.attr("x", -15);
-
-                    html = '<i class="fas fa-fire fa-2x" style="color:orange; background-color: ' + this.dataRectColor + ';"></i>';
-                    this.appendHTML(g, html, 30, 31.8, 50, y * 0.5, "pointer", this.handleFireClick, this.dataRectColor);
-                    break;
-
-                case "showcase":
-                    html = '<a id="showcase-video"><img src="img/yt_icon_rgb.png" alt="YouTube video" width="50" </a>';
-                    this.appendHTML(g, html, 50, 40, -25, 10, "pointer", this.handleShowcaseClick, this.dataRectColor);
-                    break;
-
-                case "retrospective":
-                    this.appendFaceIcon(g, averageHappiness);
-                    break;
-            }
         });
+    }
+
+    renderRectButtons(g, xPos, yPos, rect, totalIFAs, burndownPct, averageHappiness){
+        let html = "";
+        switch (rect.name) {
+
+            case "backlog":
+                break;
+
+            case "planning":
+                html = '<button class="btn btn-primary" data-toggle="modal" data-target="#sprintPlanningAlertsModal">' + totalIFAs + ' Alerts</button>';
+                this.appendHTML(g, html, 100, 40, -50, -10, "pointer", null, this.dataRectColor);
+
+                const gTachometer = this.svg.svg.append('g')
+                    .attr("transform", "translate(" + xPos + "," + yPos + ")");
+                html = '<i class="fas fa-tachometer-alt fa-2x" style="color:#1cc88a; background-color: ' + this.dataRectColor + '"></i>';
+                const yT = this.svg.height * 0.3;
+                this.appendHTML(gTachometer, html, 50, 40, 30, 28, "pointer", this.handleVelocityClick(this), this.dataRectColor);
+                break;
+
+            case "sprint-backlog":
+                break;
+
+            case "increment":
+                const y = this.svg.height * 0.3;
+                const textElem = this.appendRectText(g, y, burndownPct + " Done", rect.name);
+                textElem.attr("font-size", "x-large");
+                textElem.attr("x", -15);
+
+                html = '<i class="fas fa-fire fa-2x" style="color:orange; background-color: ' + this.dataRectColor + '"></i>';
+                this.appendHTML(g, html, 30, 31.8, 50, y * 0.5, "pointer", this.handleFireClick, this.dataRectColor);
+                break;
+
+            case "showcase":
+                html = '<a id="showcase-video"><img src="img/yt_icon_rgb.png" alt="YouTube video" width="50" </a>';
+                this.appendHTML(g, html, 50, 40, -25, 10, "pointer", this.handleShowcaseClick, this.dataRectColor);
+                break;
+
+            case "retrospective":
+                this.appendFaceIcon(g, averageHappiness);
+                break;
+        }
+    }
+
+    //This is a function that returns a function aka a "closure."
+    //Here we use the closure to preserve the This pointer.
+    // In general, closures preserve variable values.
+    handleVelocityClick(that){
+        return function (){
+            that.handleChartClick("#velocity-chart", "Velocity Chart");
+        }
     }
 
     handleFireClick(){
@@ -624,7 +644,9 @@ class SeeScrum {
         this.appendHTML(g, html, 120, 50, -50,-8.5, "pointer", this.handleRetroClick, this.dataRectColor);
 
     }
-
+    handleRetroClick(){
+        //TODO must implement
+    }
 
     handleChartClick(chartElemId, chartName){
 
