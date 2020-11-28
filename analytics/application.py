@@ -4,7 +4,7 @@
 #  1. Migrate all JS logic to the back-end and, where possible, leverage the Jira and Git APIs rather than writing bespoke code
 #  -------------------------------------------
 #  GIT
-#  1. Add git stats for weekly additions and deletions to the Velocity chart
+#  1. Add git stats for weekly LOC additions and deletions to the Velocity chart
 #       a. Set x axis to weeks
 #       c. feed additions, deletions and make the charts
 #       b. calculate net LOC and put on Y-axis
@@ -18,7 +18,7 @@
 #       b.  Divide by 100 and subtract 1 to determine how many more calls are needed
 #       c.  Execute a loop using "startAt" to get the next 100 rows, and merge the JSON payload into the final payload
 #       d.  Change the loop to fire off all the API calls needed simultaneously and asynchronously.
-#  4. Do all the sprint planning analytics Jira stories
+#  4. Do all the Jira stories for sprint planning analytics
 #  5. Create sprint objects for all sprints which have lazy load of collections for stories, tasks, and bugs
 #  6. Loop over future sprints to find active sprint + 1 based up on naming convention, else prompt for next sprint
 #  7. sprint.loadStories(): Get all stories in nextSprint using JQL and add the collection to nextSprint
@@ -340,7 +340,7 @@ def cumulative_flow_chart():
 
     return get_response(data)
 
-
+#TODO Differentiate the subset of future stories which are next sprint stories
 @app.route('/api/ifa', methods=["GET"])
 def items_for_attention():
     future_sprint_stories = jira.search_issues('project = "SS" and Sprint in futureSprints()')
