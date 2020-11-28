@@ -488,7 +488,7 @@ class SeeScrum {
         const committed = this.jiraRepo.activeStories.totalStoryPoints;
         const committedStoryCount = this.jiraRepo.activeStories.issues.length;
         const completed = this.jiraRepo.activeStories.completedStoryPoints;
-        const completedStoryCount = this.jiraRepo.activeStories.issues.filter(issue=> issue.status.name === "Done").length;
+        const completedStoryCount = this.jiraRepo.activeStories.issues.filter(issue=> issue.status === "Done").length;
         const backlogStoryCount = this.jiraRepo.backlog.issues.length;
         const averageHappiness = this.retroStore.getSprintHappiness(activeSprint).toFixed(2);
         const burndownPct =  (100 * completed / committed).toFixed()+"%";
@@ -506,7 +506,6 @@ class SeeScrum {
             switch (rect.name) {
                 case "backlog":
                     text = "Product Backlog ";
-                    text2 = backlogStoryCount + " stories ";
                     break;
 
                 case "planning":
@@ -515,13 +514,10 @@ class SeeScrum {
 
                 case "sprint-backlog":
                     text = "Sprint Backlog";
-                    text2 = committed + " points";
-                    text3 = committedStoryCount + " stories";
                     break;
 
                 case "increment":
                     text = "Product Increment ";
-                    text2 = completed + " points ";
                     break;
 
                 case "showcase":
@@ -552,39 +548,100 @@ class SeeScrum {
                 this.appendRectText(g, -18, text, rect.name);
             }
 
-            this.renderRectButtons(g, xPos, yPos, rect, totalIFAs, burndownPct, averageHappiness);
+            this.renderRectButtons(g,
+                xPos,
+                yPos,
+                rect,
+                totalIFAs,
+                burndownPct,
+                averageHappiness,
+                backlogStoryCount,
+                committed,
+                committedStoryCount,
+                completed,
+                completedStoryCount);
 
         });
     }
 
-    renderRectButtons(g, xPos, yPos, rect, totalIFAs, burndownPct, averageHappiness){
+    renderRectButtons(g, xPos, yPos, rect, totalIFAs, burndownPct, averageHappiness, backlogStoryCount, committed, committedStoryCount, completed, completedStoryCount){
         let html = "";
         switch (rect.name) {
 
             case "backlog":
+                html = '<button class="btn btn-primary">' + backlogStoryCount + ' stories';
+                this.appendHTML(g,
+                    html,
+                    100,
+                    50,
+                    -50,
+                    -10,
+                    "pointer",
+                    this.handleBacklogClick,
+                    this.dataRectColor);
                 break;
 
             case "planning":
                 html = '<button class="btn btn-primary" data-toggle="modal" data-target="#sprintPlanningAlertsModal">' + totalIFAs + ' Alerts</button>';
-                this.appendHTML(g, html, 100, 40, -50, -10, "pointer", null, this.dataRectColor);
+                this.appendHTML(g,
+                    html,
+                    100,
+                    50,
+                    -50,
+                    -10,
+                    "pointer",
+                    null,
+                    this.dataRectColor);
 
+                const velocity = this.jiraRepo.previousSprint.completedStoryPoints;
                 const gTachometer = this.svg.svg.append('g')
                     .attr("transform", "translate(" + xPos + "," + yPos + ")");
-                html = '<i class="fas fa-tachometer-alt fa-2x" style="color:#1cc88a; background-color: ' + this.dataRectColor + '"></i>';
-                const yT = this.svg.height * 0.3;
-                this.appendHTML(gTachometer, html, 50, 40, 30, 28, "pointer", this.handleVelocityClick(this), this.dataRectColor);
+                html = '<button class="btn btn-primary"><span> Velocity ' + velocity + '&nbsp&nbsp</span>';
+                html += '<span class="fas fa-tachometer-alt fa-2x" style="color:#1cc88a; background-color: ' + this.dataRectColor + '"></span></button>';
+                this.appendHTML(gTachometer,
+                    html,
+                    150,
+                    50,
+                    -70,
+                    18,
+                    "pointer",
+                    this.handleVelocityClick(this),
+                    this.dataRectColor);
                 break;
 
             case "sprint-backlog":
+
+                html = '<button class="btn btn-primary">' + committed + ' points<br>' + committedStoryCount +  ' stories';
+                this.appendHTML(g,
+                    html,
+                    110,
+                    65,
+                    -52,
+                    -10,
+                    "pointer",
+                    this.handleSprintBacklogClick,
+                    this.dataRectColor);
                 break;
 
             case "increment":
+                html = '<button class="btn btn-primary">' + completed + ' points<br>' + completedStoryCount +  ' stories';
+                this.appendHTML(g,
+                    html,
+                    110,
+                    65,
+                    -52,
+                    -10,
+                    "pointer",
+                    this.handleIncrementClick,
+                    this.dataRectColor);
+
+
                 const y = this.svg.height * 0.3;
                 const textElem = this.appendRectText(g, y, burndownPct + " Done", rect.name);
                 textElem.attr("font-size", "x-large");
                 textElem.attr("x", -15);
 
-                html = '<i class="fas fa-fire fa-2x" style="color:orange; background-color: ' + this.dataRectColor + '"></i>';
+                html = '<span class="fas fa-fire fa-2x" style="color:orange; background-color: ' + this.dataRectColor + '"></span>';
                 this.appendHTML(g, html, 30, 31.8, 50, y * 0.5, "pointer", this.handleFireClick, this.dataRectColor);
                 break;
 
@@ -606,6 +663,19 @@ class SeeScrum {
         return function (){
             that.handleChartClick("#velocity-chart", "Velocity Chart");
         }
+    }
+
+    handleBacklogClick(){
+        window.open("https://seescrum.atlassian.net/secure/RapidBoard.jspa?rapidView=1&projectKey=SS&view=planning&&epics=visible", "_blank");
+    }
+
+    handleSprintBacklogClick(){
+        window.open("https://seescrum.atlassian.net/secure/RapidBoard.jspa?rapidView=1&projectKey=SS", "_blank");
+    }
+
+    handleIncrementClick(){
+        const activeSprint = jiraRepo.activeSprint.number - 1;
+        window.open("https://seescrum.atlassian.net/issues/?jql=project%20%3D%20SS%20and%20status%20%3D%20Done%20and%20sprint%3D" + activeSprint, "_blank");
     }
 
     handleFireClick(){
@@ -761,6 +831,7 @@ class SeeScrum {
             .style("font-size", "x-large")
             .on("click", d => this.handleCircleClick(d))
             .on ("mouseover",function() {d3.select(this).style("cursor", "pointer");});
+
     }
 
     renderVideoAndInfoIcons() {
@@ -785,6 +856,7 @@ class SeeScrum {
             }
         });
     }
+
 
 
     appendInfoIcon(g, infoName, x, y) {
@@ -843,9 +915,7 @@ class SeeScrum {
 
     setSummaryStats(){
         const activeSprint = this.jiraRepo.activeSprint;
-        const velocity = this.jiraRepo.previousSprint.completedStoryPoints;
 
-        document.querySelector("#scrum-velocity").innerText = velocity + " story points";
         document.querySelector("#total-blockers").innerText = activeSprint.totalBlockers;
         document.querySelector("#sprint-goal").innerText = activeSprint.goal;
 
@@ -875,10 +945,6 @@ class SeeScrum {
     setClickHandlers() {
         document.querySelector("#sprint-selector").onchange = () => {
             $(eventHandler).trigger("selectedSprintChange", d3.select("#sprint-selector").property("value"));
-        };
-
-        document.querySelector("#velocity-card").onclick = () => {
-            window.open("https://seescrum.atlassian.net/secure/RapidBoard.jspa?projectKey=SS&rapidView=1&view=reporting&chart=velocityChart", "_blank");
         };
 
         const activeSprint = this.jiraRepo.activeSprint;
