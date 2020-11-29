@@ -1,7 +1,7 @@
 /*jshint esversion: 6 */
 /*globals d3,$,eventHandler:false */
 
-//TODO:  Use the svg object passed from RetroChart instead of creating another svg
+//TODO:  Use the svg object passed to RetroChart instead of creating another svg
 
 class RetroChart {
     constructor(data, parentElement) {
@@ -16,7 +16,7 @@ class RetroChart {
 
     get data() {return this._data;}
 
-
+//TODO Break up this overly long method
     initVis() {
         const vis = this;
 
@@ -37,7 +37,21 @@ class RetroChart {
         // Split data
         vis.splitData = [];
 
-        vis.metrics.forEach(d => {
+        const sortedCategories = [
+            "Backlog Requirements Grooming",
+            "Story Estimation",
+            "Story Prioritization",
+            "Capacity Planning",
+            "Dependency Planning",
+            "Sprint Goal",
+            "Daily Scrum",
+            "Code Quality",
+            "Product Quality",
+            "Showcase"]
+        
+        //TODO replace scalelinear with scaleband
+
+        sortedCategories.forEach(d => {
             const subset = vis.data.map(e => e[d]);
             const obj = {};
             obj[d] = subset;
@@ -91,11 +105,12 @@ class RetroChart {
         // Axis labels
         vis.svg.append("text")
             .attr("class", "axis-label")
-            .attr("x", -50)
-            .attr("y", -20)
-            .text("Score");
+            .attr("x", -60)
+            .attr("y", -0)
+            .text("Score")
+            .style("font-size", "11px")
 
-
+//TODO Make tooltips display or remove them
         // Tool tip
         vis.svg.append("text")
             .attr("id", "sprint-tool")
@@ -176,14 +191,17 @@ class RetroChart {
             })
             .attr("r", 5)
             .attr("fill", this.dataColor)
+            .on("mouseover", function (d, i) {
+                d3.select(this).attr("r", 8);
+                $("#sprint-tool").show();
+                $("#score-tool").show();
+            })
             .on("mouseout", function () {
                 d3.select(this).attr("r", 5);
 
                 $("#sprint-tool").hide();
                 $("#score-tool").hide();
 
-                $(".line").attr("opacity", 1);
-                $(".dots").attr("opacity", 1);
             })
             .on("click", split);
 
