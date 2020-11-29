@@ -158,7 +158,7 @@ function visualize(error,
         const visVelocity = new BarChart(svgVelocity, jiraRepo, gitRepo);
         visVelocity.render();
 
-        new RetroChart(retrospectiveChartData.slice(16,21), "#retrospective-chart");
+        new RetroChart(retrospectiveChartData.slice(0,5), "#retrospective-chart");
 
         d3.select("#ranking-type").on("change", () => {
                 visVelocity.rankingType = d3.select("#ranking-type").property("value");

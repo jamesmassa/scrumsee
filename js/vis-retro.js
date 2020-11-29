@@ -10,7 +10,7 @@ class RetroChart {
         this.margin = {top: 70, right: 60, bottom: 50, left: 60};
         this.width = (window.innerWidth / 3.5) - this.margin.left - this.margin.right;
         this.height = (window.innerHeight / 3.5) - this.margin.top - this.margin.bottom;
-
+        this.dataColor = "#4e73df";
         this.initVis();
     }
 
@@ -75,8 +75,6 @@ class RetroChart {
         vis.yAxis = d3.axisLeft()
             .scale(vis.y);
 
-        vis.color = d3.scaleOrdinal(d3.schemeCategory10);
-
         // Create axes
         vis.svg.append("g")
             .attr("class", "x-axis axis")
@@ -113,8 +111,6 @@ class RetroChart {
             .attr("y", -20)
             .style("display", "none");
 
-        vis.color.domain(vis.metrics);
-
         vis.line = d3.line()
             .x( (d, i) => vis.x(i))
             .y(d => {
@@ -124,7 +120,7 @@ class RetroChart {
             .curve(d3.curveMonotoneX);
 
         vis.svg.selectAll(".dotG")
-            .data(function (d) {
+            .data(d => {
                 const cat = d3.keys(d)[0];
                 return d[cat];
             })
@@ -150,7 +146,7 @@ class RetroChart {
                 return vis.y(mean);
             })
             .attr("r", 5)
-            .attr("fill", "#4e73df")
+            .attr("fill", this.dataColor)
             .on("click", unsplit);
 
         // Create path, circles, and legend for each metric
@@ -162,7 +158,7 @@ class RetroChart {
             })
             .attr("stroke-width", 2)
             .attr("fill", "none")
-            .attr("stroke","#4e73df")
+            .attr("stroke",this.dataColor)
             .attr("d", vis.line);
 
         vis.svg.selectAll(".dots")
@@ -174,15 +170,12 @@ class RetroChart {
                 return "dots " + cat;
             })
             .attr("cx", (d, i) => vis.x(i))
-            .attr("cy", function (d) {
+            .attr("cy", d => {
                 const tot = d.reduce( (a, b) => a + b);
                 return vis.y(tot / d.length)
             })
             .attr("r", 5)
-            .attr("fill", "#4e73df")
-            .on("mouseover", function (d, i) {
-                //d3.select(this).attr("r", 8);
-            })
+            .attr("fill", this.dataColor)
             .on("mouseout", function () {
                 d3.select(this).attr("r", 5);
 
@@ -210,15 +203,15 @@ class RetroChart {
         function split() {
             const delay = 500;
             const cat = d3.select(this).attr("class").split(" ")[1];
-            //const str = d3.select(this).attr("class");
-            //const cat = str.substr(str.indexOf(' ')+1);
+            const str = d3.select(this).attr("class");
+            const cat2 = str.substr(str.indexOf(' ')+1);
             $(".fit." + cat).show();
             d3.select(".fit." + cat)
                 .transition()
                 .duration(delay)
                 .attr("x2", data => vis.x(data[1]))
                 .attr("y2", data => vis.y(data[3]));
-            $(".title." + cat).text(cat + " by Individual Votes");
+            $(".title." + cat).text(cat2 + " by Individual Votes");
             $(".dotG." + cat).show();
             d3.selectAll(".spots." + cat)
                 .transition()
@@ -230,15 +223,15 @@ class RetroChart {
         function unsplit() {
             const delay = 500;
             const cat = d3.select(this).attr("class").split(" ")[1];
-            //const str = d3.select(this).attr("class");
-            //const cat = str.substr(str.indexOf(' ')+1);
+            const str = d3.select(this).attr("class");
+            const cat2 = str.substr(str.indexOf(' ')+1);
             d3.select(".fit." + cat)
                 .transition()
                 .duration(delay)
                 .attr("x2", data => vis.x(data[0]))
                 .attr("y2", data => vis.y(data[2]));
             $(".fit." + cat).delay(delay).hide(0);
-            $(".title." + cat).text(cat + " by Average Score");
+            $(".title." + cat).text(cat2 + " by Average Score");
             d3.selectAll(".spots." + cat)
                 .transition()
                 .duration(delay)
