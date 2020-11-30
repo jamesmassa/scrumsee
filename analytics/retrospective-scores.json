@@ -550,5 +550,189 @@
       5,
       4
     ]
+  },
+  {
+    "Backlog Requirements Grooming": [
+      4,
+      0,
+      1,
+      5,
+      2,
+      1,
+      2
+    ],
+    "Story Estimation": [
+      4,
+      0,
+      4,
+      1,
+      3,
+      5,
+      2
+    ],
+    "Story Prioritization": [
+      -2,
+      -1,
+      -3,
+      0,
+      -3,
+      -3,
+      -4
+    ],
+    "Capacity Planning": [
+      2,
+      2,
+      2,
+      0,
+      2,
+      3,
+      1
+    ],
+    "Dependency Planning": [
+      -3,
+      -3,
+      -4,
+      -1,
+      -2,
+      -4,
+      -1
+    ],
+    "Sprint Goal": [
+      -1,
+      -1,
+      0,
+      0,
+      1,
+      -1,
+      -2
+    ],
+    "Daily Scrum": [
+      4,
+      0,
+      1,
+      3,
+      2,
+      1,
+      2
+    ],
+    "Code Quality": [
+      4,
+      0,
+      1,
+      3,
+      2,
+      1,
+      2
+    ],
+    "Product Quality": [
+      1,
+      3,
+      3,
+      0,
+      1,
+      4,
+      3
+    ],
+    "Showcase": [
+      1,
+      4,
+      4,
+      3,
+      2,
+      5,
+      4
+    ]
+  },
+  {
+    "Backlog Requirements Grooming": [
+      4,
+      0,
+      1,
+      5,
+      2,
+      1,
+      2
+    ],
+    "Story Estimation": [
+      4,
+      0,
+      4,
+      1,
+      3,
+      5,
+      2
+    ],
+    "Story Prioritization": [
+      -2,
+      -1,
+      -3,
+      0,
+      -3,
+      -3,
+      -4
+    ],
+    "Capacity Planning": [
+      2,
+      2,
+      2,
+      0,
+      2,
+      3,
+      1
+    ],
+    "Dependency Planning": [
+      -3,
+      -3,
+      -4,
+      -1,
+      -2,
+      -4,
+      -1
+    ],
+    "Sprint Goal": [
+      -1,
+      -1,
+      0,
+      0,
+      1,
+      -1,
+      -2
+    ],
+    "Daily Scrum": [
+      4,
+      0,
+      1,
+      3,
+      2,
+      1,
+      2
+    ],
+    "Code Quality": [
+      4,
+      0,
+      1,
+      3,
+      2,
+      1,
+      2
+    ],
+    "Product Quality": [
+      1,
+      3,
+      3,
+      0,
+      1,
+      4,
+      3
+    ],
+    "Showcase": [
+      1,
+      4,
+      4,
+      3,
+      2,
+      5,
+      4
+    ]
   }
 ]

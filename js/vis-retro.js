@@ -48,8 +48,6 @@ class RetroChart {
             "Code Quality",
             "Product Quality",
             "Showcase"]
-        
-        //TODO replace scalelinear with scaleband
 
         sortedCategories.forEach(d => {
             const subset = vis.data.map(e => e[d]);
@@ -72,7 +70,10 @@ class RetroChart {
         vis.svg.append('g')
             .attr("clip-path", "url(#clip)");
 
+        //TODO replace scalelinear with scaleband
+
         // Scales and axes
+
         vis.x = d3.scaleLinear()
             .domain([0, vis.data.length - 1])
             .range([0, vis.width]);
