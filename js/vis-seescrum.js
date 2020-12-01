@@ -43,17 +43,17 @@ class SeeScrum {
 
         switch (d.name) {
             case "backlog":
-                window.open("https://seescrum.atlassian.net/secure/RapidBoard.jspa?rapidView=1&projectKey=SS&view=planning&&epics=visible", "_blank");
+                //window.open("https://seescrum.atlassian.net/secure/RapidBoard.jspa?rapidView=1&projectKey=SS&view=planning&&epics=visible", "_blank");
                 break;
             case "planning":
-                this.handleChartClick("#velocity-chart", "Velocity Chart");
+                //this.handleChartClick("#velocity-chart", "Velocity Chart");
                 break;
             case "sprint-backlog":
-                window.open("https://seescrum.atlassian.net/secure/RapidBoard.jspa?rapidView=1&projectKey=SS", "_blank");
+                //window.open("https://seescrum.atlassian.net/secure/RapidBoard.jspa?rapidView=1&projectKey=SS", "_blank");
                 break;
             case "increment":
                 const activeSprint = this.jiraRepo.activeSprint.number - 1;
-                window.open("https://seescrum.atlassian.net/issues/?jql=project%20%3D%20SS%20and%20status%20%3D%20Done%20and%20sprint%3D" + activeSprint, "_blank");
+               // window.open("https://seescrum.atlassian.net/issues/?jql=project%20%3D%20SS%20and%20status%20%3D%20Done%20and%20sprint%3D" + activeSprint, "_blank");
                 break;
             case "showcase":
                 break;
@@ -94,8 +94,8 @@ class SeeScrum {
             .attr("width", this.svg.width)
             .attr("height", this.svg.height)
             .attr("y", 0)
-            .attr("x", 0)
-            .on("mouseover", function () {d3.select(this).style("cursor", "default");});
+            .attr("x", 0);
+            //.on("mouseover", function () {d3.select(this).style("cursor", "default");});
 
         const helpTextHtml = '<div id="help-text" style="color: black "><h4>' +
             text + '</h4></div>';
@@ -324,17 +324,17 @@ class SeeScrum {
             .attr("x", d => d.x)
             .attr("rx", 6)
             .attr("ry", 6)
-            .on("click", d => this.handleRectClick(d))
-            .on ("mouseover",function(d) {
-                if (d.isClickable) {
-                    d3.select(this).style("cursor", "pointer");
-                }
-            })
-            .on ("mouseout",function(d) {
-                if (d.isClickable) {
-                    d3.select(this).style("cursor", "default");
-                }
-            });
+            .on("click", d => this.handleRectClick(d));
+            // .on ("mouseover",function(d) {
+            //     if (d.isClickable) {
+            //         d3.select(this).style("cursor", "pointer");
+            //     }
+            // })
+            // .on ("mouseout",function(d) {
+            //     if (d.isClickable) {
+            //         d3.select(this).style("cursor", "default");
+            //     }
+            // });
 
         //Marker Arrowheads
         this.setMarkerArrowHead("pre-sprint-arrowhead");
@@ -538,14 +538,14 @@ class SeeScrum {
                 .attr("transform", "translate(" + xPos + "," + yPos + ")");
 
             if (text && text && text3) {
-                this.appendRectText(g, -18, text, rect.name);
-                this.appendRectText(g, 0, text2, rect.name);
-                this.appendRectText(g, 18, text3, rect.name);
+                this.appendRectText(g, -27, text, rect.name);
+                this.appendRectText(g, -18, text2, rect.name);
+                this.appendRectText(g, 9, text3, rect.name);
             } else if (text && text2) {
-                this.appendRectText(g, -18, text, rect.name);
-                this.appendRectText(g, 0, text2, rect.name);
+                this.appendRectText(g, -27, text, rect.name);
+                this.appendRectText(g, -18, text2, rect.name);
             } else if (text) {
-                this.appendRectText(g, -18, text, rect.name);
+                this.appendRectText(g, -27, text, rect.name);
             }
 
             this.renderRectButtons(g,
@@ -575,7 +575,7 @@ class SeeScrum {
                     100,
                     50,
                     -50,
-                    -10,
+                    -20,
                     "pointer",
                     this.handleBacklogClick,
                     this.dataRectColor);
@@ -588,7 +588,7 @@ class SeeScrum {
                     100,
                     50,
                     -50,
-                    -10,
+                    -20,
                     "pointer",
                     null,
                     this.dataRectColor);
@@ -617,7 +617,7 @@ class SeeScrum {
                     110,
                     65,
                     -52,
-                    -10,
+                    -20,
                     "pointer",
                     this.handleSprintBacklogClick,
                     this.dataRectColor);
@@ -630,7 +630,7 @@ class SeeScrum {
                     110,
                     65,
                     -52,
-                    -10,
+                    -20,
                     "pointer",
                     this.handleIncrementClick,
                     this.dataRectColor);
@@ -647,7 +647,7 @@ class SeeScrum {
 
             case "showcase":
                 html = '<a id="showcase-video"><img src="img/yt_icon_rgb.png" alt="YouTube video" width="50" </a>';
-                this.appendHTML(g, html, 50, 40, -25, 10, "pointer", this.handleShowcaseClick, this.dataRectColor);
+                this.appendHTML(g, html, 50, 40, -25, 30, "pointer", this.handleShowcaseClick, this.dataRectColor);
                 break;
 
             case "retrospective":
@@ -691,6 +691,12 @@ class SeeScrum {
         window.open("https://youtu.be/3dg86TigI0w", "_blank");
     }
 
+    handleRetroClick(that){
+        return function () {
+            that.handleChartClick("#retrospective-chart", "Retrospective Chart");
+        }
+    }
+
     appendFaceIcon(g, averageHappiness) {
         let color = "";
         let icon = "";
@@ -707,16 +713,15 @@ class SeeScrum {
             icon = "fa-meh";
         }
 
-        const html = '<span style="color:' + color + '">' +
-            averageHappiness +
-            '&nbsp;&nbsp;<i class="fas ' + icon + ' fa-1x" style="font-size: xx-large"</i></span>';
+        let html = '<button class="btn btn-primary"><span> Happiness ' + averageHappiness + '</span>';
 
-        this.appendHTML(g, html, 120, 50, -50,-8.5, "pointer", this.handleRetroClick, this.dataRectColor);
+        html += '<span style="color:' + color + '">' +
+            '&nbsp;;<i class="fas ' + icon + ' fa-1x" style="font-size: xx-large"</i></span>';
+
+        this.appendHTML(g, html, 179, 50, -83,-20, "pointer", this.handleRetroClick(this), this.dataRectColor);
 
     }
-    handleRetroClick(){
-        //TODO must implement
-    }
+
 
     handleChartClick(chartElemId, chartName){
 
@@ -775,10 +780,10 @@ class SeeScrum {
             .attr("y", y )
             .text(text)
             .style("font-weight", "bold")
-            .on("click", d => this.handleRectClick(d))
-            .on("mouseover", function () {
-                d3.select(this).style("cursor", "pointer");
-            });
+            .on("click", d => this.handleRectClick(d));
+            // .on("mouseover", function () {
+            //     d3.select(this).style("cursor", "pointer");
+            // });
 
     }
 
