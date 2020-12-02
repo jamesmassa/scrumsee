@@ -39,33 +39,6 @@ class SeeScrum {
         div.innerHTML = mustSplit + noEpic + unassigned + notFibonacci;
     }
 
-    handleRectClick(d) {
-
-        switch (d.name) {
-            case "backlog":
-                //window.open("https://seescrum.atlassian.net/secure/RapidBoard.jspa?rapidView=1&projectKey=SS&view=planning&&epics=visible", "_blank");
-                break;
-            case "planning":
-                //this.handleChartClick("#velocity-chart", "Velocity Chart");
-                break;
-            case "sprint-backlog":
-                //window.open("https://seescrum.atlassian.net/secure/RapidBoard.jspa?rapidView=1&projectKey=SS", "_blank");
-                break;
-            case "increment":
-                const activeSprint = this.jiraRepo.activeSprint.number - 1;
-               // window.open("https://seescrum.atlassian.net/issues/?jql=project%20%3D%20SS%20and%20status%20%3D%20Done%20and%20sprint%3D" + activeSprint, "_blank");
-                break;
-            case "showcase":
-                break;
-            case "retrospective":
-                this.handleChartClick("#retrospective-chart", "Retrospective Chart");
-                break;
-            default:
-                alert ("unhandled click for " + d.name);
-                break;
-        }
-    }
-
     handleCircleClick(d) {
 
         let text = "";
@@ -95,7 +68,6 @@ class SeeScrum {
             .attr("height", this.svg.height)
             .attr("y", 0)
             .attr("x", 0);
-            //.on("mouseover", function () {d3.select(this).style("cursor", "default");});
 
         const helpTextHtml = '<div id="help-text" style="color: black "><h4>' +
             text + '</h4></div>';
@@ -323,18 +295,7 @@ class SeeScrum {
             .attr("y", d => d.y)
             .attr("x", d => d.x)
             .attr("rx", 6)
-            .attr("ry", 6)
-            .on("click", d => this.handleRectClick(d));
-            // .on ("mouseover",function(d) {
-            //     if (d.isClickable) {
-            //         d3.select(this).style("cursor", "pointer");
-            //     }
-            // })
-            // .on ("mouseout",function(d) {
-            //     if (d.isClickable) {
-            //         d3.select(this).style("cursor", "default");
-            //     }
-            // });
+            .attr("ry", 6);
 
         //Marker Arrowheads
         this.setMarkerArrowHead("pre-sprint-arrowhead");
@@ -779,12 +740,7 @@ class SeeScrum {
             .attr("text-anchor", "middle")
             .attr("y", y )
             .text(text)
-            .style("font-weight", "bold")
-            .on("click", d => this.handleRectClick(d));
-            // .on("mouseover", function () {
-            //     d3.select(this).style("cursor", "pointer");
-            // });
-
+            .style("font-weight", "bold");
     }
 
     renderCircleText(){

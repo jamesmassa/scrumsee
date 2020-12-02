@@ -147,7 +147,7 @@ function visualize(error,
         const retroStore = new RetroStore(retrospectiveChartData);
 
         const marginSeeScrum = {top: 0, right: 0, bottom: 0, left: 0};
-        const svgSeeScrum = new Svg("#scrumsee-svg", 1400, 210, marginSeeScrum);
+        const svgSeeScrum = new Svg("#scrumsee-svg", 1690, 210, marginSeeScrum);
 
         const visSeeScrum = new SeeScrum(svgSeeScrum, scrumTextStore, retroStore, jiraRepo, ifaData);
 
