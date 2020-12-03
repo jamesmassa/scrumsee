@@ -509,28 +509,31 @@ class SeeScrum {
                 this.appendRectText(g, -27, text, rect.name);
             }
 
+            const metrics = {};
+            metrics.totalIFAs = totalIFAs;
+            metrics.burndownPct =burndownPct;
+            metrics.averageHappiness = averageHappiness;
+            metrics.backlogStoryCount = backlogStoryCount
+            metrics.committed = committed
+            metrics.committedStoryCount = committedStoryCount
+            metrics.completed = completed;
+            metrics.completedStoryCount = completedStoryCount
+
             this.renderRectButtons(g,
                 xPos,
                 yPos,
                 rect,
-                totalIFAs,
-                burndownPct,
-                averageHappiness,
-                backlogStoryCount,
-                committed,
-                committedStoryCount,
-                completed,
-                completedStoryCount);
+                metrics);
 
         });
     }
 
-    renderRectButtons(g, xPos, yPos, rect, totalIFAs, burndownPct, averageHappiness, backlogStoryCount, committed, committedStoryCount, completed, completedStoryCount){
+    renderRectButtons(g, xPos, yPos, rect, metrics){
         let html = "";
         switch (rect.name) {
 
             case "backlog":
-                html = '<button class="btn btn-primary">' + backlogStoryCount + ' stories';
+                html = '<button class="btn btn-primary">' + metrics.backlogStoryCount + ' stories';
                 this.appendHTML(g,
                     html,
                     100,
@@ -543,7 +546,7 @@ class SeeScrum {
                 break;
 
             case "planning":
-                html = '<button class="btn btn-primary" data-toggle="modal" data-target="#sprintPlanningAlertsModal">' + totalIFAs + ' Alerts</button>';
+                html = '<button class="btn btn-primary" data-toggle="modal" data-target="#sprintPlanningAlertsModal">' + metrics.totalIFAs + ' Alerts</button>';
                 this.appendHTML(g,
                     html,
                     100,
@@ -572,7 +575,7 @@ class SeeScrum {
 
             case "sprint-backlog":
 
-                html = '<button class="btn btn-primary">' + committed + ' points<br>' + committedStoryCount +  ' stories';
+                html = '<button class="btn btn-primary">' + metrics.committed + ' points<br>' + metrics.committedStoryCount +  ' stories';
                 this.appendHTML(g,
                     html,
                     110,
@@ -585,7 +588,7 @@ class SeeScrum {
                 break;
 
             case "increment":
-                html = '<button class="btn btn-primary">' + completed + ' points<br>' + completedStoryCount +  ' stories';
+                html = '<button class="btn btn-primary">' + metrics.completed + ' points<br>' + metrics.completedStoryCount +  ' stories';
                 this.appendHTML(g,
                     html,
                     110,
@@ -598,7 +601,7 @@ class SeeScrum {
 
 
                 const y = this.svg.height * 0.3;
-                const textElem = this.appendRectText(g, y, burndownPct + " Done", rect.name);
+                const textElem = this.appendRectText(g, y, metrics.burndownPct + " Done", rect.name);
                 textElem.attr("font-size", "x-large");
                 textElem.attr("x", -15);
 
@@ -612,7 +615,7 @@ class SeeScrum {
                 break;
 
             case "retrospective":
-                this.appendFaceIcon(g, averageHappiness);
+                this.appendFaceIcon(g, metrics.averageHappiness);
                 break;
         }
     }
@@ -807,13 +810,14 @@ class SeeScrum {
 
                 this.appendInfoIcon(gInfo, infoName,12, -13);
 
-                const xPosVideo = this.getCircleCx(circle.name, circle.cx) + this.circleHelpRadius + 2;
+                const xPosVideo = this.getCircleCx(circle.name, circle.cx) + this.circleHelpRadius + 55;
                 const yPosVideo = circle.cy;
-                const gVideo = this.svg.svg.append('g')
-                    .attr("transform", "translate(" + xPosVideo + "," + yPosVideo + ")");
                 const videoName = "video" + circle.name.slice(4);
 
-                this.appendVideoIcon(gVideo, videoName,40, -0);
+                const gVideo = this.svg.svg.append('g')
+                    .attr("transform", "translate(" + xPosVideo + "," + yPosVideo + ")");
+
+                this.appendPlaylistIcon(gVideo, videoName);
             }
         });
     }
@@ -823,54 +827,49 @@ class SeeScrum {
     appendInfoIcon(g, infoName, x, y) {
         const html = '<i class="fas fa-info-circle fa-1x" id="' + infoName + '" </i>';
         this.appendHTML(g, html, 20, 25, x,y, "pointer", this.handleInfoClick(infoName), this.dataRectColor);
+    }
 
-        g.append('svg:foreignObject')
-            .attr("width", 20)
-            .attr("height", 25)
-            .attr("text-anchor", "middle")
-            .attr("x", x)
-            .attr("y", y)
-            .append("xhtml:body")
-            .html(html)
-            .style("font-weight", "bold")
-            .style("font-size", "larger")
-            .style("background-color", this.dataRectColor)
-            .on("click", d => this.handleInfoClick(infoName))
+    appendPlaylistIcon(g, videoName) {
+
+
+
+        const g2 = g.append('g');
+
+        g2.append("path")
+            .attr("id", "yt-playlist-" + videoName) //Unique id of the path
+            .attr("d", "M19 9H2v2h17V9zm0-4H2v2h17V5zM2 15h13v-2H2v2zm15-2v6l5-3-5-3z") //SVG
+            .style("fill", "black");
+            // .on("click", d => this.handlePlaylistClick(videoName))
+            // .on("mouseover", function () {
+            //     d3.select(this).style("cursor", "pointer");
+            // });
+
+        g2.transition().attrTween("transform", (d, i, a) => d3.interpolateString(a, 'scale(2)'));
+        g2.append("rect")
+            .attr("fill", "none")
+            .attr("width", 24)
+            .attr("height", 23)
+            .attr("y", 0)
+            .attr("x", 0)
+            .attr("pointer-events", "all")
+            .attr("cursor", "pointer")
+            .on("click", d => this.handlePlaylistClick(videoName))
             .on("mouseover", function () {
                 d3.select(this).style("cursor", "pointer");
             });
-    }
-
-    appendVideoIcon(g, videoName, x, y) {
-        const html = '<img src="img/yt_icon_mono_light.png" id="' + videoName + '" alt="YouTube Video" height="32">';
-
-        g.append('svg:foreignObject')
-            .attr("width", 50)
-            .attr("height", 32)
-            .attr("text-anchor", "middle")
-            .attr("x", x)
-            .attr("y", y)
-            .append("xhtml:body")
-            .html(html)
-            .style("font-weight", "bold")
-            .style("font-size", "larger")
-            .style("background-color", this.dataRectColor)
-            .on("click", d => this.handleVideoClick(videoName))
-            .on("mouseover", function () {
-                d3.select(this).style("cursor", "pointer");
-            });
-    }
-
-    handleInfoClick(name){
 
     }
 
-    handleVideoClick(videoName){
+    handleInfoClick(){
+
+    }
+
+    handlePlaylistClick(playlist){
         //TODO replace hard coding of video name with detection of name
 
-        switch (videoName) {
+        switch (playlist) {
             case("video-planning"):
-                window.open("https://youtu.be/GLHcTmXSftQ", "_blank");
+                window.open("https://www.youtube.com/playlist?list=PL_cBooxGk-FbYdR_frAaQn04IMHY5ntyr", "_blank");
         }
     }
 
