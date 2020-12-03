@@ -32,11 +32,34 @@ class SeeScrum {
     setIfaModalData(){
         const div = document.querySelector('#sprint-planning-alerts');
         const data = this._ifaData;
-        const mustSplit = "<h5>Large Stories to Split</h5><br>" + JSON.stringify(data.mustSplit) + "<br>";
-        const noEpic = "<br><h5>Stories with no Epic</h5><br>" + JSON.stringify(data.noEpic) + "<br>";
-        const unassigned = "<br><h5>Stories with no Assignee</h5><br>" + JSON.stringify(data.unassigned) + "<br>";
-        const notFibonacci = "<br><h5>Stories Whose Estimate is Not in Fibonacci Sequence</h5><br>" + JSON.stringify(data.notFibonacci) + "<br>";
+        const mustSplit = this.analyticsToString("which should be split", data.mustSplit);
+        const noEpic = this.analyticsToString("with no epic", data.noEpic);
+        const unassigned = this.analyticsToString("with no assignee", data.unassigned);
+        const notFibonacci = this.analyticsToString("whose estimate is not in the Fibonacci Sequence", data.notFibonacci);
         div.innerHTML = mustSplit + noEpic + unassigned + notFibonacci;
+    }
+
+    analyticsToString(header, data){
+        let html = "";
+
+        if (!data) return html;
+
+        html = "<h5>" + data.length + " ";
+
+        if (data.length === 1) {
+            html += "Story";
+        } else {
+            html += "Stories";
+        }
+
+        html += " " + header + "</h5>";
+        data.forEach(story => {
+            const storyUrl = "https://seescrum.atlassian.net/browse/" + story[1];
+            html += '<br><a href="' + storyUrl + '">' + story[1] + '</a>'
+        });
+        html += '<hr/>';
+
+        return html
     }
 
     handleCircleClick(d) {
@@ -546,12 +569,13 @@ class SeeScrum {
                 break;
 
             case "planning":
-                html = '<button class="btn btn-primary" data-toggle="modal" data-target="#sprintPlanningAlertsModal">' + metrics.totalIFAs + ' Alerts</button>';
+                html = '<button class="btn btn-primary" data-toggle="modal" data-target="#sprintPlanningAlertsModal"><span>' + metrics.totalIFAs + ' Alerts &nbsp&nbsp</span>';
+                html += '<span class="fas fa-exclamation-triangle fa-2x" style="color:#ffc107; background-color: ' + this.dataRectColor + '"></span></button>';
                 this.appendHTML(g,
                     html,
-                    100,
+                    150,
                     50,
-                    -50,
+                    -63,
                     -20,
                     "pointer",
                     null,
@@ -567,7 +591,7 @@ class SeeScrum {
                     150,
                     50,
                     -70,
-                    18,
+                    24,
                     "pointer",
                     this.handleVelocityClick(this),
                     this.dataRectColor);
@@ -831,20 +855,17 @@ class SeeScrum {
 
     appendPlaylistIcon(g, videoName) {
 
-
-
         const g2 = g.append('g');
 
         g2.append("path")
             .attr("id", "yt-playlist-" + videoName) //Unique id of the path
             .attr("d", "M19 9H2v2h17V9zm0-4H2v2h17V5zM2 15h13v-2H2v2zm15-2v6l5-3-5-3z") //SVG
             .style("fill", "black");
-            // .on("click", d => this.handlePlaylistClick(videoName))
-            // .on("mouseover", function () {
-            //     d3.select(this).style("cursor", "pointer");
-            // });
 
+        //Increase the size of the playlist path
         g2.transition().attrTween("transform", (d, i, a) => d3.interpolateString(a, 'scale(2)'));
+
+        //Create a target rectangle for mouse events because the path has "holes" in it
         g2.append("rect")
             .attr("fill", "none")
             .attr("width", 24)
