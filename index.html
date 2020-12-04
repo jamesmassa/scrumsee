@@ -236,12 +236,14 @@
 
         <!-- Modal -->
         <div class="modal fade" id="sprintPlanningAlertsModal" tabindex="-1" role="dialog" aria-labelledby="sprintPlanningAlertsModalCenterTitle" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
                         <h3 class="modal-title" id="sprintPlanningAlertsModalTitle">Sprint Planning Alerts</h3>
                     </div>
-                    <div class="modal-body" id="sprint-planning-alerts"></div>
+                    <div class="modal-body" id="sprint-planning-alerts">
+                        <div class='sstable table'></div>
+                    </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                     </div>
@@ -284,6 +286,7 @@
 <script src="js/scrumstore.js"></script>
 <script src="js/svg.js"></script>
 <script src="js/bar-chart.js"></script>
+<script src="js/table-generator.js"></script>
 
 <!-- Page level custom scripts -->
 <script src="js/issue-property-control.js"></script>

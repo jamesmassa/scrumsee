@@ -1,5 +1,19 @@
 /*jshint esversion: 6 */
 /*globals d3,$,eventHandler:false */
+
+class Ifa {
+
+    constructor(ifa) {
+
+        this.id = ifa[1];
+        this.score = ifa[2];
+        this.time_alive = ifa[3];
+        this.accuracy = ifa[4];
+        this.user_id = ifa[5];
+        this.user = ifa[6];
+    }
+}
+
 class SeeScrum {
 
     constructor(svg, scrumTextStore, retroStore, jiraRepo, ifaData) {
@@ -30,6 +44,46 @@ class SeeScrum {
     }
 
     setIfaModalData(){
+        createSsTable(); // Clears able div if it has any children nodes, creates & appends the table
+        // Iterates through all the objects in the scores array and appends each one to the table body
+
+
+
+        const stories2 = this._ifaData.mustSplit.map(ifa => new Ifa(ifa));
+
+        const stories = [
+            {"id": 1,
+                "score": 115,
+                "time_alive": 70.659,
+                "accuracy": 17.1,
+                "user_id": 1,
+                "user": {
+                    "username": "daniel"
+                }},
+            {"id": 2,
+                "score": 115,
+                "time_alive": 70.659,
+                "accuracy": 17.1,
+                "user_id": 1,
+                "user": {
+                    "username": "jimbo"
+                }},
+            {"id": 3,
+                "score": 115,
+                "time_alive": 70.659,
+                "accuracy": 17.1,
+                "user_id": 1,
+                "user": {
+                    "username": "jameison"
+                }}];
+
+        stories2.forEach(story => {
+            let storyIndex = stories.indexOf(story) + 1; // Index of score in score array for global ranking (these are already sorted in the back-end)
+            appendStories(story, storyIndex); // Creates and appends each row to the table body
+        });
+
+
+
         const div = document.querySelector('#sprint-planning-alerts');
         const data = this._ifaData;
         const mustSplit = this.analyticsToString("to split", data.mustSplit);
@@ -37,7 +91,7 @@ class SeeScrum {
         const unassigned = this.analyticsToString("with no assignee", data.unassigned);
         const notEstimated = this.analyticsToString(" without an estimate", data.notEstimated);
         const notFibonacci = this.analyticsToString("with non-Fibonacci estimates", data.notFibonacci);
-        div.innerHTML = mustSplit + noEpic + unassigned + notEstimated + notFibonacci;
+        div.innerHTML += mustSplit + noEpic + unassigned + notEstimated + notFibonacci;
     }
 
 
