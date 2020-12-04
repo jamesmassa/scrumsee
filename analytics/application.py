@@ -347,18 +347,18 @@ def items_for_attention():
 
     fibonacci = [0, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144]
 
-    not_estimated = [(issue.id, issue.key) for issue in future_sprint_stories if issue.fields.customfield_10026 is None]
+    not_estimated = [(issue.id, issue.key, issue.fields.summary) for issue in future_sprint_stories if issue.fields.customfield_10026 is None]
 
-    not_fibonacci = [(issue.id, issue.key) for issue in future_sprint_stories
+    not_fibonacci = [(issue.id, issue.key, issue.fields.summary) for issue in future_sprint_stories
                      if issue.fields.customfield_10026 not in fibonacci]
 
-    unassigned = [(issue.id, issue.key) for issue in future_sprint_stories if issue.fields.assignee is None]
+    unassigned = [(issue.id, issue.key, issue.fields.summary) for issue in future_sprint_stories if issue.fields.assignee is None]
 
-    must_split = [(issue.id, issue.key) for issue in future_sprint_stories
+    must_split = [(issue.id, issue.key, issue.fields.summary) for issue in future_sprint_stories
                   if issue.fields.customfield_10026 is not None and
                   int(issue.fields.customfield_10026) > 8]
 
-    no_epic = [(issue.id, issue.key) for issue in future_sprint_stories if issue.fields.customfield_10014 is None]
+    no_epic = [(issue.id, issue.key, issue.fields.summary) for issue in future_sprint_stories if issue.fields.customfield_10014 is None]
 
     data = {
         "notEstimated": not_estimated,

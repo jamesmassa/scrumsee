@@ -32,31 +32,53 @@ class SeeScrum {
     setIfaModalData(){
         const div = document.querySelector('#sprint-planning-alerts');
         const data = this._ifaData;
-        const mustSplit = this.analyticsToString("which should be split", data.mustSplit);
+        const mustSplit = this.analyticsToString("to split", data.mustSplit);
         const noEpic = this.analyticsToString("with no epic", data.noEpic);
         const unassigned = this.analyticsToString("with no assignee", data.unassigned);
-        const notFibonacci = this.analyticsToString("whose estimate is not in the Fibonacci Sequence", data.notFibonacci);
-        div.innerHTML = mustSplit + noEpic + unassigned + notFibonacci;
+        const notEstimated = this.analyticsToString(" without an estimate", data.notEstimated);
+        const notFibonacci = this.analyticsToString("with non-Fibonacci estimates", data.notFibonacci);
+        div.innerHTML = mustSplit + noEpic + unassigned + notEstimated + notFibonacci;
     }
+
 
     analyticsToString(header, data){
         let html = "";
 
         if (!data) return html;
 
-        html = "<h5>" + data.length + " ";
+        let jqlUrl = 'https://seescrum.atlassian.net/issues/?jql=project%20%3D%20%22SS%22%20and%20key%20in%20(';
+
+        const quote = "%22";
+        const comma = "%2C";
+
+        for (let i = 0; i < data.length; i++) {
+            const story = data[i];
+            jqlUrl += quote + story[1] + quote + comma;
+        }
+        jqlUrl = jqlUrl.slice(0, -3) //remove last comma
+
+        jqlUrl += ')%20ORDER%20BY%20created%20DESC';
+        html = '<h5><a href="' + jqlUrl + '" target="_blank">';
+
+        html += data.length + " ";
 
         if (data.length === 1) {
             html += "Story";
         } else {
             html += "Stories";
         }
+        html += "</a>";
 
         html += " " + header + "</h5>";
+
         data.forEach(story => {
             const storyUrl = "https://seescrum.atlassian.net/browse/" + story[1];
-            html += '<br><a href="' + storyUrl + '">' + story[1] + '</a>'
+            const storyKey = story[1];
+            const storyDescription = story[2];
+            html += '<br><a href="' + storyUrl + '" target="_blank">' + storyKey + '</a>&nbsp;&nbsp;&nbsp;'
+            html += storyDescription;
         });
+
         html += '<hr/>';
 
         return html
