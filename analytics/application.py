@@ -189,7 +189,7 @@ def jira_stories_future():
 @app.route('/api/jira-sprints', methods=["GET"])
 def jira_sprints():
 
-    data = jira._get_json( 'sprint/', base='https://seescrum.atlassian.net/rest/agile/latest/board/1/sprint')
+    data = jira._get_json('sprint/', base='https://seescrum.atlassian.net/rest/agile/latest/board/1/sprint')
     return get_response(data)
     # https://seescrum.atlassian.net/rest/agile/latest/board/1/sprint/
 
@@ -202,10 +202,11 @@ def jira_epics():
 @app.route('/api/jira-versions',  methods=["GET"])
 def jira_versions():
 
-    data = jira._get_json( 'version/', base='https://seescrum.atlassian.net/rest/agile/latest/board/1/version')
+    data = jira._get_json('version/', base='https://seescrum.atlassian.net/rest/agile/latest/board/1/version')
 
     return get_response(data)
     # https://seescrum.atlassian.net/rest/agile/latest/board/1/version/'
+
 
 @app.route('/api/jira-issues-for-epic', methods=["GET"])
 def jira_issues_for_epic():
@@ -340,25 +341,64 @@ def cumulative_flow_chart():
 
     return get_response(data)
 
-#TODO Differentiate the subset of future stories which are next sprint stories
+
+# TODO Differentiate the subset of future stories which are next sprint stories
 @app.route('/api/ifa', methods=["GET"])
 def items_for_attention():
+    # storypoints = customfield_10026
+    # epic = customfield_10014
+
     future_sprint_stories = jira.search_issues('project = "SS" and Sprint in futureSprints()')
 
     fibonacci = [0, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144]
 
-    not_estimated = [(issue.id, issue.key, issue.fields.summary) for issue in future_sprint_stories if issue.fields.customfield_10026 is None]
+    not_estimated = [(issue.id,
+                      issue.key,
+                      issue.fields.summary,
+                      issue.fields.customfield_10014,  # epic
+                      issue.fields.priority.name,
+                      str(issue.fields.assignee),
+                      issue.fields.customfield_10026)  # story points
+                     for issue in future_sprint_stories if issue.fields.customfield_10026 is None]
 
-    not_fibonacci = [(issue.id, issue.key, issue.fields.summary) for issue in future_sprint_stories
+    not_fibonacci = [(issue.id,
+                      issue.key,
+                      issue.fields.summary,
+                      issue.fields.customfield_10014,
+                      issue.fields.priority.name,
+                      str(issue.fields.assignee),
+                      issue.fields.customfield_10026)
+                     for issue in future_sprint_stories
                      if issue.fields.customfield_10026 not in fibonacci]
 
-    unassigned = [(issue.id, issue.key, issue.fields.summary) for issue in future_sprint_stories if issue.fields.assignee is None]
+    unassigned = [(issue.id,
+                   issue.key,
+                   issue.fields.summary,
+                   issue.fields.customfield_10014,
+                   issue.fields.priority.name,
+                   str(issue.fields.assignee),
+                   issue.fields.customfield_10026)
+                  for issue in future_sprint_stories if issue.fields.assignee is None]
 
-    must_split = [(issue.id, issue.key, issue.fields.summary) for issue in future_sprint_stories
+    must_split = [(issue.id,
+                   issue.key,
+                   issue.fields.summary,
+                   issue.fields.customfield_10014,
+                   issue.fields.priority.name,
+                   str(issue.fields.assignee),
+                   issue.fields.customfield_10026)
+                  for issue in future_sprint_stories
                   if issue.fields.customfield_10026 is not None and
                   int(issue.fields.customfield_10026) > 8]
 
-    no_epic = [(issue.id, issue.key, issue.fields.summary) for issue in future_sprint_stories if issue.fields.customfield_10014 is None]
+    no_epic = [(issue.id,
+                issue.key,
+                issue.fields.summary,
+                issue.fields.customfield_10014,
+                issue.fields.priority.name,
+                str(issue.fields.assignee),
+                issue.fields.customfield_10026)
+               for issue in future_sprint_stories if issue.fields.customfield_10014 is None]
 
     data = {
         "notEstimated": not_estimated,
@@ -385,10 +425,12 @@ def get_response(data):
     response.headers.add('Access-Control-Allow-Origin', '*')
     return response
 
-#TODO Route to homepage
+
+# TODO Route to homepage
 @app.route("/", methods=["GET"])
 def home():
     return redirect(url_for('/api/get-json'))
+
 
 @app.route("/error", methods=["GET"])
 def error():

@@ -59,7 +59,7 @@ class Issues {
     }
 
     get issues(){return this._issues;}
-    set issues(issues){this.issues = issues;}
+    set issues(issues){this._issues = issues;}
 
     get priorities(){return Array.from(new Set(this.issues.map(issue => issue.priority)));}
     get issueTypes(){return Array.from(new Set(this.issues.map(issue => issue.issuetype)));}
@@ -69,9 +69,10 @@ class Issues {
 class Epic {
     constructor(data){
         this._id = parseInt(data.id);
-        this._name = data.name;
+        this._name = data.fields.customfield_10011;
         this._summary = data.summary;
         this._url = data.self;
+        this._key = data.key;
     }
     get issues(){return jiraRepo.issues.getFilteredIssues(issue => issue.epic.id === this.id);}
 
@@ -79,6 +80,7 @@ class Epic {
     get name(){return this._name;}
     get summary(){return this._summary;}
     get url(){return this._url;}
+    get key(){return this._key;}
 
     get blockers(){return jiraRepo.issues.getFilteredIssues( issue => issue.status === "Blocked");}
     get totalBlockers(){return this.blockers.length;}

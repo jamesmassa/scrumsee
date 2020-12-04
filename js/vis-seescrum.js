@@ -75,8 +75,18 @@ class SeeScrum {
             const storyUrl = "https://seescrum.atlassian.net/browse/" + story[1];
             const storyKey = story[1];
             const storyDescription = story[2];
+
+            const storyEpicKey = story[3];
+            const storyEpic = jiraRepo.epics._epics.find(epic => epic.key === storyEpicKey);
+            const storyEpicName = storyEpic ? "Epic: " + storyEpic.name : "";
+            const storyPriority = story[4];
+            const storyAssignee = story[5];
+            const storyPoints = story[6];
+
             html += '<br><a href="' + storyUrl + '" target="_blank">' + storyKey + '</a>&nbsp;&nbsp;&nbsp;'
             html += storyDescription;
+            html += '<br>' + storyPriority + '&nbsp;&nbsp;&nbsp;' + storyPoints + ' points&nbsp;&nbsp;&nbsp;'
+            html += '&nbsp;&nbsp;&nbsp;Assigned to: ' + storyAssignee + '&nbsp;&nbsp;&nbsp;' + storyEpicName;
         });
 
         html += '<hr/>';
