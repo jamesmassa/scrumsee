@@ -73,6 +73,7 @@ class Epic {
         this._summary = data.summary;
         this._url = data.self;
         this._key = data.key;
+        this._colorLabel = data.fields.customfield_10013;
     }
     get issues(){return jiraRepo.issues.getFilteredIssues(issue => issue.epic.id === this.id);}
 
@@ -81,6 +82,9 @@ class Epic {
     get summary(){return this._summary;}
     get url(){return this._url;}
     get key(){return this._key;}
+    get colorLabel(){return this._colorLabel;}
+    get color(){return jiraRepo.epicColors.find(color => color.label === this.colorLabel).color;}
+    get backgroundColor(){return jiraRepo.epicColors.find(color => color.label === this.colorLabel).backgroundColor;}
 
     get blockers(){return jiraRepo.issues.getFilteredIssues( issue => issue.status === "Blocked");}
     get totalBlockers(){return this.blockers.length;}
@@ -180,8 +184,25 @@ class JiraRepo {
 
         this._parseDate = d3.timeParse("%Y-%m-%dT%H:%M:%S.%L%Z");
 
+        this._epicColors = [
+            {"label": "ghx-label-1", "color": "#FFFFFF", "backgroundColor": "#42526E"},
+            {"label": "ghx-label-2", "color": "#172B4D", "backgroundColor": "#FFC400"},
+            {"label": "ghx-label-3", "color": "#42526E", "backgroundColor": "#FFE380"},
+            {"label": "ghx-label-4", "color": "#172B4D", "backgroundColor": "#4C9AFF"},
+            {"label": "ghx-label-5", "color": "#172B4D", "backgroundColor": "#00C7E6"},
+            {"label": "ghx-label-6", "color": "#006644", "backgroundColor": "#79F2C0"},
+            {"label": "ghx-label-7", "color": "#403294", "backgroundColor": "#C0B6F2"},
+            {"label": "ghx-label-8", "color": "#172B4D", "backgroundColor": "#998DD9"},
+            {"label": "ghx-label-9", "color": "#42526E", "backgroundColor": "#FFBDAD"},
+            {"label": "ghx-label-10", "color": "#0049B0", "backgroundColor": "#B3D4FF"},
+            {"label": "ghx-label-11", "color": "#42526E", "backgroundColor": "#79E2F2"},
+            {"label": "ghx-label-12", "color": "#42526E", "backgroundColor": "#EBECF0"},
+            {"label": "ghx-label-13", "color": "#172B4D", "backgroundColor": "#57D9A3"},
+            {"label": "ghx-label-14", "color": "#172B4D", "backgroundColor": "#FF8F73"}
+        ];
     }
 
+    get epicColors(){return this._epicColors;}
     get backlog(){return this.futureStories;}
     get activeSprint(){return this.sprints.activeSprint;}
     get previousSprint(){return this.sprints.previousSprint;}

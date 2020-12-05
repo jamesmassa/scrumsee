@@ -10,7 +10,17 @@ class Ifa {
 
         const storyEpicKey = ifa[3];
         const storyEpic = jiraRepo.epics._epics.find(epic => epic.key === storyEpicKey);
-        this.epic = storyEpic ? storyEpic.name : "";
+        this.epic = "";
+
+        if (storyEpic) {
+            this.epic = '<span style="color: ' + storyEpic.color;
+            this.epic += '; background-color: ' + storyEpic.backgroundColor;
+            this.epic += '; padding: 2px 5px';
+            this.epic += '; border-radius: 3px">'
+            this.epic += storyEpic.name + '</span>';
+        }
+
+
 
         this.assigneeAvatar = 'https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/5dc4ce16e41bfe0df6c29f65/9235b3cd-065b-46d7-8a8f-3f23a52e2a18/48';
         let assigneeHtml = '<span><img src="' + this.assigneeAvatar + '" style="border-radius: 50%; height: 50%"></span>';
