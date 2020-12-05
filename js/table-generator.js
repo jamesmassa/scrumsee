@@ -29,17 +29,19 @@ const appendStories = (singleStory) => {
     ssTableBodyRow.className = 'ssTableBodyRow';
 // Lines 72-85 create the 5 column cells that will be appended to the current table row
     const key = document.createElement('td');
+    key.style.whiteSpace = "nowrap";
     key.innerHTML = singleStory.key;
     const summaryData = document.createElement('td');
     summaryData.innerText = singleStory.summary;
     const epicData = document.createElement('td');
     epicData.innerText = singleStory.epic;
     const priorityData = document.createElement('td');
-    priorityData.innerText = singleStory.priority;
+    priorityData.innerHTML = singleStory.priority;
     const assigneeData = document.createElement('td');
-    assigneeData.innerText = singleStory.assignee;
+    assigneeData.align = "center";
+    assigneeData.innerHTML = singleStory.assignee;
     const storyPointData = document.createElement('td');
-    storyPointData.innerText = singleStory.storypoints;
+    storyPointData.innerHTML = singleStory.storypoints;
     ssTableBodyRow.append(key, summaryData, epicData, priorityData, assigneeData, storyPointData); // Append all 5 cells to the table row
     ssTable.append(ssTableBodyRow); // Append the current row to the scoreboard table body
 };

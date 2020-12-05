@@ -5,14 +5,28 @@ class Ifa {
 
     constructor(ifa) {
         const storyUrl = "https://seescrum.atlassian.net/browse/" + ifa[1];
-        this.key = '<a href="' + storyUrl + '" target="_blank">' + ifa[1] + '</a>';
+        this.storyAvatar = '<img src="https://seescrum.atlassian.net/secure/viewavatar?size=medium&avatarId=10315&avatarType=issuetype">'
+        this.key = '<a href="' + storyUrl + '" target="_blank">' + this.storyAvatar + '&nbsp;' + ifa[1] + '</a>';
         this.summary = ifa[2];
         const storyEpicKey = ifa[3];
         const storyEpic = jiraRepo.epics._epics.find(epic => epic.key === storyEpicKey);
         this.epic = storyEpic ? storyEpic.name : "";
-        this.priority = ifa[4];
-        this.assignee = ifa[5];
-        this.storypoints = ifa[6]
+
+        const priorityText = ifa[4];
+        const priorityIconBaseUrl = "https://seescrum.atlassian.net/images/icons/priorities/";
+        let priorityHtml = '<span><img height="16" src="' + priorityIconBaseUrl + priorityText.toLowerCase() + '.svg">&nbsp';
+        priorityHtml += priorityText + '</span>';
+        this.priority = priorityHtml;
+
+        this.assigneeAvatar = 'https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/5dc4ce16e41bfe0df6c29f65/9235b3cd-065b-46d7-8a8f-3f23a52e2a18/48';
+        let assigneeHtml = '<span><img src="' + this.assigneeAvatar + '" style="border-radius: 50%; height: 50%"></span>';
+        assigneeHtml += '<span>&nbsp' + ifa[5] + '</span>';
+        this.assignee = assigneeHtml;
+
+        let ptsHtml = '<span class="fas fa-exclamation-triangle fa-sm" style="color:#ffc107">&nbsp</span>';
+        ptsHtml += '<span style="background-color: #dfe1e6; color: black; font-size: 12px; height: 16px; border-radius:3em; padding-left: 7px; padding-right: 7px;">' + '<span>' + '</span>' + ifa[6] + '</span>';
+        this.storypoints = ptsHtml;
+
     }
 }
 
