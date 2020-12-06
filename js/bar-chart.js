@@ -262,15 +262,24 @@ class BarChart {
     setData(){
         switch (this.rankingType) {
             case "completedStoryPoints":
-                return jiraRepo.velocityCompletedStoryPoints;
+                if (!this.velocityCompletedStoryPoints) {
+                    this.velocityCompletedStoryPoints = jiraRepo.velocityCompletedStoryPoints;
+                }
+                return this.velocityCompletedStoryPoints;
             case "completedStories":
-                return jiraRepo.velocityCompletedStoryCount;
+                if (!this.velocityCompletedStoryCount){
+                    this.velocityCompletedStoryCount = jiraRepo.velocityCompletedStoryCount;
+                }
+                return this.velocityCompletedStoryCount;
             case "gitNetLinesOfCode":
             case "gitLinesOfCodeAdditions":
             case "gitLinesOfCodeDeletions":
                 return gitRepo.statsCodeFrequency.slice(this.velocityWeekCount);
             case "gitCodeCommits":
-                return gitRepo.velocityChartCommitActivity;
+                if (!this.velocityChartCommitActivity) {
+                    this.velocityChartCommitActivity = gitRepo.velocityChartCommitActivity;
+                }
+                return this.velocityChartCommitActivity;
             case "gitPulls":
                 return gitRepo.pulls;
             case "gitReleases":

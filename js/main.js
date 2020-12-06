@@ -6,7 +6,7 @@ let gitRepo = null;
 let visVelocity = null;
 
 document.addEventListener("DOMContentLoaded", () => {
-
+// TODO:  Technical Debt:  Remove passing of gitRepo and jiraRepo global variables to constructors
 // TODO: Velocity Chart
 //      1. Use completed data from the Velocity Chart Data service and remove my JS calculations
 //      2. Tag Git data with sprints and visualize it
