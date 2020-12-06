@@ -369,7 +369,7 @@ def items_for_attention():
                       str(issue.fields.assignee),
                       issue.fields.customfield_10026)
                      for issue in future_sprint_stories
-                     if issue.fields.customfield_10026 not in fibonacci]
+                     if issue.fields.customfield_10026 is not None and issue.fields.customfield_10026 not in fibonacci]
 
     unassigned = [(issue.id,
                    issue.key,

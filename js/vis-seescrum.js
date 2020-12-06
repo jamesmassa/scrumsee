@@ -22,9 +22,7 @@ class Ifa {
 
         let assigneeHtml = "";
         if (ifa[5] === "None") {
-            //assigneeHtml = '<span style="border-radius: 50%" role="presentation"><svg width="24" height="24" viewBox="0 0 24 24" focusable="false" role="presentation"><g fill="currentColor" fill-rule="evenodd"><path d="M6 14c0-1.105.902-2 2.009-2h7.982c1.11 0 2.009.894 2.009 2.006v4.44c0 3.405-12 3.405-12 0V14z"></path><circle cx="12" cy="7" r="4"></circle></g></svg></span>';
-            //assigneeHtml += '<span>&nbsp Unassigned</span>';
-            assigneeHtml = '<span class="css-1c24z73" style="border-radius: 50%; background-color: gray; color: white; margin-left: 3px;"><span class="css-geaztb"><span class="sc-btzYZH fDjiIb" role="presentation"><svg width="18" height="24" viewBox="0 0 24 24" focusable="false" role="presentation"><g fill="currentColor" fill-rule="evenodd"><path d="M6 14c0-1.105.902-2 2.009-2h7.982c1.11 0 2.009.894 2.009 2.006v4.44c0 3.405-12 3.405-12 0V14z"></path><circle cx="12" cy="7" r="4"></circle></g></svg></span></span></span>'
+            assigneeHtml = '<span style="border-radius: 50%; background-color: gray; color: white; margin-left: 3px;"><span><span><svg width="18" height="24" viewBox="0 0 24 24" focusable="false" role="presentation"><g fill="currentColor" fill-rule="evenodd"><path d="M6 14c0-1.105.902-2 2.009-2h7.982c1.11 0 2.009.894 2.009 2.006v4.44c0 3.405-12 3.405-12 0V14z"></path><circle cx="12" cy="7" r="4"></circle></g></svg></span></span></span>'
             assigneeHtml += '<span>&nbsp Unassigned</span>';
 
         } else {
@@ -45,7 +43,12 @@ class Ifa {
         this.priority = priorityHtml;
 
         let ptsHtml = '<span class="fas fa-exclamation-triangle fa-sm" style="color:#ffc107">&nbsp</span>';
-        ptsHtml += '<span style="background-color: #dfe1e6; color: black; font-size: 12px; height: 16px; border-radius:3em; padding-left: 7px; padding-right: 7px;">' + '<span>' + '</span>' + ifa[6] + '</span>';
+        ptsHtml += '<span style="background-color: #dfe1e6; color: black; font-size: 12px; height: 16px; border-radius:3em; padding-left: 7px; padding-right: 7px;">' + '<span>' + '</span>';
+        if (ifa[6] === null) {
+            ptsHtml += "-" + '</span>';
+        } else {
+            ptsHtml += ifa[6] + '</span>';
+        }
         this.storypoints = ptsHtml;
 
     }
