@@ -20,11 +20,19 @@ class Ifa {
             this.epic += storyEpic.name + '</span>';
         }
 
+        let assigneeHtml = "";
+        if (ifa[5] === "None") {
+            //assigneeHtml = '<span style="border-radius: 50%" role="presentation"><svg width="24" height="24" viewBox="0 0 24 24" focusable="false" role="presentation"><g fill="currentColor" fill-rule="evenodd"><path d="M6 14c0-1.105.902-2 2.009-2h7.982c1.11 0 2.009.894 2.009 2.006v4.44c0 3.405-12 3.405-12 0V14z"></path><circle cx="12" cy="7" r="4"></circle></g></svg></span>';
+            //assigneeHtml += '<span>&nbsp Unassigned</span>';
+            assigneeHtml = '<span class="css-1c24z73" style="border-radius: 50%; background-color: gray; color: white; margin-left: 3px;"><span class="css-geaztb"><span class="sc-btzYZH fDjiIb" role="presentation"><svg width="18" height="24" viewBox="0 0 24 24" focusable="false" role="presentation"><g fill="currentColor" fill-rule="evenodd"><path d="M6 14c0-1.105.902-2 2.009-2h7.982c1.11 0 2.009.894 2.009 2.006v4.44c0 3.405-12 3.405-12 0V14z"></path><circle cx="12" cy="7" r="4"></circle></g></svg></span></span></span>'
+            assigneeHtml += '<span>&nbsp Unassigned</span>';
 
+        } else {
+            this.assigneeAvatar = 'https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/5dc4ce16e41bfe0df6c29f65/9235b3cd-065b-46d7-8a8f-3f23a52e2a18/48';
+            assigneeHtml = '<span><img src="' + this.assigneeAvatar + '" style="border-radius: 50%; height: 50%;"></span>';
+            assigneeHtml += '<span>&nbsp' + ifa[5] + '</span>';
+        }
 
-        this.assigneeAvatar = 'https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/5dc4ce16e41bfe0df6c29f65/9235b3cd-065b-46d7-8a8f-3f23a52e2a18/48';
-        let assigneeHtml = '<span><img src="' + this.assigneeAvatar + '" style="border-radius: 50%; height: 50%"></span>';
-        assigneeHtml += '<span>&nbsp' + ifa[5] + '</span>';
         this.assignee = assigneeHtml;
 
         const storyUrl = "https://seescrum.atlassian.net/browse/" + ifa[1];
@@ -78,6 +86,19 @@ class SeeScrum {
 
         let stories = this._ifaData.mustSplit.map(ifa => new Ifa(ifa));
         stories.forEach(story => appendStories(story));  // Creates and appends each row to the table body
+
+        stories = this._ifaData.noEpic.map(ifa => new Ifa(ifa));
+        stories.forEach(story => appendStories(story));  // Creates and appends each row to the table body
+
+        stories = this._ifaData.unassigned.map(ifa => new Ifa(ifa));
+        stories.forEach(story => appendStories(story));  // Creates and appends each row to the table body
+
+        stories = this._ifaData.notEstimated.map(ifa => new Ifa(ifa));
+        stories.forEach(story => appendStories(story));  // Creates and appends each row to the table body
+
+        stories = this._ifaData.notFibonacci.map(ifa => new Ifa(ifa));
+        stories.forEach(story => appendStories(story));  // Creates and appends each row to the table body
+
 
         const div = document.querySelector('#sprint-planning-alerts');
         const data = this._ifaData;

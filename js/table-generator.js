@@ -2,9 +2,9 @@
 const scoreDiv = document.querySelector("div.sstable"); // Find the scoreboard div in our html
 const tableHeaders = ["Issue Key", "Summary", "Epic", "Priority",  "Assignee", "Story Points"];
 const createSsTable = () => {
-    while (scoreDiv.firstChild) scoreDiv.removeChild(scoreDiv.firstChild); // Remove all children from scoreboard div (if any)
+    while (scoreDiv.firstChild) scoreDiv.removeChild(scoreDiv.firstChild); // Remove all children from ssTable div (if any)
     const ssTable = document.createElement('table'); // Create the table itself
-    ssTable.className = 'ssTable table';
+    ssTable.className = 'ssTable table-hover table';
     const ssTableHead = document.createElement('thead'); // Creates the table header group element
     ssTableHead.className = 'ssTableHead';
     const ssTableHeaderRow = document.createElement('tr'); // Creates the row that will contain the headers
@@ -20,24 +20,25 @@ const createSsTable = () => {
     const ssTableBody = document.createElement('tbody'); // Creates the table body group element
     ssTableBody.className = "ssTable-Body";
     ssTable.append(ssTableBody); // Appends the table body group element to the table
-    scoreDiv.append(ssTable); // Appends the table to the scoreboard div
+    scoreDiv.append(ssTable); // Appends the table to the ssTable div
 }
-// The function below will accept a single story and its index to create the global ranking
+// The function below will add a table row
 const appendStories = (singleStory) => {
     const ssTable = document.querySelector('.ssTable'); // Find the table we created
     const ssTableBodyRow = document.createElement('tr'); // Create the current table row
     ssTableBodyRow.className = 'ssTableBodyRow';
-// Lines 72-85 create the 5 column cells that will be appended to the current table row
 
-
+    const tdPadding = '4px';
+// Create the column cells that will be appended to the current table row
     const summaryData = document.createElement('td');
     summaryData.innerHTML = singleStory.summary;
 
     const epicData = document.createElement('td');
     epicData.innerHTML = singleStory.epic;
 
+
     const assigneeData = document.createElement('td');
-    assigneeData.align = "center";
+    assigneeData.align = "left";
     assigneeData.innerHTML = singleStory.assignee;
 
     const key = document.createElement('td');
@@ -51,6 +52,7 @@ const appendStories = (singleStory) => {
     const storyPointData = document.createElement('td');
     storyPointData.style.whiteSpace = "nowrap";
     storyPointData.innerHTML = singleStory.storypoints;
+
     ssTableBodyRow.append(key, summaryData, epicData, priorityData, assigneeData, storyPointData); // Append all 5 cells to the table row
     ssTable.append(ssTableBodyRow); // Append the current row to the scoreboard table body
 };
