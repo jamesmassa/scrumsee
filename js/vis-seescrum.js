@@ -1046,7 +1046,13 @@ class SeeScrum {
         };
 
         const visualizations = document.querySelectorAll(".viz");
-        visualizations.forEach( viz => { viz.style.display = "none";});
+        visualizations.forEach( viz => {
+            if (viz.id === "velocity-chart") {
+                viz.style.display = "block";
+            }else {
+                viz.style.display = "none";
+            }
+        });
 
     }
 

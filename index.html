@@ -31,78 +31,20 @@
     <div id="content-wrapper" class="d-flex flex-column">
 
 
-        <img src="img/see-scrum-logo.png" height="850" alt="See Scrum Logo">
+        <img src="img/see-scrum-logo.png" height="825" alt="See Scrum Logo">
 
         <header id="overview">
             <h2 style="text-align: center;">MAKE SCRUM DETAILS FUN AGAIN WITH CLEAR VISUAL INSIGHT</h2>
-            <br><br>
-            <h2 style="color:#006400">
-                Agile Scrum is easy and makes us happy
-                <i class="fas fa-smile-beam fa-2x"></i>
-            </h2>
-            <h5>
-                We learn Scrum through the <a href="https://agilemanifesto.org/">Agile Manifesto</a>,
-                which teaches us to value people over tools,
-                and through the intuitive universal <a href="https://www.visual-paradigm.com/tutorials/agile-tutorial/">Scrum
-                process diagram</a>
-                which shows how the Scrum <a href="https://thedigitalprojectmanager.com/scrum-ceremonies-made-simple/">
-                ceremonies</a>,
-                <a href="https://www.visual-paradigm.com/scrum/what-are-the-three-scrum-roles/"> roles</a>, and
-                <a href="https://www.tutorialspoint.com/scrum/scrum_artifacts.htm"> artifacts</a> work together.
-            </h5>
             <br>
-
-            <h2 style="color:#8b0000">
-                Practicing Scrum with Jira is hard and makes us sad
-                <i class="fas fa-sad-tear fa-2x"></i>
-            </h2>
-            <h5>
-                Jira, was originally developed for bug tracking, not Scrum. Shoehorning Scrum into Jira causes <a
-                    href="https://medium.com/@jiajingguo/how-is-data-visualization-influenced-by-our-cognitive-processes-281d8486abfe">
-                cognitive overload</a>
-                because "Jira Scrum" is
-                <i class="doubleUnderline w3-tooltip">incomplete
-                    <span class="w3-tooltiptext">Jira partially models the Scrum process but omits
-              support for major Scrum ceremonies such as the retrospective, showcase, and estimation poker.</span>
-                </i>,
-                <i class="doubleUnderline w3-tooltip">ineffective
-                    <span class="w3-tooltiptext">
-              Jira doesn't ground us in the universal Scrum diagram so we must mentally map
-              the missing diagram to Jira, filling in Scrum ceremonies not included in Jira.
-              </span>
-                </i>, and
-                <i class="doubleUnderline w3-tooltip">nonvisual
-                    <span class="w3-tooltiptext">
-                Jira relies heavily on text.  Visualizations are in a separate section
-                outside the daily flow so many teams don't use them.  Moreover, the visualizations do not provide
-                direct insights, i.e., Jira is better at the "what" than the "so what"
-              </span>
-                </i>.
-            </h5>
-            <br>
-            <h2 style="color:darkgreen">
-                <i class="fas fa-glasses fa-sm "></i>
-                See Scrum makes us happy again
-                <i id="happy-again" class="fas fa-smile-wink fa-2x"></i>
-            </h2>
-
-            <h5>
-                The See Scrum tool helps teams follow the scrum process and
-                highlights actionable insights about the health of their team and their sprints.
-                See Scrum leverages the universal Scrum diagram to model the full
-                Scrum process and it encourages the team to explore with interactive visualizations.
-            </h5>
-
-            <br><br><br><br>
             <div id="goto-scrumsee">
                 <h3>
-                    <a href="#scrumsee">Get started <i class="fas fa-arrow-circle-down"></i></a>
+                    <a href="#scrumsee">Get Started <i class="fas fa-arrow-circle-down"></i></a>
                     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                    <a href="https://jamesmassa.dreamhosters.com/scrumseeblog/editorial/home/" target="_blank">
+                    <a href="https://www.seescrum.com/editorial/home/" target="_blank">
                         Read More <i class="fas fa-external-link-alt"></i></a>
                 </h3>
             </div>
-            <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+            <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
 
         </header>
 
@@ -187,9 +129,9 @@
                                     <div class="col-md-3">
                                         <form class="form-inline">
                                             <div class="form-group">
-                                                <label id="ranking-type-label" for="ranking-type" style="display:none;">Measure
+                                                <label id="ranking-type-label" for="ranking-type">Measure
                                                     with &nbsp</label>
-                                                <select class="form-control" id="ranking-type" style="display:none;">
+                                                <select class="form-control" id="ranking-type">
                                                     <option value="completedStoryPoints">Story Points</option>
                                                     <option value="completedStories">Stories</option>
                                                     <option value="gitCodeCommits">Code Commits</option>
@@ -221,7 +163,7 @@
                                 <div class="col-xl-12 col-lg-12 ml-md-5">
                                     <div id="burn-down-chart" class="viz"></div>
                                     <div id="retrospective-chart" class="viz"></div>
-                                    <div id="velocity-chart" class="viz"></div>
+                                    <div id="velocity-chart" class="viz active-chart"></div>
                                 </div>
                             </div>
                             <!-- End Card Body -->
