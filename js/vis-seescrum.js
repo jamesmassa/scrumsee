@@ -3,7 +3,10 @@
 
 class Ifa {
 
-    constructor(ifa) {
+    constructor(ifa, ifaType) {
+
+        this.ifaType = ifaType;
+        this.warningIcon = '<span onclick="' + this.handleIfaClick(this) + '" class="fas fa-exclamation-triangle fa-sm" style="color:#ffc107">&nbsp</span>';
 
         this.storyAvatar = '<img src="https://seescrum.atlassian.net/secure/viewavatar?size=medium&avatarId=10315&avatarType=issuetype">';
         this.summary = this.storyAvatar + '&nbsp;' + ifa[2];
@@ -12,8 +15,13 @@ class Ifa {
         const storyEpic = jiraRepo.epics._epics.find(epic => epic.key === storyEpicKey);
         this.epic = "";
 
+        if (ifaType === "noEpic") {
+            this.epic = this.warningIcon;
+            this.epic += "&nbspNo Epic"
+        }
+
         if (storyEpic) {
-            this.epic = '<span style="color: ' + storyEpic.color;
+            this.epic += '<span style="color: ' + storyEpic.color;
             this.epic += '; background-color: ' + storyEpic.backgroundColor;
             this.epic += '; padding: 2px 5px';
             this.epic += '; border-radius: 3px">'
@@ -21,13 +29,18 @@ class Ifa {
         }
 
         let assigneeHtml = "";
+
+        if (ifaType === "unassigned") {
+            assigneeHtml = this.warningIcon;
+        }
+
         if (ifa[5] === "None") {
-            assigneeHtml = '<span style="border-radius: 50%; background-color: gray; color: white; margin-left: 3px;"><span><span><svg width="18" height="24" viewBox="0 0 24 24" focusable="false" role="presentation"><g fill="currentColor" fill-rule="evenodd"><path d="M6 14c0-1.105.902-2 2.009-2h7.982c1.11 0 2.009.894 2.009 2.006v4.44c0 3.405-12 3.405-12 0V14z"></path><circle cx="12" cy="7" r="4"></circle></g></svg></span></span></span>'
+            assigneeHtml += '<span style="border-radius: 50%; background-color: gray; color: white; margin-left: 3px;"><span><span><svg width="18" height="24" viewBox="0 0 24 24" focusable="false" role="presentation"><g fill="currentColor" fill-rule="evenodd"><path d="M6 14c0-1.105.902-2 2.009-2h7.982c1.11 0 2.009.894 2.009 2.006v4.44c0 3.405-12 3.405-12 0V14z"></path><circle cx="12" cy="7" r="4"></circle></g></svg></span></span></span>'
             assigneeHtml += '<span>&nbsp Unassigned</span>';
 
         } else {
             this.assigneeAvatar = 'https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/5dc4ce16e41bfe0df6c29f65/9235b3cd-065b-46d7-8a8f-3f23a52e2a18/48';
-            assigneeHtml = '<span><img src="' + this.assigneeAvatar + '" style="border-radius: 50%; height: 50%;"></span>';
+            assigneeHtml += '<span><img src="' + this.assigneeAvatar + '" style="border-radius: 50%; height: 50%;"></span>';
             assigneeHtml += '<span>&nbsp' + ifa[5] + '</span>';
         }
 
@@ -42,15 +55,26 @@ class Ifa {
         priorityHtml += priorityText + '</span>';
         this.priority = priorityHtml;
 
-        let ptsHtml = '<span class="fas fa-exclamation-triangle fa-sm" style="color:#ffc107">&nbsp</span>';
-        ptsHtml += '<span style="background-color: #dfe1e6; color: black; font-size: 12px; height: 16px; border-radius:3em; padding-left: 7px; padding-right: 7px;">' + '<span>' + '</span>';
-        if (ifa[6] === null) {
-            ptsHtml += "-" + '</span>';
-        } else {
-            ptsHtml += ifa[6] + '</span>';
-        }
-        this.storypoints = ptsHtml;
 
+        let ptsHtml = "<span style='padding-right: 20px'>";
+        if (ifaType === "notEstimated" || ifaType === "notFibonacci" || ifaType === "mustSplit") {
+            ptsHtml += this.warningIcon;
+        }
+
+        ptsHtml += '<span style="background-color: #dfe1e6; color: black; font-size: 12px; height: 16px; border-radius:3em; padding-left: 7px; padding-right: 7px;">';
+        if (ifa[6] === null) {
+            ptsHtml += "-";
+        } else {
+            ptsHtml += ifa[6];
+        }
+        ptsHtml += '</span></span>';
+        this.storypoints = ptsHtml;
+    }
+
+    handleIfaClick(that){
+        return function () {
+            alert(that.ifaType);
+        }
     }
 }
 
@@ -84,24 +108,9 @@ class SeeScrum {
     }
 
     setIfaModalData(){
+
         createSsTable(); // Clears able div if it has any children nodes, creates & appends the table
         // Iterates through all the objects in the stories array and appends each one to the table body
-
-        let stories = this._ifaData.mustSplit.map(ifa => new Ifa(ifa));
-        stories.forEach(story => appendStories(story));  // Creates and appends each row to the table body
-
-        stories = this._ifaData.noEpic.map(ifa => new Ifa(ifa));
-        stories.forEach(story => appendStories(story));  // Creates and appends each row to the table body
-
-        stories = this._ifaData.unassigned.map(ifa => new Ifa(ifa));
-        stories.forEach(story => appendStories(story));  // Creates and appends each row to the table body
-
-        stories = this._ifaData.notEstimated.map(ifa => new Ifa(ifa));
-        stories.forEach(story => appendStories(story));  // Creates and appends each row to the table body
-
-        stories = this._ifaData.notFibonacci.map(ifa => new Ifa(ifa));
-        stories.forEach(story => appendStories(story));  // Creates and appends each row to the table body
-
 
         const div = document.querySelector('#sprint-planning-alerts');
         const data = this._ifaData;
@@ -110,7 +119,25 @@ class SeeScrum {
         const unassigned = this.analyticsToString("with no assignee", data.unassigned);
         const notEstimated = this.analyticsToString(" without an estimate", data.notEstimated);
         const notFibonacci = this.analyticsToString("with non-Fibonacci estimates", data.notFibonacci);
-        div.innerHTML += mustSplit + noEpic + unassigned + notEstimated + notFibonacci;
+        div.innerHTML += '<h5>Summary</h5>' + mustSplit + noEpic + unassigned + notEstimated + notFibonacci + '<br>';
+
+
+        let stories = this._ifaData.mustSplit.map(ifa => new Ifa(ifa, "mustSplit"));
+        stories.forEach(story => appendStories(story));  // Creates and appends each row to the table body
+
+        stories = this._ifaData.noEpic.map(ifa => new Ifa(ifa, "noEpic"));
+        stories.forEach(story => appendStories(story));  // Creates and appends each row to the table body
+
+        stories = this._ifaData.unassigned.map(ifa => new Ifa(ifa, "unassigned"));
+        stories.forEach(story => appendStories(story));  // Creates and appends each row to the table body
+
+        stories = this._ifaData.notEstimated.map(ifa => new Ifa(ifa, "notEstimated"));
+        stories.forEach(story => appendStories(story));  // Creates and appends each row to the table body
+
+        stories = this._ifaData.notFibonacci.map(ifa => new Ifa(ifa, "notFibonacci"));
+        stories.forEach(story => appendStories(story));  // Creates and appends each row to the table body
+
+
     }
 
 
@@ -131,7 +158,7 @@ class SeeScrum {
         jqlUrl = jqlUrl.slice(0, -3) //remove last comma
 
         jqlUrl += ')%20ORDER%20BY%20created%20DESC';
-        html = '<h5><a href="' + jqlUrl + '" target="_blank">';
+        html = '<h6><a href="' + jqlUrl + '" target="_blank">';
 
         html += data.length + " ";
 
@@ -143,26 +170,6 @@ class SeeScrum {
         html += "</a>";
 
         html += " " + header + "</h5>";
-
-        data.forEach(story => {
-            const storyUrl = "https://seescrum.atlassian.net/browse/" + story[1];
-            const storyKey = story[1];
-            const storyDescription = story[2];
-
-            const storyEpicKey = story[3];
-            const storyEpic = jiraRepo.epics._epics.find(epic => epic.key === storyEpicKey);
-            const storyEpicName = storyEpic ? "Epic: " + storyEpic.name : "";
-            const storyPriority = story[4];
-            const storyAssignee = story[5];
-            const storyPoints = story[6];
-
-            html += '<br><a href="' + storyUrl + '" target="_blank">' + storyKey + '</a>&nbsp;&nbsp;&nbsp;'
-            html += storyDescription;
-            html += '<br>' + storyPriority + '&nbsp;&nbsp;&nbsp;' + storyPoints + ' points&nbsp;&nbsp;&nbsp;'
-            html += '&nbsp;&nbsp;&nbsp;Assigned to: ' + storyAssignee + '&nbsp;&nbsp;&nbsp;' + storyEpicName;
-        });
-
-        html += '<hr/>';
 
         return html
     }

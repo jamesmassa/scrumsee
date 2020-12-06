@@ -51,6 +51,7 @@ const appendStories = (singleStory) => {
 
     const storyPointData = document.createElement('td');
     storyPointData.style.whiteSpace = "nowrap";
+    storyPointData.align = "right";
     storyPointData.innerHTML = singleStory.storypoints;
 
     ssTableBodyRow.append(key, summaryData, epicData, priorityData, assigneeData, storyPointData); // Append all 5 cells to the table row
