@@ -108,12 +108,26 @@ class SeeScrum {
     }
 
     setIfaModalData(){
+        const data = this._ifaData;
+        const warningIcon = '<span class="fas fa-exclamation-triangle fa-lg" style="color:#ffc107">&nbsp</span>';
+        const capacityCheck = document.querySelector('#capacity-check');
+        const velocity = '(Velocity ' + data.velocity + ")&nbsp";
+        const plannedStoryPoints = '(Planned Story Points ' + data.plannedStoryPoints + ")";
+
+        if (parseInt(data.plannedStoryPoints) > parseInt(data.velocity)) {
+            capacityCheck.innerHTML = "<h5>" + warningIcon + "&nbsp" + velocity +
+                "is less than &nbsp" + plannedStoryPoints + "&nbsp for the upcoming sprint</h5><br><br>";
+        } else
+            capacityCheck.innerHTML = "<h5>Velocity of &nbsp" + velocity +
+                "is greater than" + "planned story points of &nbsp" + plannedStoryPoints + "&nbsp for the upcoming sprint</h5><br><br>";
+
+
+
 
         createSsTable(); // Clears able div if it has any children nodes, creates & appends the table
         // Iterates through all the objects in the stories array and appends each one to the table body
 
         const div = document.querySelector('#sprint-planning-alerts');
-        const data = this._ifaData;
         const mustSplit = this.analyticsToString("to split", data.mustSplit);
         const noEpic = this.analyticsToString("with no epic", data.noEpic);
         const unassigned = this.analyticsToString("with no assignee", data.unassigned);
