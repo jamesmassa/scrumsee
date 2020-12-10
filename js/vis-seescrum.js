@@ -700,7 +700,7 @@ class SeeScrum {
                 html += '<span class="fas fa-tachometer-alt fa-2x" style="color:#1cc88a; background-color: ' + this.dataRectColor + '"></span></button>';
                 this.appendHTML(gTachometer,
                     html,
-                    150,
+                    160,
                     50,
                     -70,
                     24,

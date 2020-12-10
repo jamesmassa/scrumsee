@@ -1,7 +1,8 @@
 # TODO
 #  -------------------------------------------
 #  GENERAL
-#  1. Migrate all JS logic to the back-end and, where possible, leverage the Jira and Git APIs rather than writing bespoke code
+#  1. Migrate all JS logic to the back-end and, where possible, leverage the Jira and Git APIs
+#  rather than writing bespoke code
 #  -------------------------------------------
 #  GIT
 #  1. Add git stats for weekly LOC additions and deletions to the Velocity chart
@@ -223,6 +224,14 @@ def jira_issues_for_sprint():
 @app.route('/api/velocity-chart', methods=["GET"])
 def velocity_chart():
 
+    data = velocity_chart_json()
+
+    return get_response(data)
+
+    # 'https://seescrum.atlassian.net/rest/greenhopper/1.0/rapid/charts/velocity.json?rapidViewId=1')
+
+
+def velocity_chart_json():
     url_response = jira._get_json(
         "rapid/charts/velocity.json?rapidViewId=%s"
         % board_id,
@@ -237,9 +246,7 @@ def velocity_chart():
         "velocityStatEntries": velocity_stat_entries
     }}
 
-    return get_response(data)
-
-    # 'https://seescrum.atlassian.net/rest/greenhopper/1.0/rapid/charts/velocity.json?rapidViewId=1')
+    return data
 
 
 # TODO Detect active sprint (or receive in param) and set the sprintId value in the url
@@ -348,7 +355,7 @@ def items_for_attention():
     # storypoints = customfield_10026
     # epic = customfield_10014
 
-    future_sprint_stories = jira.search_issues('project = "SS" and Sprint in futureSprints()')
+    future_sprint_stories = jira.search_issues('project = "SS" and Sprint in futureSprints()', maxResults=500)
 
     fibonacci = [0, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144]
 
@@ -400,12 +407,33 @@ def items_for_attention():
                 issue.fields.customfield_10026)
                for issue in future_sprint_stories if issue.fields.customfield_10014 is None]
 
+    # Average the story points from the recent sprints
+    velocity_chart_data = velocity_chart_json()["velocityChartData"]
+    velocity_stat_entries = velocity_chart_data["velocityStatEntries"]
+    velocity_stat_key_list = list(velocity_stat_entries.keys())
+
+    velocity = sum(velocity_stat_entries[key]["completed"]["value"]
+                   for key in velocity_stat_key_list) / len(velocity_stat_key_list)
+
+    # Get the last completed sprint.  Plus one is active sprint and plus two is next sprint
+    next_sprint_id = velocity_chart_data["sprints"][0]["id"] + 2
+
+    planned_story_points = 0
+    for story in future_sprint_stories:
+        sprint_id = story.fields.customfield_10020[-1].id
+        story_points = story.fields.customfield_10026
+
+        if sprint_id == next_sprint_id and story_points is not None:
+            planned_story_points += story_points
+
     data = {
         "notEstimated": not_estimated,
         "notFibonacci": not_fibonacci,
         "unassigned": unassigned,
         "mustSplit": must_split,
-        "noEpic": no_epic
+        "noEpic": no_epic,
+        "velocity": int(round(velocity)),
+        "plannedStoryPoints": planned_story_points
     }
 
     return get_response(data)
